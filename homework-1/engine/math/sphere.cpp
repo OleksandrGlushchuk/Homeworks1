@@ -27,9 +27,7 @@ bool sphere::hit(const ray& r, hit_record& record) const {
             t1 = t2;
             if (t1 < 0)
             {
-                record.t = -999.999;
-                record.hit_point = vec3(-999.999, -999.999, -999.999);
-                record.normal = record.hit_point;
+                record.t = std::numeric_limits<float>::infinity();
                 return false;
             }
                 
@@ -39,8 +37,6 @@ bool sphere::hit(const ray& r, hit_record& record) const {
         record.normal = (record.hit_point - center) / radius;
         return true;
     }
-    record.t = -999.999;
-    record.hit_point = vec3(-999.999, -999.999, -999.999);
-    record.normal = record.hit_point;
+    record.t = std::numeric_limits<float>::infinity();
     return false;
 }

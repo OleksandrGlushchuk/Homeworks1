@@ -5,18 +5,17 @@
 #include "../math/sphere.h"
 class Render
 {
-	static sphere sp;
-	static bool need_to_redraw;
+	sphere sp;
+	bool need_to_redraw;
+	BITMAPINFO bitmap_info;
+	RGBQUAD* image = nullptr;
 public:
-	static void Init(RECT screen);
-	static void Redraw(RECT screen, HDC compatible_context, HBITMAP compatible_bitmap);
-	static void Draw(RECT screen, HDC device_context, HDC compatible_context, HBITMAP compatible_bitmap);
-
-	class Input_processing
+	void Init(RECT screen);
+	void Redraw(RECT screen, HDC device_context);
+	void Draw(RECT screen, HDC device_context);
+	~Render()
 	{
-	public:
-		static void OnKeyDown();
-		static void OnMouseMove(WORD x, WORD y);
-		static void OnChangeWindowSize(RECT screen, HDC device_context, HDC compatible_context, HBITMAP compatible_bitmap);
-	};
+		delete[] image;
+	}
+	friend class Controller;
 };

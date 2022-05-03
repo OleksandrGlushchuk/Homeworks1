@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math\sphere.cpp" />
+    <ClCompile Include="window\controller.cpp" />
     <ClCompile Include="window\render.cpp" />
     <ClCompile Include="window\window.cpp" />
   </ItemGroup>
@@ -150,6 +151,7 @@
     <ClInclude Include="math\ray.h" />
     <ClInclude Include="math\sphere.h" />
     <ClInclude Include="math\vec3.h" />
+    <ClInclude Include="window\controller.h" />
     <ClInclude Include="window\render.h" />
     <ClInclude Include="window\window.h" />
   </ItemGroup>

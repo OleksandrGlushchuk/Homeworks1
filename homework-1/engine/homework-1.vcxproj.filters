@@ -27,6 +27,9 @@
     <ClCompile Include="math\sphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="window\controller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="math\vec3.h">
@@ -42,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="window\render.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="window\controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,30 +1,28 @@
 #include "window.h"
 #include "render.h"
-HDC Window::device_context, Window::compatible_context;
+#include <thread>
+HDC Window::device_context;
 RECT Window::screen;
-HBITMAP Window::compatible_bitmap;
-
+Render Window::render;
+Controller Window::controller = Window::render;
 LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	switch (msg)
 	{
 	case WM_CREATE:
 		device_context = GetDC(hwnd);
-		compatible_context = CreateCompatibleDC(device_context);
 		break;
-	case WM_SIZE:
+	case WM_SIZE: {
 		GetClientRect(hwnd, &screen);
-		compatible_bitmap = CreateCompatibleBitmap(device_context, screen.right, screen.bottom);
-		Render::Input_processing::OnChangeWindowSize(screen, device_context, compatible_context, compatible_bitmap);
+		controller.OnChangeWindowSize(screen, device_context);
 		break;
+	}
 	case WM_DESTROY:
-		DeleteObject(compatible_bitmap);
-		DeleteDC(compatible_context);
 		PostQuitMessage(0);
 		break;
 	case WM_MOUSEMOVE:
-		if(wparam == MK_RBUTTON)
-			Render::Input_processing::OnMouseMove(LOWORD(lparam), HIWORD(lparam));
+		if (wparam == MK_RBUTTON)
+			controller.OnMouseMove(LOWORD(lparam), HIWORD(lparam));
 		break;
 	default: return DefWindowProc(hwnd, msg, wparam, lparam);
 	}
@@ -36,18 +34,33 @@ void Window::Show()
 	ShowWindow(hwnd, SW_SHOWNORMAL);
 }
 
+bool FrameTimeElapsed(double seconds)
+{
+	static time_t start = clock();
+	if (clock() - start >= seconds*CLOCKS_PER_SEC)
+	{
+		start = clock();
+		return true;
+	}
+	return false;
+}
+
 void Window::Run()
 {
 	MSG msg;
 	while (true)
 	{
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+
+		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			if (msg.message == WM_QUIT) return;
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
+			
 		}
-		Render::Input_processing::OnKeyDown();
-		Render::Draw(screen, device_context, compatible_context, compatible_bitmap);
+		controller.OnKeyDown();
+		if(FrameTimeElapsed(1.0/60.0))
+			render.Draw(screen, device_context);
+		std::this_thread::yield();
 	}
 }

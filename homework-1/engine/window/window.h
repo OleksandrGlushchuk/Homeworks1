@@ -1,13 +1,14 @@
 #pragma once
 #include <windows.h>
+#include "controller.h"
 class Window
 {
 	HWND hwnd;
-	
 	WNDCLASS wndclass;
-	static HDC device_context, compatible_context;
+	static HDC device_context;
 	static RECT screen;
-	static HBITMAP compatible_bitmap;
+	static Controller controller;
+	static Render render;
 public:
 	static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
