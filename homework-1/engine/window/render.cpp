@@ -7,7 +7,6 @@ bool Render::need_to_redraw;
 void Render::Init(RECT screen)
 {
 	sp = sphere(vec3((screen.right) / 2.0, (screen.bottom) / 2.0, 60), 50);
-	need_to_redraw = true;
 }
 
 void Render::Redraw(RECT screen, HDC compatible_context, HBITMAP compatible_bitmap)

@@ -49,6 +49,5 @@ void Window::Run()
 		}
 		Render::Input_processing::OnKeyDown();
 		Render::Draw(screen, device_context, compatible_context, compatible_bitmap);
-		Sleep(16);
 	}
 }
