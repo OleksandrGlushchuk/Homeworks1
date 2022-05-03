@@ -31,9 +31,10 @@ void Controller::OnMouseMove(WORD x, WORD y)
 	render.need_to_redraw = true;
 }
 
-void Controller::OnChangeWindowSize(RECT screen, HDC device_context)
+void Controller::OnChangeWindowSize(Window &window)
 {
-	render.Init(screen);
-	render.Redraw(screen, device_context);
-	render.Draw(screen, device_context);
+	UpdateWindowSize(window);
+	render.Init(window);
+	render.RedrawOn(window);
+	render.DrawOn(window);
 }

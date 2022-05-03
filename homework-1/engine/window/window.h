@@ -1,29 +1,43 @@
 #pragma once
 #include <windows.h>
-#include "controller.h"
+#include <vector>
 class Window
 {
 	HWND hwnd;
 	WNDCLASS wndclass;
-	static HDC device_context;
-	static RECT screen;
-	static Controller controller;
-	static Render render;
+	HDC device_context;
+	RECT screen;
+	BITMAPINFO bitmap_info;
+	std::vector<RGBQUAD> image;
 public:
-	static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-
-	Window(LPCWSTR name, HINSTANCE hinstance, WNDCLASS _wndclass =
+	Window() = default;
+	Window(LPCWSTR name, HINSTANCE hinstance, WNDPROC WndProc,  WNDCLASS _wndclass =
 		{ CS_HREDRAW | CS_VREDRAW | CS_OWNDC,
-		WndProc, 0, 0, 0, 0,
+		0, 0, 0, 0, 0,
 		LoadCursor(NULL, IDC_ARROW), 0, 0, L"MyClass" }) : wndclass(_wndclass)
 	{
 		wndclass.hInstance = hinstance;
+		wndclass.lpfnWndProc = WndProc;
 		RegisterClass(&wndclass);
 		hwnd = CreateWindow(wndclass.lpszClassName, name, WS_OVERLAPPEDWINDOW, 0, 0, 320, 300, 0, 0, wndclass.hInstance, 0);
+		device_context = GetDC(hwnd);
+
+		ZeroMemory(&bitmap_info, sizeof(BITMAPINFO));
+		bitmap_info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+		bitmap_info.bmiHeader.biBitCount = 32;
+		bitmap_info.bmiHeader.biPlanes = 1;
 	}
 
-	void Show();
+	void Show()
+	{
+		ShowWindow(hwnd, SW_SHOWNORMAL);
+	}
 
-	void Run();
+	friend class Render;
+	friend void UpdateWindowSize(Window& wnd);
 };
 
+inline void UpdateWindowSize(Window& wnd)
+{
+	GetClientRect(wnd.hwnd, &wnd.screen);
+}
