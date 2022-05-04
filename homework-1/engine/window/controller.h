@@ -5,7 +5,7 @@ class Controller
 	Render &render;
 public:
 	Controller(Render &_render): render(_render){}
-	void OnKeyDown();
+	void ProcessInput();
 	void OnMouseMove(WORD x, WORD y);
-	void OnChangeWindowSize(Window& window);
+	void OnChangeWindowSize(Window& wnd);
 };

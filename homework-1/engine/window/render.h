@@ -11,8 +11,8 @@ class Render
 	bool need_to_redraw;
 public:
 	void Init(Window& wnd);
-	void RedrawOn(Window &wnd);
-	void DrawOn(Window& wnd);
+	void Redraw(Window &wnd);
+	void Draw(Window& wnd);
 
 	friend class Controller;
 };

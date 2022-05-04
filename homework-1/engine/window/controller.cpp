@@ -1,6 +1,6 @@
 #include "controller.h"
 
-void Controller::OnKeyDown()
+void Controller::ProcessInput()
 {
 	if (GetKeyState('W') < 0)
 	{
@@ -31,10 +31,9 @@ void Controller::OnMouseMove(WORD x, WORD y)
 	render.need_to_redraw = true;
 }
 
-void Controller::OnChangeWindowSize(Window &window)
+void Controller::OnChangeWindowSize(Window &wnd)
 {
-	UpdateWindowSize(window);
-	render.Init(window);
-	render.RedrawOn(window);
-	render.DrawOn(window);
+	render.Init(wnd);
+	render.Redraw(wnd);
+	render.Draw(wnd);
 }

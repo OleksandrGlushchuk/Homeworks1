@@ -27,17 +27,10 @@ public:
 		bitmap_info.bmiHeader.biBitCount = 32;
 		bitmap_info.bmiHeader.biPlanes = 1;
 	}
-
 	void Show()
 	{
 		ShowWindow(hwnd, SW_SHOWNORMAL);
 	}
-
+	void OnResize();
 	friend class Render;
-	friend void UpdateWindowSize(Window& wnd);
 };
-
-inline void UpdateWindowSize(Window& wnd)
-{
-	GetClientRect(wnd.hwnd, &wnd.screen);
-}

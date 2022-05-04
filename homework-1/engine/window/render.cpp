@@ -1,13 +1,11 @@
 #include "render.h"
+
 void Render::Init(Window& wnd)
 {
 	sp = sphere(vec3((wnd.screen.right) / 2.0, (wnd.screen.bottom) / 2.0, 60), 50);
-	wnd.image.resize(wnd.screen.right * wnd.screen.bottom);
-	wnd.bitmap_info.bmiHeader.biWidth = wnd.screen.right;
-	wnd.bitmap_info.bmiHeader.biHeight = wnd.screen.bottom;
 }
 
-void Render::RedrawOn(Window& wnd)
+void Render::Redraw(Window& wnd)
 {
 	ray r(vec3(0, 0, 0), vec3(0, 0, 1));
 	hit_record record;
@@ -34,12 +32,12 @@ void Render::RedrawOn(Window& wnd)
 	}
 }
 
-void Render::DrawOn(Window& wnd)
+void Render::Draw(Window& wnd)
 {
 	if (need_to_redraw)
 	{
 		need_to_redraw = false;
-		RedrawOn(wnd);
+		Redraw(wnd);
 	}
 	SetDIBitsToDevice(wnd.device_context, 0, 0, wnd.screen.right, wnd.screen.bottom, 
 		0, 0, 0, wnd.screen.bottom, &wnd.image[0], &wnd.bitmap_info, DIB_RGB_COLORS);

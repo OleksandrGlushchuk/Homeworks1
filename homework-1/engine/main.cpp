@@ -2,14 +2,16 @@
 #include "window/controller.h"
 #include "window/render.h"
 #include <thread>
+#include <chrono>
+const float FRAME_DURATION = 1.f / 60.f;
 
 LRESULT WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-bool FrameTimeElapsed(clock_t &start, float seconds)
+bool FrameTimeElapsed(std::chrono::time_point<std::chrono::steady_clock> &start, const float &seconds)
 {
-	if (clock() - start >= seconds * CLOCKS_PER_SEC)
+	if (std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::steady_clock::now() - start).count() >= seconds)
 	{
-		start = clock();
+		start = std::chrono::steady_clock::now();
 		return true;
 	}
 	return false;
@@ -25,7 +27,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 	window = Window(L"homework-1", hinstance, WndProc);
 	window.Show();
 	MSG msg;
-	clock_t start = clock();
+	std::chrono::time_point<std::chrono::steady_clock> start = std::chrono::steady_clock::now();
 	while (true)
 	{
 		while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -36,10 +38,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 
 		}
 
-		if (FrameTimeElapsed(start,1.0 / 60.0))
+		if (FrameTimeElapsed(start, FRAME_DURATION))
 		{
-			controller.OnKeyDown();
-			render.DrawOn(window);
+			controller.ProcessInput();
+			render.Draw(window);
 		}
 		std::this_thread::yield();
 	}
@@ -51,6 +53,7 @@ LRESULT WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	switch (msg)
 	{
 	case WM_SIZE: {
+		window.OnResize();
 		controller.OnChangeWindowSize(window);
 		break;
 	}
