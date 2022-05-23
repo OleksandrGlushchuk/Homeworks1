@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Math_headers">
+      <UniqueIdentifier>{4f5e5840-bf3d-4671-b513-40b4391817b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math_cpp">
+      <UniqueIdentifier>{379910df-2721-4022-9342-04c5308977d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Window_headers">
+      <UniqueIdentifier>{d517fba3-aaef-4984-a0a2-df34e8cbb6fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Window_cpp">
+      <UniqueIdentifier>{987fc4f6-dbb5-4fb8-853f-ae56cf34ecb9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Matr.cpp">
+      <Filter>Math_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="math\sphere.cpp">
+      <Filter>Math_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="window\controller.cpp">
+      <Filter>Window_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="window\render.cpp">
+      <Filter>Window_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="window\window.cpp">
+      <Filter>Window_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="math\camera.cpp">
+      <Filter>Math_cpp</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="math\vec3.h">
+      <Filter>Math_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Matr.h">
+      <Filter>Math_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Quaternion.h">
+      <Filter>Math_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="math\ray.h">
+      <Filter>Math_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="math\sphere.h">
+      <Filter>Math_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Floor.h">
+      <Filter>Math_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="window\controller.h">
+      <Filter>Window_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="window\render.h">
+      <Filter>Window_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="window\window.h">
+      <Filter>Window_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="math\camera.h">
+      <Filter>Math_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Cube.h">
+      <Filter>Math_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Intersection.h">
+      <Filter>Math_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Light.h">
+      <Filter>Math_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Material.h">
+      <Filter>Math_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="math\ObjectMover.h">
+      <Filter>Math_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Transform.h">
+      <Filter>Math_headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
