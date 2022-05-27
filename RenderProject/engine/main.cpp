@@ -71,10 +71,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_RBUTTONUP:
 		controller.OnRMouseUp(LOWORD(lparam), HIWORD(lparam));
 		break;
-
-	case WM_KEYDOWN:
-
-		break;
 	default: return DefWindowProc(hwnd, msg, wparam, lparam);
 	}
 	return TRUE;

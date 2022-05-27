@@ -14,13 +14,13 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="math">
-      <UniqueIdentifier>{2a825538-082b-4778-b3e0-93c80f972c4b}</UniqueIdentifier>
+      <UniqueIdentifier>{d01d4ff0-9ad5-46df-9095-609bcbcf5263}</UniqueIdentifier>
     </Filter>
     <Filter Include="window">
-      <UniqueIdentifier>{4275cca1-bc47-4312-9eee-8f22255e8468}</UniqueIdentifier>
+      <UniqueIdentifier>{87e8a099-a76e-4d62-9c9d-1429ed737312}</UniqueIdentifier>
     </Filter>
     <Filter Include="objects">
-      <UniqueIdentifier>{be302538-300f-4ccf-91ef-c3c8426f11c1}</UniqueIdentifier>
+      <UniqueIdentifier>{5dc25d20-7801-4318-8751-579965f082a7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -68,7 +68,13 @@
     <ClInclude Include="math\Light.h">
       <Filter>math</Filter>
     </ClInclude>
+    <ClInclude Include="math\Material.h">
+      <Filter>math</Filter>
+    </ClInclude>
     <ClInclude Include="math\Matr.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\ObjectMover.h">
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="math\Quaternion.h">
@@ -83,6 +89,9 @@
     <ClInclude Include="math\Transform.h">
       <Filter>math</Filter>
     </ClInclude>
+    <ClInclude Include="math\Triangle.h">
+      <Filter>math</Filter>
+    </ClInclude>
     <ClInclude Include="math\vec3.h">
       <Filter>math</Filter>
     </ClInclude>
@@ -92,35 +101,32 @@
     <ClInclude Include="window\Scene.h">
       <Filter>window</Filter>
     </ClInclude>
-    <ClInclude Include="window\window.h">
+    <ClInclude Include="window\Timer.h">
       <Filter>window</Filter>
     </ClInclude>
-    <ClInclude Include="objects\Floor.h">
-      <Filter>objects</Filter>
-    </ClInclude>
-    <ClInclude Include="objects\Material.h">
-      <Filter>objects</Filter>
-    </ClInclude>
-    <ClInclude Include="math\Triangle.h">
-      <Filter>math</Filter>
+    <ClInclude Include="window\window.h">
+      <Filter>window</Filter>
     </ClInclude>
     <ClInclude Include="objects\Cube.h">
       <Filter>objects</Filter>
     </ClInclude>
-    <ClInclude Include="objects\Sphere.h">
-      <Filter>objects</Filter>
-    </ClInclude>
-    <ClInclude Include="objects\ObjRef.h">
+    <ClInclude Include="objects\Floor.h">
       <Filter>objects</Filter>
     </ClInclude>
     <ClInclude Include="objects\IntersectionQuery.h">
       <Filter>objects</Filter>
     </ClInclude>
+    <ClInclude Include="objects\Material.h">
+      <Filter>objects</Filter>
+    </ClInclude>
     <ClInclude Include="objects\ObjectMover.h">
       <Filter>objects</Filter>
     </ClInclude>
-    <ClInclude Include="window\Timer.h">
-      <Filter>window</Filter>
+    <ClInclude Include="objects\ObjRef.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="objects\Sphere.h">
+      <Filter>objects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

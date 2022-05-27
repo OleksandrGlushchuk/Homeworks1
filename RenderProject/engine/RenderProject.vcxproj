@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{05834bcf-da0f-4785-9fcf-62f21cf90bf1}</ProjectGuid>
-    <RootNamespace>homework2</RootNamespace>
+    <ProjectGuid>{7fd8b628-9c14-4327-ac78-5aef85adf41d}</ProjectGuid>
+    <RootNamespace>RenderProject</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -90,7 +90,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -104,7 +104,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -157,7 +157,9 @@
     <ClInclude Include="math\Floor.h" />
     <ClInclude Include="math\Intersection.h" />
     <ClInclude Include="math\Light.h" />
+    <ClInclude Include="math\Material.h" />
     <ClInclude Include="math\Matr.h" />
+    <ClInclude Include="math\ObjectMover.h" />
     <ClInclude Include="math\Quaternion.h" />
     <ClInclude Include="math\ray.h" />
     <ClInclude Include="math\sphere.h" />
