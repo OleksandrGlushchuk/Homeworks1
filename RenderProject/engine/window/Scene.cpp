@@ -190,7 +190,7 @@ Vec3 Scene::CalculateSpotLights(std::vector<Sphere_Spot_Light>& _sphere_spot_lig
 	return sum;
 }
 
-void Scene::DrawNearest(math::Intersection& nearest, Material& nearest_material, RGBQUAD& pixel)
+void Scene::CalculateLighting(math::Intersection& nearest, Material& nearest_material, RGBQUAD& pixel)
 {
 	if (nearest_material.only_emmission)
 	{
@@ -224,7 +224,6 @@ void Scene::DrawNearest(math::Intersection& nearest, Material& nearest_material,
 void Scene::Redraw(Window& wnd)
 {
 	ray r(Vec3(0, 0, 0), Vec3(0, 0, 1));
-	camera.updateMatrices();
 	int pixel_index = 0;
 	int size = wnd.image.size();
 	math::Intersection nearest;
@@ -253,7 +252,7 @@ void Scene::Redraw(Window& wnd)
 
 			if (findIntersection(r, nearest, nearest_material))
 			{
-				DrawNearest(nearest, nearest_material, wnd.image[pixel_index]);
+				CalculateLighting(nearest, nearest_material, wnd.image[pixel_index]);
 			}
 			else
 			{

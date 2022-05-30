@@ -29,7 +29,7 @@ class Scene
 	Vec3 background_color = Vec3(60, 60, 170);
 	Vec3 scene_ambient = Vec3(20, 20, 20);
 public:
-	void DrawNearest(math::Intersection& nearest, Material &nearest_material, RGBQUAD& pixel);
+	void CalculateLighting(math::Intersection& nearest, Material &nearest_material, RGBQUAD& pixel);
 	void Redraw(Window &wnd);
 	void Draw(Window& wnd);
 

@@ -174,7 +174,10 @@ void Controller::OnChangeWindowSize()
 {
 	wnd.OnResize();
 	need_to_rotate = false;
-	InitScene();
+	float aspect = float(wnd.screen.right) / wnd.screen.bottom;
+	scene.camera.updateAspect(aspect);
+	scene.camera.updateBasis();
+	scene.camera.updateMatrices();
 	scene.Redraw(wnd);
 	scene.Draw(wnd);
 }
@@ -199,16 +202,16 @@ void Controller::InitScene()
 
 	//LIGHTS INITIALIZING
 	{
-		scene.sphere_point_light[0] = Sphere_Point_Light(Vec3(10, 180, 40), 1);
+		scene.sphere_point_light[0] = Sphere_Point_Light(Vec3(10, 180, 40), 4);
 		scene.sphere_point_light[0].light.color = Vec3(255, 255, 255);
 		scene.sphere_point_light[0].light.light_radius = 130;
 
-		scene.sphere_point_light[1] = Sphere_Point_Light(Vec3(-20, 79, 150), 1);
+		scene.sphere_point_light[1] = Sphere_Point_Light(Vec3(-20, 79, 150), 4);
 		scene.sphere_point_light[1].light.color = Vec3(220, 220, 220);
 		scene.sphere_point_light[1].light.light_radius = 110;
 
 
-		scene.sphere_spot_light[0] = Sphere_Spot_Light(Vec3(50, 10, -100), 1, Vec3(-1, -0.1, 0));
+		scene.sphere_spot_light[0] = Sphere_Spot_Light(Vec3(50, 10, -100), 4, Vec3(-1, -0.1, 0));
 		scene.sphere_spot_light[0].light.color = Vec3(255, 255, 255);
 		scene.sphere_spot_light[0].light.outerCutoff = cosf(M_PI / 4.f);
 		scene.sphere_spot_light[0].light.innerCutoff = cosf(M_PI / 6.f);
@@ -267,4 +270,5 @@ void Controller::InitScene()
 
 	float aspect = float(wnd.screen.right) / wnd.screen.bottom;
 	scene.camera = Camera(fovy, aspect, p_near, p_far);
+	scene.need_to_redraw = true;
 }

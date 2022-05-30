@@ -21,6 +21,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 	Timer timer;
 	timer.start_timer();
 	float delta_time;
+	controller.InitScene();
 	while (true)
 	{
 		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))

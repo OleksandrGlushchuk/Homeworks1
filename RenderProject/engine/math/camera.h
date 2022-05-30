@@ -14,6 +14,7 @@ class Camera
 {
 	bool need_to_update_matrices = true;
 	bool need_to_update_basis = true;
+	float fov, aspect, p_near, p_far;
 public:
 	const Vec3& right() 	const { return m_viewInv[0]; }
 	const Vec3& top() 		const { return m_viewInv[1]; }
@@ -27,8 +28,9 @@ public:
 	Vec3 TopLeft, BottomLeft, BottomRight;
 
 	Camera();
-	Camera(float fov, float aspect, float p_near, float p_far);
+	Camera(float _fov, float _aspect, float _p_near, float _p_far);
 
+	void updateAspect(float _aspect);
 	void updateMatrices();
 	void addRelativeOffset(const Vec3 &offset);
 	void setPerspective(float fov, float aspect, float p_near, float p_far); // sets m_proj and m_projInv

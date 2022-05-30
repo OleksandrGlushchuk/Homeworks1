@@ -18,13 +18,21 @@ Camera::Camera()
 
 }
 
-Camera::Camera(float fov, float aspect, float p_near, float p_far)
+Camera::Camera(float _fov, float _aspect, float _p_near, float _p_far) : fov(_fov), aspect(_aspect), p_near(_p_near), p_far(_p_far)
 {
 	setPerspective(fov, aspect, p_near, p_far);
 	setWorldOffset(Vec3(0, 0, 0));
 	setWorldAngles(Angles(0, 0, 0));
 	updateBasis();
 	updateMatrices();
+}
+
+void Camera::updateAspect(float _aspect)
+{
+	aspect = _aspect;
+	setPerspective(fov, aspect, p_near, p_far);
+	need_to_update_basis = true;
+	need_to_update_matrices = true;
 }
 
 void Camera::updateMatrices()
