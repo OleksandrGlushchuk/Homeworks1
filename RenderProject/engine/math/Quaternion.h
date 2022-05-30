@@ -25,8 +25,8 @@ public:
 	inline void operator*=(const Quaternion& b)
 	{
 		Quaternion a = *this;
-		a.w = b.w * this->w - dot(b.vec, this->vec);
-		a.vec = this->w * b.vec + b.w * this->vec + cross(this->vec,b.vec);
+		a.w = b.w * this->w - Vec3::dot(b.vec,this->vec);
+		a.vec = this->w * b.vec + b.w * this->vec + Vec3::cross(this->vec,b.vec);
 		this->w = a.w;
 		this->vec = a.vec;
 	}

@@ -8,7 +8,6 @@ namespace math
 	public:
 		float t;
 		Vec3 point;
-		Vec3 point_without_translation;
 		Vec3 normal;
 		void reset() { t = std::numeric_limits<float>::infinity(); }
 		bool exists() const { return std::isfinite(t); }

@@ -15,7 +15,7 @@ public:
 	SphereMover(Sphere* _sphere) : sphere(_sphere) {}
 	virtual void move(const Vec3& offset) override
 	{
-		sphere->center = offset;
+		sphere->center += offset;
 	}
 	Sphere* sphere;
 };
@@ -26,8 +26,8 @@ public:
 	Sphere_Point_Light_Mover(Sphere_Point_Light* _spl):spl(_spl){}
 	virtual void move(const Vec3& offset) override
 	{
-		spl->sphere.center = offset;
-		spl->light.pos = offset;
+		spl->sphere.center += offset;
+		spl->light.pos += offset;
 	}
 	Sphere_Point_Light* spl;
 };
@@ -38,21 +38,10 @@ public:
 	Sphere_Spot_Light_Mover(Sphere_Spot_Light* _ssl) :ssl(_ssl) {}
 	virtual void move(const Vec3& offset) override
 	{
-		ssl->sphere.center = offset;
-		ssl->light.pos = offset;
+		ssl->sphere.center += offset;
+		ssl->light.pos += offset;
 	}
 	Sphere_Spot_Light* ssl;
-};
-
-class LightMover : public SphereMover
-{
-public:
-	virtual void move(const Vec3& offset) override
-	{
-		sphere->center = offset;
-		light->pos = offset;
-	}
-	Point_Light* light;
 };
 
 class CubeMover : public IObjectMover
@@ -61,7 +50,7 @@ public:
 	CubeMover(Cube* _cube) : cube(_cube) {}
 	virtual void move(const Vec3& offset) override
 	{
-		cube->SetPosition(offset);
+		cube->Translate(offset);
 	}
 	Cube* cube;
 };

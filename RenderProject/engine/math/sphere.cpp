@@ -14,9 +14,9 @@ bool solveQuadratic(const float& a, const float& b, const float& c, float& x0, f
 bool math::Sphere::intersection(math::Intersection& nearest, const ray& r) const
 {
     Vec3 oc = r.get_origin() - center;
-    float a = dot(r.get_direction(), r.get_direction());
-    float b = 2.0 * dot(oc, r.get_direction());
-    float c = dot(oc, oc) - radius * radius;
+    float a = Vec3::dot(r.get_direction(), r.get_direction());
+    float b = 2.0 * Vec3::dot(oc, r.get_direction());
+    float c = Vec3::dot(oc, oc) - radius * radius;
     float t1, t2;
 
     if (solveQuadratic(a, b, c, t1, t2))
@@ -34,7 +34,6 @@ bool math::Sphere::intersection(math::Intersection& nearest, const ray& r) const
         nearest.t = t1;
         nearest.point = r.point_at_parameter(t1);
         nearest.normal = (nearest.point - center) / radius;
-        nearest.point_without_translation = radius * nearest.normal;
         return true;
     }
     return false;

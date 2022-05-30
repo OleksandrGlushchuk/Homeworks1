@@ -74,9 +74,6 @@
     <ClInclude Include="math\Matr.h">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="math\ObjectMover.h">
-      <Filter>math</Filter>
-    </ClInclude>
     <ClInclude Include="math\Quaternion.h">
       <Filter>math</Filter>
     </ClInclude>
@@ -127,6 +124,9 @@
     </ClInclude>
     <ClInclude Include="objects\Sphere.h">
       <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="window\InputState.h">
+      <Filter>window</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

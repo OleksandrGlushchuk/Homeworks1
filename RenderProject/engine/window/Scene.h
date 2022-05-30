@@ -26,12 +26,10 @@ class Scene
 
 	bool need_to_redraw;
 	Floor floor = Floor(Vec3(0, 1, 0), Vec3(0, -10, 0));
-	Floor clicked_plane;
 	Vec3 background_color = Vec3(60, 60, 170);
 	Vec3 scene_ambient = Vec3(20, 20, 20);
 public:
-	void Init(Window& wnd);
-	void DrawNearest(IntersectionQuery& nearest, RGBQUAD& pixel);
+	void DrawNearest(math::Intersection& nearest, Material &nearest_material, RGBQUAD& pixel);
 	void Redraw(Window &wnd);
 	void Draw(Window& wnd);
 
@@ -39,9 +37,9 @@ public:
 	bool findIntersection(const ray& _ray, math::Intersection& outNearest, Material& outMaterial);
 	bool findIntersection(const ray& _ray, IntersectionQuery& query);
 
-	Vec3 CalculatePointLights(std::vector<Sphere_Point_Light>& _sphere_point_light, IntersectionQuery& nearest);
-	Vec3 CalculateDirectionalLights(std::vector<Directional_Light>& _dir_light, IntersectionQuery& nearest);
-	Vec3 CalculateSpotLights(std::vector<Sphere_Spot_Light>& _sphere_spot_light, IntersectionQuery& nearest);
+	Vec3 CalculatePointLights(std::vector<Sphere_Point_Light>& _sphere_point_light, math::Intersection& nearest, Material &nearest_material);
+	Vec3 CalculateDirectionalLights(std::vector<Directional_Light>& _dir_light, math::Intersection& nearest, Material& nearest_material);
+	Vec3 CalculateSpotLights(std::vector<Sphere_Spot_Light>& _sphere_spot_light, math::Intersection& nearest, Material& nearest_material);
 
 	friend class Controller;
 private:

@@ -9,9 +9,9 @@ struct Transform
     Quaternion rotation;
     Vec3 position;
     Vec3 scale;
-    const Vec3& right() 	const { return transform[0]/length(transform[0]); }
-    const Vec3& top() 		const { return transform[1]/length(transform[1]); }
-    const Vec3& forward() 	const { return transform[2]/length(transform[2]); }
+    const Vec3& right() 	const { return Vec3(transform[0]) / Vec3::length(transform[0]); }
+    const Vec3& top() 		const { return Vec3(transform[1]) / Vec3::length(transform[1]); }
+    const Vec3& forward() 	const { return Vec3(transform[2]) / Vec3::length(transform[2]); }
     Matr toMat() const
     {
         Matr matr(4);

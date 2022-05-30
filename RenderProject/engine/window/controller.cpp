@@ -1,66 +1,52 @@
 #include "controller.h"
-#include "../math/ObjectMover.h"
+const float p_near = 1.f, p_far = 1002.f, fovy = M_PI / 3.f;
+
+void Controller::DrawScene()
+{
+	ProcessInput();
+	scene.Draw(wnd);
+}
 
 void Controller::ProcessInput()
 {
-	Vec3 offset(0,0,0);
+	Vec3 offset = Vec3(0, 0, 0);
 	Angles angle;
-	if (GetKeyState('W') < 0)
+	if (input_state['A'])
 	{
-		scene.need_to_redraw = true;
-		offset.e[2] += camera_move_offset_val;
-	}
-	if (GetKeyState('S') < 0)
-	{
-		scene.need_to_redraw = true;
-		offset.e[2] -= camera_move_offset_val;
-	}
-	if (GetKeyState('A') < 0)
-	{
-		scene.need_to_redraw = true;
 		offset.e[0] -= camera_move_offset_val;
-	}
-	if (GetKeyState('D') < 0)
-	{
 		scene.need_to_redraw = true;
+	}
+	if (input_state['D'])
+	{
 		offset.e[0] += camera_move_offset_val;
-	}
-	if (GetKeyState(VK_SPACE) < 0)
-	{
 		scene.need_to_redraw = true;
+	}
+	if (input_state['W'])
+	{
+		offset.e[2] += camera_move_offset_val;
+		scene.need_to_redraw = true;
+	}
+	if (input_state['S'])
+	{
+		offset.e[2] -= camera_move_offset_val;
+		scene.need_to_redraw = true;
+	}
+	if (input_state[VK_SPACE])
+	{
 		offset.e[1] += camera_move_offset_val;
-	}
-	if (GetKeyState(VK_CONTROL) < 0)
-	{
 		scene.need_to_redraw = true;
+	}
+	if (input_state[VK_CONTROL])
+	{
 		offset.e[1] -= camera_move_offset_val;
-	}
-	if (GetKeyState('Y') < 0)
-	{
 		scene.need_to_redraw = true;
-		angle.pitch += camera_angle_offset_val;
 	}
-	if (GetKeyState('H') < 0)
-	{
-		scene.need_to_redraw = true;
-		angle.pitch -= camera_angle_offset_val;
-	}
-	if (GetKeyState('G') < 0)
-	{
-		scene.need_to_redraw = true;
-		angle.yaw += camera_angle_offset_val;
-	}
-	if (GetKeyState('J') < 0)
-	{
-		scene.need_to_redraw = true;
-		angle.yaw -= camera_angle_offset_val;
-	}
-	if (GetKeyState('Q') < 0)
+	if (input_state['Q'])
 	{
 		scene.need_to_redraw = true;
 		angle.roll -= camera_angle_offset_val;
 	}
-	if (GetKeyState('E') < 0)
+	if (input_state['E'])
 	{
 		scene.need_to_redraw = true;
 		angle.roll += camera_angle_offset_val;
@@ -76,6 +62,16 @@ void Controller::ProcessInput()
 	}
 }
 
+void Controller::OnKeyDown(WPARAM key)
+{
+	input_state[key] = true;
+}
+
+void Controller::OnKeyUp(WPARAM key)
+{
+	input_state[key] = false;
+}
+
 void Controller::moveCamera(const Vec3& offset, const Angles& angles)
 {
 	scene.camera.addRelativeAngles(angles);
@@ -86,11 +82,12 @@ void Controller::moveCamera(const Vec3& offset, const Angles& angles)
 Vec3 start_rotation(0, 0, 1), end_rotation(0, 0, 1), dir_rotation(0, 0, 1);
 void Controller::OnLMouseDown(WORD x, WORD y)
 {
-	need_to_rotate = false;
+	need_to_rotate = true;
 	mouse_x = x;
 	mouse_y = y;
-	start_rotation.e[0] = x;
-	start_rotation.e[1] = y;
+	start_rotation.e[0] = end_rotation.e[0] = x;
+	start_rotation.e[1] = end_rotation.e[1] = y;
+	dir_rotation = Vec3(0, 0, 1);
 }
 
 void Controller::OnLMouseMove(WORD x, WORD y)
@@ -99,19 +96,15 @@ void Controller::OnLMouseMove(WORD x, WORD y)
 	mouse_y = y;
 	end_rotation.e[0] = x;
 	end_rotation.e[1] = y;
-	dir_rotation = (start_rotation - end_rotation) / 50.f;
+	dir_rotation = delta_time * (start_rotation - end_rotation) * 360.f / wnd.screen.right;
 	scene.need_to_redraw = true;
 }
 
 void Controller::OnLMouseUp(WORD x, WORD y)
 {
-	need_to_rotate = true;
 	mouse_x = x;
 	mouse_y = y;
-	end_rotation.e[0] = x;
-	end_rotation.e[1] = y;
-	dir_rotation = (start_rotation - end_rotation) / 50.f;
-	scene.need_to_redraw = true;
+	need_to_rotate = false;
 }
 
 void Controller::RotateCamera()
@@ -119,8 +112,6 @@ void Controller::RotateCamera()
 	if (need_to_rotate)
 	{
 		scene.camera.addRelativeAngles(Angles(0, dir_rotation.e[1], dir_rotation.e[0]));
-		if (need_to_move_object)
-			OnRMouseMove(mouse_x, mouse_y);
 		scene.need_to_redraw = true;
 	}
 }
@@ -131,13 +122,13 @@ void Controller::OnRMouseDown(WORD x, WORD y)
 	mouse_y = y;
 	nearest_clicked_object.reset();
 	need_to_move_object = false;
-	float xx = (static_cast<float>(x) + 0.5f) / ((static_cast<float>(wnd.screen.right) - 1.f) / 2.f) - 1;
-	float yy = (static_cast<float>(y) + 0.5f) / ((static_cast<float>(wnd.screen.bottom) - 1.f) / (-2.f)) + 1;
+	float xx = (x + 0.5f) / ((wnd.screen.right - 1.f) / 2.f) - 1;
+	float yy = (y + 0.5f) / ((wnd.screen.bottom - 1.f) / (-2.f)) + 1;
 
 	ray_clicked_to_object.origin = Vec3(xx, yy, 1);
-	ray_clicked_to_object.origin.mult(scene.camera.m_viewProjInv,1);
+	ray_clicked_to_object.origin.mult(scene.camera.m_viewProjInv, 1);
 	ray_clicked_to_object.direction = ray_clicked_to_object.origin - scene.camera.position();
-	make_unit_vector(ray_clicked_to_object.direction);
+	ray_clicked_to_object.direction.normalize();
 
 	if (scene.findIntersection(ray_clicked_to_object, nearest_clicked_object))
 	{
@@ -151,29 +142,23 @@ void Controller::OnRMouseDown(WORD x, WORD y)
 
 void Controller::OnRMouseMove(WORD x, WORD y)
 {
+	if (need_to_rotate)
+		OnLMouseMove(x, y);
 	if (need_to_move_object)
 	{
 		mouse_x = x;
 		mouse_y = y;
-		float xx = (static_cast<float>(x) + 0.5f) / ((static_cast<float>(wnd.screen.right) - 1.f) / 2.f) - 1;
-		float yy = (static_cast<float>(y) + 0.5f) / ((static_cast<float>(wnd.screen.bottom) - 1.f) / (-2.f)) + 1;
+		float xx = (x + 0.5f) / ((wnd.screen.right - 1.f) / 2.f) - 1;
+		float yy = (y + 0.5f) / ((wnd.screen.bottom - 1.f) / (-2.f)) + 1;
 
 		ray_clicked_to_object.origin = Vec3(xx, yy, 1);
 		ray_clicked_to_object.origin.mult(scene.camera.m_viewProjInv, 1);
 		ray_clicked_to_object.direction = ray_clicked_to_object.origin - scene.camera.position();
 
-		Vec3 mousepos = ray_clicked_to_object.origin;
-		ray r = ray_clicked_to_object;
-		make_unit_vector(ray_clicked_to_object.direction);
-
-
-		scene.clicked_plane.normal = -scene.camera.forward();
-		scene.clicked_plane.point = distance_object_to_camera * (ray_clicked_to_object.direction) + scene.camera.position();
-		new_object_intersection.reset();
-		scene.clicked_plane.intersection(new_object_intersection.nearest, r);
-
-		nearest_clicked_object.mover->move(new_object_intersection.nearest.point - nearest_clicked_object.nearest.point_without_translation);
-
+		ray_clicked_to_object.direction.normalize();
+		Vec3 new_position = ray_clicked_to_object.direction * distance_object_to_camera + scene.camera.position();
+		nearest_clicked_object.mover->move(new_position - nearest_clicked_object.nearest.point);
+		nearest_clicked_object.nearest.point = new_position;
 		scene.need_to_redraw = true;
 	}
 }
@@ -225,7 +210,8 @@ void Controller::InitScene()
 
 		scene.sphere_spot_light[0] = Sphere_Spot_Light(Vec3(50, 10, -100), 1, Vec3(-1, -0.1, 0));
 		scene.sphere_spot_light[0].light.color = Vec3(255, 255, 255);
-		scene.sphere_spot_light[0].light.cutoff = cosf(M_PI / 6.f);
+		scene.sphere_spot_light[0].light.outerCutoff = cosf(M_PI / 4.f);
+		scene.sphere_spot_light[0].light.innerCutoff = cosf(M_PI / 6.f);
 		scene.sphere_spot_light[0].light.light_radius = 250;
 
 
@@ -278,8 +264,6 @@ void Controller::InitScene()
 		scene.floor.material.glossiness = 7;
 		scene.floor.material.only_emmission = false;
 	}
-
-	static float p_near = 1.f, p_far = 1002.f, fovy = M_PI / 3.f;
 
 	float aspect = float(wnd.screen.right) / wnd.screen.bottom;
 	scene.camera = Camera(fovy, aspect, p_near, p_far);

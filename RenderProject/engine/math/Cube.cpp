@@ -28,7 +28,7 @@ bool math::Cube::intersection(math::Intersection& nearest, const ray& r) const
 	rr.direction.mult(m_transform.transformInv, 0);
 	rr.origin.mult(m_transform.transformInv, 1);
 	int k = 0;
-	for (int i = 0; i < 12; i++)
+	for (int i = 0; i < Cube::mesh.size(); i++)
 	{
 		if (Cube::mesh[i].intersection(nearest, rr))
 		{
@@ -38,8 +38,7 @@ bool math::Cube::intersection(math::Intersection& nearest, const ray& r) const
 	if (k > 0)
 	{
 		nearest.normal.mult(m_transform.transform, 0);
-		make_unit_vector(nearest.normal);
-		nearest.point_without_translation = (nearest.point * m_transform.scale).mult(m_transform.rotation.toMat3(), 1);
+		nearest.normal.normalize();
 		nearest.point.mult(m_transform.transform, 1);
 		return true;
 	}

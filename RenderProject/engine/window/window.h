@@ -3,13 +3,13 @@
 #include <vector>
 class Window
 {
-	HWND hwnd;
 	WNDCLASS wndclass;
 	HDC device_context;
 	RECT screen;
 	BITMAPINFO bitmap_info;
 	std::vector<RGBQUAD> image;
 public:
+	HWND hwnd;
 	Window() = default;
 	Window(LPCWSTR name, HINSTANCE hinstance, WNDPROC WndProc,  WNDCLASS _wndclass =
 		{ CS_HREDRAW | CS_VREDRAW | CS_OWNDC,
