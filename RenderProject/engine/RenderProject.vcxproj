@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{506e1373-966b-4603-9cf2-91e1e0b2a86b}</ProjectGuid>
-    <RootNamespace>homework1</RootNamespace>
+    <ProjectGuid>{7fd8b628-9c14-4327-ac78-5aef85adf41d}</ProjectGuid>
+    <RootNamespace>RenderProject</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -102,10 +102,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -117,6 +116,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -131,28 +132,52 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="math\camera.cpp" />
+    <ClCompile Include="math\Cube.cpp" />
+    <ClCompile Include="math\Matr.cpp" />
     <ClCompile Include="math\sphere.cpp" />
+    <ClCompile Include="math\Triangle.cpp" />
     <ClCompile Include="window\controller.cpp" />
-    <ClCompile Include="window\render.cpp" />
+    <ClCompile Include="window\Scene.cpp" />
     <ClCompile Include="window\window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="math\camera.h" />
+    <ClInclude Include="math\Cube.h" />
+    <ClInclude Include="math\Floor.h" />
+    <ClInclude Include="math\Intersection.h" />
+    <ClInclude Include="math\Light.h" />
+    <ClInclude Include="math\Material.h" />
+    <ClInclude Include="math\Matr.h" />
+    <ClInclude Include="math\Quaternion.h" />
     <ClInclude Include="math\ray.h" />
     <ClInclude Include="math\sphere.h" />
+    <ClInclude Include="math\Transform.h" />
+    <ClInclude Include="math\Triangle.h" />
     <ClInclude Include="math\vec3.h" />
+    <ClInclude Include="objects\Cube.h" />
+    <ClInclude Include="objects\Floor.h" />
+    <ClInclude Include="objects\IntersectionQuery.h" />
+    <ClInclude Include="objects\Material.h" />
+    <ClInclude Include="objects\ObjectMover.h" />
+    <ClInclude Include="objects\ObjRef.h" />
+    <ClInclude Include="objects\Sphere.h" />
     <ClInclude Include="window\controller.h" />
-    <ClInclude Include="window\render.h" />
+    <ClInclude Include="window\InputState.h" />
+    <ClInclude Include="window\Scene.h" />
+    <ClInclude Include="window\Timer.h" />
     <ClInclude Include="window\window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

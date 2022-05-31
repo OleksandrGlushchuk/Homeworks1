@@ -3,13 +3,13 @@
 #include <vector>
 class Window
 {
-	HWND hwnd;
 	WNDCLASS wndclass;
 	HDC device_context;
 	RECT screen;
 	BITMAPINFO bitmap_info;
 	std::vector<RGBQUAD> image;
 public:
+	HWND hwnd;
 	Window() = default;
 	Window(LPCWSTR name, HINSTANCE hinstance, WNDPROC WndProc,  WNDCLASS _wndclass =
 		{ CS_HREDRAW | CS_VREDRAW | CS_OWNDC,
@@ -19,7 +19,7 @@ public:
 		wndclass.hInstance = hinstance;
 		wndclass.lpfnWndProc = WndProc;
 		RegisterClass(&wndclass);
-		hwnd = CreateWindow(wndclass.lpszClassName, name, WS_OVERLAPPEDWINDOW, 0, 0, 320, 300, 0, 0, wndclass.hInstance, 0);
+		hwnd = CreateWindow(wndclass.lpszClassName, name, WS_OVERLAPPEDWINDOW, 0, 0, 250, 250, 0, 0, wndclass.hInstance, 0);
 		device_context = GetDC(hwnd);
 
 		ZeroMemory(&bitmap_info, sizeof(BITMAPINFO));
@@ -32,5 +32,6 @@ public:
 		ShowWindow(hwnd, SW_SHOWNORMAL);
 	}
 	void OnResize();
-	friend class Render;
+	friend class Scene;
+	friend class Controller;
 };

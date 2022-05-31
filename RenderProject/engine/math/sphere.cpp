@@ -1,5 +1,4 @@
 #include "sphere.h"
-
 bool solveQuadratic(const float& a, const float& b, const float& c, float& x0, float& x1)
 {
     float discr = b * b - 4 * a * c;
@@ -12,12 +11,12 @@ bool solveQuadratic(const float& a, const float& b, const float& c, float& x0, f
     return true;
 }
 
-bool sphere::hit(const ray& r, hit_record& record) const {
-
-    vec3 oc = r.get_origin() - center;
-    float a = dot(r.get_direction(), r.get_direction());
-    float b = 2.0 * dot(oc, r.get_direction());
-    float c = dot(oc, oc) - radius * radius;
+bool math::Sphere::intersection(math::Intersection& nearest, const ray& r) const
+{
+    Vec3 oc = r.get_origin() - center;
+    float a = Vec3::dot(r.get_direction(), r.get_direction());
+    float b = 2.0 * Vec3::dot(oc, r.get_direction());
+    float c = Vec3::dot(oc, oc) - radius * radius;
     float t1, t2;
 
     if (solveQuadratic(a, b, c, t1, t2))
@@ -27,16 +26,15 @@ bool sphere::hit(const ray& r, hit_record& record) const {
             t1 = t2;
             if (t1 < 0)
             {
-                record.t = std::numeric_limits<float>::infinity();
                 return false;
             }
-                
         }
-        record.t = t1;
-        record.hit_point = r.point_at_parameter(t1);
-        record.normal = (record.hit_point - center) / radius;
+        if (nearest.t < t1) return false;
+
+        nearest.t = t1;
+        nearest.point = r.point_at_parameter(t1);
+        nearest.normal = (nearest.point - center) / radius;
         return true;
     }
-    record.t = std::numeric_limits<float>::infinity();
     return false;
 }
