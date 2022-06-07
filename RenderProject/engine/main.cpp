@@ -15,7 +15,7 @@ Controller controller(window,scene);
 
 int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPWSTR cmdline, _In_ int cmdshow)
 {
-	window = Window(L"homework-2", hinstance, WndProc);
+	window = Window(L"homework-3", hinstance, WndProc);
 	window.Show();
 	MSG msg;
 	Timer timer;

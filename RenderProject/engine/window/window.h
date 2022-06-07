@@ -19,13 +19,19 @@ public:
 		wndclass.hInstance = hinstance;
 		wndclass.lpfnWndProc = WndProc;
 		RegisterClass(&wndclass);
-		hwnd = CreateWindow(wndclass.lpszClassName, name, WS_OVERLAPPEDWINDOW, 0, 0, 250, 250, 0, 0, wndclass.hInstance, 0);
+		hwnd = CreateWindow(wndclass.lpszClassName, name, WS_OVERLAPPEDWINDOW, 0, 0, 320, 320, 0, 0, wndclass.hInstance, 0);
 		device_context = GetDC(hwnd);
 
 		ZeroMemory(&bitmap_info, sizeof(BITMAPINFO));
 		bitmap_info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 		bitmap_info.bmiHeader.biBitCount = 32;
 		bitmap_info.bmiHeader.biPlanes = 1;
+	}
+	LONG image_width() { 
+		return bitmap_info.bmiHeader.biWidth;
+	}
+	LONG image_height() { 
+		return bitmap_info.bmiHeader.biHeight;
 	}
 	void Show()
 	{

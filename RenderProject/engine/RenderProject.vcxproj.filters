@@ -51,6 +51,9 @@
     <ClCompile Include="window\window.cpp">
       <Filter>window</Filter>
     </ClCompile>
+    <ClCompile Include="window\ParallelExecutor.cpp">
+      <Filter>window</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="math\camera.h">
@@ -66,9 +69,6 @@
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="math\Light.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="math\Material.h">
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="math\Matr.h">
@@ -127,6 +127,9 @@
     </ClInclude>
     <ClInclude Include="window\InputState.h">
       <Filter>window</Filter>
+    </ClInclude>
+    <ClInclude Include="window\ParallelExecutor.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

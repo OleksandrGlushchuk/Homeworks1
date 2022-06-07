@@ -150,6 +150,7 @@
     <ClCompile Include="math\sphere.cpp" />
     <ClCompile Include="math\Triangle.cpp" />
     <ClCompile Include="window\controller.cpp" />
+    <ClCompile Include="window\ParallelExecutor.cpp" />
     <ClCompile Include="window\Scene.cpp" />
     <ClCompile Include="window\window.cpp" />
   </ItemGroup>
@@ -159,7 +160,6 @@
     <ClInclude Include="math\Floor.h" />
     <ClInclude Include="math\Intersection.h" />
     <ClInclude Include="math\Light.h" />
-    <ClInclude Include="math\Material.h" />
     <ClInclude Include="math\Matr.h" />
     <ClInclude Include="math\Quaternion.h" />
     <ClInclude Include="math\ray.h" />
@@ -176,6 +176,7 @@
     <ClInclude Include="objects\Sphere.h" />
     <ClInclude Include="window\controller.h" />
     <ClInclude Include="window\InputState.h" />
+    <ClInclude Include="window\ParallelExecutor.h" />
     <ClInclude Include="window\Scene.h" />
     <ClInclude Include="window\Timer.h" />
     <ClInclude Include="window\window.h" />

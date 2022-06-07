@@ -41,11 +41,12 @@ public:
     inline Vec3& normalize() { return *this /= length(); }
 
     inline float length() const { return sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]); }
-    inline static float length(const Vec3& v);
     inline float squared_length() const { return e[0] * e[0] + e[1] * e[1] + e[2] * e[2]; }
 
     inline static float dot(const Vec3 &v1, const Vec3& v2);
     inline static Vec3 cross(const Vec3 &v1, const Vec3& v2);
+    inline static float length(const Vec3& v);
+    inline static Vec3 lerp(const Vec3& a, const Vec3& b, float t);
 
     inline Vec3& mult(const Matr& matr, float w);
 
@@ -60,6 +61,11 @@ public:
 inline float Vec3::length(const Vec3& v)
 {
     return sqrt(v.e[0] * v.e[0] + v.e[1] * v.e[1] + v.e[2] * v.e[2]);
+}
+
+inline Vec3 Vec3::lerp(const Vec3& a, const Vec3& b, float t)
+{
+    return a + (b - a) * t;
 }
 
 inline float Vec3::dot(const Vec3& v1, const Vec3& v2)
@@ -109,6 +115,7 @@ inline Vec3& Vec3::mult(const Matr& matr, float w)
 }
 
 inline Vec3 operator*(float t, const Vec3& v) { return v * t; }
+inline Vec3 operator-(float t, const Vec3& v) { return Vec3(t-v.e[0],t-v.e[1],t-v.e[2]); }
 
 inline Vec3& Vec3::operator+=(const Vec3& v) {
     e[0] += v.e[0];

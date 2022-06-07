@@ -27,6 +27,19 @@ Camera::Camera(float _fov, float _aspect, float _p_near, float _p_far) : fov(_fo
 	updateMatrices();
 }
 
+void Camera::updateCorners()
+{
+	TopLeft = Vec3(-1, 1, 1);
+	BottomLeft = Vec3(-1, -1, 1); BottomRight = Vec3(1, -1, 1);
+
+	TopLeft.mult(m_viewProjInv, 1) / m_viewProjInv[3][3] - position();
+	BottomLeft.mult(m_viewProjInv, 1) / m_viewProjInv[3][3] - position();
+	BottomRight.mult(m_viewProjInv, 1) / m_viewProjInv[3][3] - position();
+
+	BR_M_BL = BottomRight - BottomLeft;
+	TL_M_BL = TopLeft - BottomLeft;
+}
+
 void Camera::updateAspect(float _aspect)
 {
 	aspect = _aspect;
@@ -98,9 +111,10 @@ void Camera::addWorldAngles(const Angles& angles)
 
 void Camera::setWorldAngles(const Angles& angles)
 {
-	m_rotation = Quaternion(angles.roll, { 0.f, 0.f, 1.f }); // overwrites
+	m_rotation = Quaternion(angles.roll, { 0.f, 0.f, 1.f });
 	m_rotation *= Quaternion(angles.pitch, { 1.f, 0.f, 0.f });
 	m_rotation *= Quaternion(angles.yaw, { 0.f, 1.f, 0.f });
+	
 	m_rotation.normalize();
 
 	need_to_update_basis = true;
@@ -109,10 +123,17 @@ void Camera::setWorldAngles(const Angles& angles)
 
 void Camera::addRelativeAngles(const Angles& angles)
 {
-	m_rotation *= Quaternion(angles.roll, forward());
-	m_rotation *= Quaternion(angles.pitch, right());
-	m_rotation *= Quaternion(angles.yaw, top());
-
+	if (need_to_roll)
+	{
+		m_rotation *= Quaternion(angles.roll, forward());
+		m_rotation *= Quaternion(angles.pitch, right());
+		m_rotation *= Quaternion(angles.yaw, top());
+	}
+	else
+	{
+		m_rotation *= Quaternion(angles.pitch, right());
+		m_rotation *= Quaternion(angles.yaw, { 0.f, 1.f, 0.f });
+	}
 
 	m_rotation.normalize();
 
