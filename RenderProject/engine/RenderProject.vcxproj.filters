@@ -33,9 +33,6 @@
     <ClCompile Include="math\Cube.cpp">
       <Filter>math</Filter>
     </ClCompile>
-    <ClCompile Include="math\Matr.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
     <ClCompile Include="math\sphere.cpp">
       <Filter>math</Filter>
     </ClCompile>
@@ -53,6 +50,9 @@
     </ClCompile>
     <ClCompile Include="window\ParallelExecutor.cpp">
       <Filter>window</Filter>
+    </ClCompile>
+    <ClCompile Include="math\vec3.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +129,9 @@
       <Filter>window</Filter>
     </ClInclude>
     <ClInclude Include="window\ParallelExecutor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="math\LightingPostProcess.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

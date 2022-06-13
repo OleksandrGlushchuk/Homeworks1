@@ -4,18 +4,18 @@
 
 struct Transform
 {
-    Matr transform = Matr(4);
-    Matr transformInv = Matr(4);
+    Matr<4> transform = Matr<4>::identity(),
+            transformInv = Matr<4>::identity();
     Quaternion rotation;
     Vec3 position;
     Vec3 scale;
     const Vec3& right() 	const { return Vec3(transform[0]) / Vec3::length(transform[0]); }
     const Vec3& top() 		const { return Vec3(transform[1]) / Vec3::length(transform[1]); }
     const Vec3& forward() 	const { return Vec3(transform[2]) / Vec3::length(transform[2]); }
-    Matr toMat() const
+    Matr<4> toMat() const
     {
-        Matr matr(4);
-        Matr quat_to_matr = rotation.toMat3();
+        Matr<4> matr = Matr<4>::identity();
+        Matr<3> quat_to_matr = rotation.toMat3();
         for (int i = 0; i < 3; i++)
         {
             for (int j = 0; j < 3; j++)
@@ -33,7 +33,7 @@ struct Transform
     }
     void UpdateMatrices()
     {
-        transform = Matr(4);
+        transform = Matr<4>::identity();
         Matr quat_to_matr = rotation.toMat3();
         for (int i = 0; i < 3; i++)
         {
@@ -53,6 +53,6 @@ struct Transform
         transform[3][0] = position.x();
         transform[3][1] = position.y();
         transform[3][2] = position.z();
-        transformInv = invert(transform);
+        transformInv = transform.invert();
     }
 };

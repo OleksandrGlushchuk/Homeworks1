@@ -1,12 +1,9 @@
 #include "window.h"
 
-void Window::OnResize()
+void Window::OnResize(uint32_t image_compression)
 {
 	GetClientRect(hwnd, &screen);
-	/*image.resize((screen.right/2) * (screen.bottom/2));
-	bitmap_info.bmiHeader.biWidth = screen.right/2;
-	bitmap_info.bmiHeader.biHeight = screen.bottom/2;*/
-	image.resize((screen.right) * (screen.bottom ));
-	bitmap_info.bmiHeader.biWidth = screen.right ;
-	bitmap_info.bmiHeader.biHeight = screen.bottom ;
+	image.resize((screen.right/ image_compression) * (screen.bottom/ image_compression));
+	bitmap_info.bmiHeader.biWidth = screen.right/ image_compression;
+	bitmap_info.bmiHeader.biHeight = screen.bottom/ image_compression;
 }

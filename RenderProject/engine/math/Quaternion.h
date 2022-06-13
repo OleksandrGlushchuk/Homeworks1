@@ -45,12 +45,12 @@ public:
 	{
 		(*this) *= 1.f / norma();
 	}
-	inline Matr toMat3() const
+	inline Matr<3> toMat3() const
 	{
-		Matr out(3);
-		out[0] = { 1.0f - 2.0f * vec.y() * vec.y() - 2.0f * vec.z() * vec.z(), 2.0f * vec.x() * vec.y() - 2.0f * vec.z() * w, 2.0f * vec.x() * vec.z() + 2.0f * vec.y() * w };
-		out[1] = { 2.0f * vec.x() * vec.y() + 2.0f * vec.z() * w, 1.0f - 2.0f * vec.x() * vec.x() - 2.0f * vec.z() * vec.z(), 2.0f * vec.y() * vec.z() - 2.0f * vec.x() * w };
-		out[2] = { 2.0f * vec.x() * vec.z() - 2.0f * vec.y() * w, 2.0f * vec.y() * vec.z() + 2.0f * vec.x() * w, 1.0f - 2.0f * vec.x() * vec.x() - 2.0f * vec.y() * vec.y() };
+		Matr<3> out;
+		Matr<3>::fill_row(out[0], { 1.0f - 2.0f * vec.y() * vec.y() - 2.0f * vec.z() * vec.z(), 2.0f * vec.x() * vec.y() - 2.0f * vec.z() * w, 2.0f * vec.x() * vec.z() + 2.0f * vec.y() * w });
+		Matr<3>::fill_row(out[1], { 2.0f * vec.x() * vec.y() + 2.0f * vec.z() * w, 1.0f - 2.0f * vec.x() * vec.x() - 2.0f * vec.z() * vec.z(), 2.0f * vec.y() * vec.z() - 2.0f * vec.x() * w });
+		Matr<3>::fill_row(out[2], { 2.0f * vec.x() * vec.z() - 2.0f * vec.y() * w, 2.0f * vec.y() * vec.z() + 2.0f * vec.x() * w, 1.0f - 2.0f * vec.x() * vec.x() - 2.0f * vec.y() * vec.y() });
 		return out;
 	}
 };

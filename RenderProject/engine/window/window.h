@@ -37,7 +37,7 @@ public:
 	{
 		ShowWindow(hwnd, SW_SHOWNORMAL);
 	}
-	void OnResize();
+	void OnResize(uint32_t image_compression = 2);
 	friend class Scene;
 	friend class Controller;
 };

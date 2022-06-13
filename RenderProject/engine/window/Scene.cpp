@@ -91,7 +91,7 @@ Vec3 Scene::CalculatePointLights(std::vector<Sphere_Point_Light>& _sphere_point_
 	Vec3 sum(0, 0, 0);
 	ray back_ray;
 	math::Intersection back_nearest;
-	back_ray.origin = nearest.point + 0.01f * nearest.normal;
+	back_ray.origin = nearest.point + 0.1f * nearest.normal;
 	for (int i = 0; i < sphere_point_light.size(); ++i)
 	{
 		back_ray.direction = sphere_point_light[i].light.pos - back_ray.origin;
@@ -123,7 +123,7 @@ Vec3 Scene::CalculateDirectionalLights(std::vector<Directional_Light>& _dir_ligh
 	Vec3 sum(0, 0, 0);
 	ray back_ray;
 	math::Intersection back_nearest;
-	back_ray.origin = nearest.point + 0.01f * nearest.normal;
+	back_ray.origin = nearest.point + 0.1f * nearest.normal;
 	for (int i = 0; i < _dir_light.size(); ++i)
 	{
 		back_ray.direction = _dir_light[i].direction;
@@ -154,7 +154,7 @@ Vec3 Scene::CalculateSpotLights(std::vector<Sphere_Spot_Light>& _sphere_spot_lig
 	Vec3 sum(0, 0, 0);
 	ray back_ray;
 	math::Intersection back_nearest;
-	back_ray.origin = nearest.point + 0.01f * nearest.normal;
+	back_ray.origin = nearest.point + 0.1f * nearest.normal;
 	for (int i = 0; i < sphere_spot_light.size(); ++i)
 	{
 		Vec3 LightToPixel(nearest.point - sphere_spot_light[i].light.pos);
@@ -187,36 +187,6 @@ Vec3 Scene::CalculateSpotLights(std::vector<Sphere_Spot_Light>& _sphere_spot_lig
 	return sum;
 }
 
-Vec3 Scene::adjustExposure(const Vec3& color, float EV100)
-{
-	float LMax = (78.0f / (0.65f * 100.0f)) * powf(2.0f, EV100);
-	return color * (1.0f / LMax);
-}
-
-Vec3 Scene::acesHdr2Ldr(const Vec3& hdr)
-{
-	Matr m1(3); 
-	m1[0] = { 0.59719f, 0.07600f, 0.02840f };
-	m1[1] = { 0.35458f, 0.90834f, 0.13383f };
-	m1[2] = { 0.04823f, 0.01566f, 0.83777f };
-		
-	Matr m2(3);
-	m2[0] = { 1.60475f, -0.10208, -0.00327f };
-	m2[1] = { -0.53108f, 1.10813, -0.07276f };
-	m2[2] = { -0.07367f, -0.00605, 1.07602f };
-
-	Vec3 v = hdr;
-	v.mult(m1,1);
-	Vec3 a = v * (v + Vec3(0.0245786f, 0.0245786f, 0.0245786f)) - Vec3(0.000090537f, 0.000090537f, 0.000090537f);
-	Vec3 b = v * (0.983729f * v + Vec3(0.4329510f, 0.4329510f, 0.4329510f)) + Vec3(0.238081f, 0.238081f, 0.238081f);
-
-	Vec3 ldr = (a / b).mult(m2,1);
-	std::clamp(ldr.e[0], 0.0f, 1.0f);
-	std::clamp(ldr.e[1], 0.0f, 1.0f);
-	std::clamp(ldr.e[2], 0.0f, 1.0f);
-	return ldr;
-}
-
 ray Scene::RayFromCameraTo(Window& wnd, float x, float y)
 {
 	ray r;
@@ -230,17 +200,12 @@ ray Scene::RayFromCameraTo(Window& wnd, float x, float y)
 	return r;
 }
 
-Vec3 Reflect(const Vec3 &vec, const Vec3 &normal)
-{
-	return vec - 2.f * Vec3::dot(vec, normal) * normal;
-}
-
 Vec3 Scene::CalculateLighting(const ray &ray_to_object, math::Intersection& nearest, Material& nearest_material, const int &depth)
 {
 	Vec3 result_light;
 	if (nearest_material.only_emmission)
 	{
-		result_light = nearest_material.emmission * 255.f;
+		result_light = nearest_material.emmission;
 		return result_light;
 	}
 	Vec3 sum(0, 0, 0);
@@ -255,22 +220,19 @@ Vec3 Scene::CalculateLighting(const ray &ray_to_object, math::Intersection& near
 	
 	if (smooth_reflection)
 	{
-		if (nearest_material.roughness <= 0.1f && depth < 50)
+		if (nearest_material.roughness <= MAX_REFLECTIVE_ROUGHNESS && depth > 0)
 		{
 			ray r;
 			r.origin = nearest.point + 0.01f * nearest.normal;
-			r.direction = Reflect(ray_to_object.direction, nearest.normal);
+			r.direction = Vec3::Reflect(ray_to_object.direction, nearest.normal);
 
 			math::Intersection reflected_nearest;
 			Material reflected_nearest_material;
 			reflected_nearest.reset();
-			Vec3 back_result_light;
-
-			if (findIntersection(r, reflected_nearest, reflected_nearest_material))
+			if (find_Intersection_Without_Light_Sources(r, reflected_nearest, reflected_nearest_material))
 			{
-				result_light += CalculateLighting(r, reflected_nearest, reflected_nearest_material, depth + 1) *
-					Vec3::lerp(Vec3(0, 0, 0), result_light, ((0.1f - nearest_material.roughness) * 10.f));
-
+				result_light += CalculateLighting(r, reflected_nearest, reflected_nearest_material, depth - 1) *
+					Vec3::lerp(Vec3(0, 0, 0), result_light, ((MAX_REFLECTIVE_ROUGHNESS - nearest_material.roughness) * 1.f/ MAX_REFLECTIVE_ROUGHNESS));
 			}
 			else
 			{
@@ -281,13 +243,29 @@ Vec3 Scene::CalculateLighting(const ray &ray_to_object, math::Intersection& near
 	return result_light;
 }
 
-void Scene::ÑorrectLight(Vec3& light)
+bool Scene::find_Intersection_Without_Light_Sources(const ray& _ray, math::Intersection& outNearest, Material& outMaterial)
 {
-	light = adjustExposure(light, EV100);
-	light = acesHdr2Ldr(light);
-	light.e[0] = powf(light.e[0], 1.f / 2.2f);
-	light.e[1] = powf(light.e[1], 1.f / 2.2f);
-	light.e[2] = powf(light.e[2], 1.f / 2.2f);
+	outNearest.reset();
+	bool found_intersection = false;
+	ObjRef outRef;
+	for (int i = 0; i < sp.size(); i++)
+	{
+		found_intersection |= sp[i].intersects(_ray, outRef, outNearest, outMaterial);
+	}
+	for (int i = 0; i < cube.size(); i++)
+	{
+		found_intersection |= cube[i].intersects(_ray, outRef, outNearest, outMaterial);
+	}
+	found_intersection |= floor.intersects(_ray, outRef, outNearest, outMaterial);
+
+	return found_intersection;
+}
+
+void Scene::LightningPostProcess(Vec3& light)
+{
+	light = lpp::AdjustExposure(light, EV100);
+	light = lpp::ACES(light);
+	light = lpp::GammaCorrection(light);
 }
 
 void Scene::ComputePixelColor(Window& wnd, float x, float y)
@@ -300,13 +278,13 @@ void Scene::ComputePixelColor(Window& wnd, float x, float y)
 	Vec3 result_light;
 	if (findIntersection(r, nearest, nearest_material))
 	{
-		result_light = CalculateLighting(r, nearest, nearest_material,0);
+		result_light = CalculateLighting(r, nearest, nearest_material,50);
 	}
 	else
 	{
 		result_light = background_color;
 	}
-	ÑorrectLight(result_light);
+	LightningPostProcess(result_light);
 
 	int pixel_index = wnd.image.size() - wnd.bitmap_info.bmiHeader.biWidth - wnd.bitmap_info.bmiHeader.biWidth * y + x;
 	RGBQUAD& pixel = wnd.image[pixel_index];
@@ -328,8 +306,8 @@ void Scene::Draw(Window& wnd)
 {
 	if (need_to_redraw)
 	{
-		need_to_redraw = false;
 		Redraw(wnd);
+		need_to_redraw = false;
 	}
 	StretchDIBits(wnd.device_context, 0, 0, wnd.screen.right, wnd.screen.bottom, 
 		0, 0, wnd.bitmap_info.bmiHeader.biWidth, wnd.bitmap_info.bmiHeader.biHeight, &wnd.image[0], &wnd.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
