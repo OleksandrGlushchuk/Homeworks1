@@ -297,9 +297,9 @@ void Scene::ComputePixelColor(Window& wnd, float x, float y)
 void Scene::Redraw(Window& wnd)
 {
 	camera.updateCorners();
-	ParallelExecutor executor = ParallelExecutor::MAX_THREADS;
+	ParallelExecutor executor(ParallelExecutor::MAX_THREADS);
 	auto func = [this,&wnd](uint32_t threadIndex, uint32_t taskIndex){ComputePixelColor(wnd, taskIndex % wnd.image_width(), taskIndex % wnd.image_height()); };
-	executor.execute(func, wnd.image_width() * wnd.image_height(), 20);
+	executor.execute(func, wnd.image_width() * wnd.image_height(), 200);
 }
 
 void Scene::Draw(Window& wnd)
