@@ -38,15 +38,15 @@ public:
 	bool findIntersection(const ray& _ray, math::Intersection& outNearest, Material& outMaterial);
 	bool findIntersection(const ray& _ray, IntersectionQuery& query);
 
-	Vec3 CalculatePointLights(std::vector<Sphere_Point_Light>& _sphere_point_light, math::Intersection& nearest, Material &nearest_material);
-	Vec3 CalculateDirectionalLights(std::vector<Directional_Light>& _dir_light, math::Intersection& nearest, Material& nearest_material);
-	Vec3 CalculateSpotLights(std::vector<Sphere_Spot_Light>& _sphere_spot_light, math::Intersection& nearest, Material& nearest_material);
+	Vec3 CalculatePointLights(std::vector<Sphere_Point_Light>& _sphere_point_light, const Vec3& view_pos, math::Intersection& nearest, Material &nearest_material);
+	Vec3 CalculateDirectionalLights(std::vector<Directional_Light>& _dir_light, const Vec3& view_pos, math::Intersection& nearest, Material& nearest_material);
+	Vec3 CalculateSpotLights(std::vector<Sphere_Spot_Light>& _sphere_spot_light, const Vec3& view_pos, math::Intersection& nearest, Material& nearest_material);
 
 	void ComputePixelColor(Window& wnd, float x, float y);
-	Vec3 CalculateLighting(const ray& ray_to_object, math::Intersection& nearest, Material& nearest_material, const int& depth);
+	Vec3 CalculateLighting(const ray& ray_to_object, const Vec3& view_pos, math::Intersection& nearest, Material& nearest_material, const int& depth);
 	bool find_Intersection_Without_Light_Sources(const ray& _ray, math::Intersection& outNearest, Material& outMaterial);
 
-	void LightningPostProcess(Vec3& light);
+	void LightingPostProcess(Vec3& light);
 
 	ray RayFromCameraTo(Window &wnd, float x, float y);
 

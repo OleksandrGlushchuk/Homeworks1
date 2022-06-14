@@ -86,7 +86,7 @@ bool Scene::findIntersection(const ray& _ray, math::Intersection& outNearest, Ma
 	return ref.type != ObjRef::IntersectedType::NONE;
 }
 
-Vec3 Scene::CalculatePointLights(std::vector<Sphere_Point_Light>& _sphere_point_light, math::Intersection& nearest, Material& nearest_material)
+Vec3 Scene::CalculatePointLights(std::vector<Sphere_Point_Light>& _sphere_point_light, const Vec3 &view_pos, math::Intersection& nearest, Material& nearest_material)
 {
 	Vec3 sum(0, 0, 0);
 	ray back_ray;
@@ -113,12 +113,12 @@ Vec3 Scene::CalculatePointLights(std::vector<Sphere_Point_Light>& _sphere_point_
 			//if there is another object between the object and the light source
 			continue;
 		}
-		sum += CalculatePointLight(sphere_point_light[i].light, camera, nearest.point, nearest.normal, nearest_material);
+		sum += CalculatePointLight(sphere_point_light[i].light, view_pos, nearest.point, nearest.normal, nearest_material);
 	}
 	return sum;
 }
 
-Vec3 Scene::CalculateDirectionalLights(std::vector<Directional_Light>& _dir_light, math::Intersection& nearest, Material& nearest_material)
+Vec3 Scene::CalculateDirectionalLights(std::vector<Directional_Light>& _dir_light, const Vec3& view_pos, math::Intersection& nearest, Material& nearest_material)
 {
 	Vec3 sum(0, 0, 0);
 	ray back_ray;
@@ -144,12 +144,12 @@ Vec3 Scene::CalculateDirectionalLights(std::vector<Directional_Light>& _dir_ligh
 			//if there is another object between the object and the light direction
 			continue;
 		}
-		sum += CalculateDirectionalLight(_dir_light[i], camera, nearest.point, nearest.normal, nearest_material);
+		sum += CalculateDirectionalLight(_dir_light[i], view_pos, nearest.point, nearest.normal, nearest_material);
 	}
 	return sum;
 }
 
-Vec3 Scene::CalculateSpotLights(std::vector<Sphere_Spot_Light>& _sphere_spot_light, math::Intersection& nearest, Material& nearest_material)
+Vec3 Scene::CalculateSpotLights(std::vector<Sphere_Spot_Light>& _sphere_spot_light, const Vec3& view_pos, math::Intersection& nearest, Material& nearest_material)
 {
 	Vec3 sum(0, 0, 0);
 	ray back_ray;
@@ -181,7 +181,7 @@ Vec3 Scene::CalculateSpotLights(std::vector<Sphere_Spot_Light>& _sphere_spot_lig
 				//if there is another object between the object and the light source
 				continue;
 			}
-			sum += CalculateSpotLight(sphere_spot_light[i].light, camera, nearest.point, nearest.normal, nearest_material, Ldir_dot_LtoPixel);
+			sum += CalculateSpotLight(sphere_spot_light[i].light, view_pos, nearest.point, nearest.normal, nearest_material, Ldir_dot_LtoPixel);
 		}
 	}
 	return sum;
@@ -200,7 +200,7 @@ ray Scene::RayFromCameraTo(Window& wnd, float x, float y)
 	return r;
 }
 
-Vec3 Scene::CalculateLighting(const ray &ray_to_object, math::Intersection& nearest, Material& nearest_material, const int &depth)
+Vec3 Scene::CalculateLighting(const ray &ray_to_object, const Vec3& view_pos, math::Intersection& nearest, Material& nearest_material, const int &depth)
 {
 	Vec3 result_light;
 	if (nearest_material.only_emmission)
@@ -210,11 +210,11 @@ Vec3 Scene::CalculateLighting(const ray &ray_to_object, math::Intersection& near
 	}
 	Vec3 sum(0, 0, 0);
 
-	sum += CalculatePointLights(sphere_point_light, nearest, nearest_material);
+	sum += CalculatePointLights(sphere_point_light, view_pos, nearest, nearest_material);
 
-	sum += CalculateDirectionalLights(dir_light, nearest, nearest_material);
+	sum += CalculateDirectionalLights(dir_light, view_pos, nearest, nearest_material);
 
-	sum += CalculateSpotLights(sphere_spot_light, nearest, nearest_material);
+	sum += CalculateSpotLights(sphere_spot_light, view_pos, nearest, nearest_material);
 
 	result_light = nearest_material.emmission + scene_ambient * nearest_material.albedo + sum;
 	
@@ -231,7 +231,7 @@ Vec3 Scene::CalculateLighting(const ray &ray_to_object, math::Intersection& near
 			reflected_nearest.reset();
 			if (find_Intersection_Without_Light_Sources(r, reflected_nearest, reflected_nearest_material))
 			{
-				result_light += CalculateLighting(r, reflected_nearest, reflected_nearest_material, depth - 1) *
+				result_light += CalculateLighting(r, r.origin, reflected_nearest, reflected_nearest_material, depth - 1) *
 					Vec3::lerp(Vec3(0, 0, 0), result_light, ((MAX_REFLECTIVE_ROUGHNESS - nearest_material.roughness) * 1.f/ MAX_REFLECTIVE_ROUGHNESS));
 			}
 			else
@@ -261,7 +261,7 @@ bool Scene::find_Intersection_Without_Light_Sources(const ray& _ray, math::Inter
 	return found_intersection;
 }
 
-void Scene::LightningPostProcess(Vec3& light)
+void Scene::LightingPostProcess(Vec3& light)
 {
 	light = lpp::AdjustExposure(light, EV100);
 	light = lpp::ACES(light);
@@ -278,13 +278,13 @@ void Scene::ComputePixelColor(Window& wnd, float x, float y)
 	Vec3 result_light;
 	if (findIntersection(r, nearest, nearest_material))
 	{
-		result_light = CalculateLighting(r, nearest, nearest_material,50);
+		result_light = CalculateLighting(r,camera.position(), nearest, nearest_material,50);
 	}
 	else
 	{
 		result_light = background_color;
 	}
-	LightningPostProcess(result_light);
+	LightingPostProcess(result_light);
 
 	int pixel_index = wnd.image.size() - wnd.bitmap_info.bmiHeader.biWidth - wnd.bitmap_info.bmiHeader.biWidth * y + x;
 	RGBQUAD& pixel = wnd.image[pixel_index];
@@ -296,7 +296,6 @@ void Scene::ComputePixelColor(Window& wnd, float x, float y)
 
 void Scene::Redraw(Window& wnd)
 {
-	camera.updateCorners();
 	ParallelExecutor executor(ParallelExecutor::MAX_THREADS);
 	auto func = [this,&wnd](uint32_t threadIndex, uint32_t taskIndex){ComputePixelColor(wnd, taskIndex % wnd.image_width(), taskIndex % wnd.image_height()); };
 	executor.execute(func, wnd.image_width() * wnd.image_height(), 20);

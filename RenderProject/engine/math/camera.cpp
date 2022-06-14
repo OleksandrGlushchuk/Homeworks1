@@ -38,6 +38,7 @@ void Camera::updateMatrices()
 		m_viewProj = m_view * m_proj;
 		m_viewProjInv = m_projInv * m_viewInv;
 		need_to_update_matrices = false;
+		updateCorners();
 	}
 }
 

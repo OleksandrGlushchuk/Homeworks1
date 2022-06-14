@@ -88,10 +88,10 @@ inline float FindSolidAngle(float DistancePointToLight, float light_radius)
 	return 2.f * M_PI * (1.f - sqrt(DistancePointToLight * DistancePointToLight - light_radius * light_radius) / DistancePointToLight);
 }
 
-inline Vec3 CalculateDirectionalLight(const Directional_Light& light, const Camera& camera, const Vec3& nearest_point, const Vec3& nearest_normal, const Material& nearest_mat)
+inline Vec3 CalculateDirectionalLight(const Directional_Light& light, const Vec3& view_pos, const Vec3& nearest_point, const Vec3& nearest_normal, const Material& nearest_mat)
 {
 	Vec3 PointToLight = light.direction;
-	Vec3 PointToCamera(camera.position() - nearest_point);
+	Vec3 PointToCamera(view_pos - nearest_point);
 	Vec3 HalfCameraLight = PointToCamera + PointToLight;
 	HalfCameraLight.normalize();
 	PointToCamera.normalize();
@@ -113,7 +113,7 @@ inline Vec3 CalculateDirectionalLight(const Directional_Light& light, const Came
 
 }
 
-inline Vec3 CalculatePointLight(const Point_Light& light, const Camera &camera, const Vec3& nearest_point, const Vec3& nearest_normal, const Material& nearest_mat)
+inline Vec3 CalculatePointLight(const Point_Light& light, const Vec3 &view_pos, const Vec3& nearest_point, const Vec3& nearest_normal, const Material& nearest_mat)
 {
 	/*Vec3 PointToLight(light.pos - nearest_point);
 	Vec3 PointToCamera(camera.position() - nearest_point);
@@ -162,7 +162,7 @@ inline Vec3 CalculatePointLight(const Point_Light& light, const Camera &camera, 
 	r.direction = Vec3::Reflect(-PointToLight.normalized(), nearest_normal);
 	Vec3 PointToSpecLight = approximateClosestSphereDir(intersects, r.direction, cosf(solid_angle), PointToLight, PointToLight.normalized(), DistancePointToLight, light.light_radius);
 	
-	Vec3 PointToCamera = camera.position() - nearest_point;
+	Vec3 PointToCamera = view_pos/*camera.position()*/ - nearest_point;
 	Vec3 HalfCameraLight = PointToCamera + PointToLight;
 	Vec3 HalfCameraSpecLight = PointToCamera + PointToSpecLight;
 	
@@ -204,7 +204,7 @@ inline float smoothstep(float edge0, float edge1, float x)
 	return x * x * (3 - 2 * x);
 }
 
-inline Vec3 CalculateSpotLight(const Spot_Light& light, const Camera& camera, const Vec3& nearest_point, const Vec3& nearest_normal, const Material& nearest_mat, const float Ldir_dot_LtoPixel)
+inline Vec3 CalculateSpotLight(const Spot_Light& light, const Vec3& view_pos, const Vec3& nearest_point, const Vec3& nearest_normal, const Material& nearest_mat, const float Ldir_dot_LtoPixel)
 {
-	return CalculatePointLight(light, camera, nearest_point, nearest_normal, nearest_mat) * smoothstep(light.outerCutoff, light.innerCutoff, Ldir_dot_LtoPixel);
+	return CalculatePointLight(light, view_pos, nearest_point, nearest_normal, nearest_mat) * smoothstep(light.outerCutoff, light.innerCutoff, Ldir_dot_LtoPixel);
 }
