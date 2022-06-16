@@ -191,8 +191,8 @@ ray Scene::RayFromCameraTo(Window& wnd, float x, float y)
 {
 	ray r;
 	r.origin = Vec3(
-		(x + 0.5f) / (wnd.image_width() - 1.f),
-		1.f - (y + 0.5f) / (wnd.image_height() - 1.f),
+		(x + 0.5f) / (wnd.image_width()),
+		1.f - (y + 0.5f) / (wnd.image_height()),
 		1.f
 	);
 	r.origin = camera.BottomLeft + camera.BR_M_BL * r.origin[0] + camera.TL_M_BL * r.origin[1];
@@ -297,8 +297,8 @@ void Scene::ComputePixelColor(Window& wnd, float x, float y)
 void Scene::Redraw(Window& wnd)
 {
 	ParallelExecutor executor(ParallelExecutor::MAX_THREADS);
-	auto func = [this,&wnd](uint32_t threadIndex, uint32_t taskIndex){ComputePixelColor(wnd, taskIndex % wnd.image_width(), taskIndex % wnd.image_height()); };
-	executor.execute(func, wnd.image_width() * wnd.image_height(), 20);
+	auto func = [this, &wnd](uint32_t threadIndex, uint32_t taskIndex) {ComputePixelColor(wnd, (taskIndex) % ((wnd.image_width())), (taskIndex) / (wnd.image_width())); };
+	executor.execute(func, wnd.image_width() * wnd.image_height(), 50);
 }
 
 void Scene::Draw(Window& wnd)

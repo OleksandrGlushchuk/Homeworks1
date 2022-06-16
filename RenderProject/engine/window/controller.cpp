@@ -185,8 +185,8 @@ void Controller::OnRMouseDown(WORD x, WORD y)
 	mouse_y = y;
 	nearest_clicked_object.reset();
 	need_to_move_object = false;
-	float xx = (x + 0.5f) / ((wnd.screen.right - 1.f) / 2.f) - 1;
-	float yy = (y + 0.5f) / ((wnd.screen.bottom - 1.f) / (-2.f)) + 1;
+	float xx = (x + 0.5f) / ((wnd.screen.right) / 2.f) - 1.f;
+	float yy = (y + 0.5f) / ((wnd.screen.bottom) / (-2.f)) + 1.f;
 
 	ray_clicked_to_object.origin = Vec3(xx, yy, 1);
 	ray_clicked_to_object.origin.mult(scene.camera.m_viewProjInv, 1);
@@ -211,8 +211,8 @@ void Controller::OnRMouseMove(WORD x, WORD y)
 	{
 		mouse_x = x;
 		mouse_y = y;
-		float xx = (x + 0.5f) / ((wnd.screen.right - 1.f) / 2.f) - 1;
-		float yy = (y + 0.5f) / ((wnd.screen.bottom - 1.f) / (-2.f)) + 1;
+		float xx = (x + 0.5f) / ((wnd.screen.right) / 2.f) - 1.f;
+		float yy = (y + 0.5f) / ((wnd.screen.bottom) / (-2.f)) + 1.f;
 
 		ray_clicked_to_object.origin = Vec3(xx, yy, 1);
 		ray_clicked_to_object.origin.mult(scene.camera.m_viewProjInv, 1);
@@ -309,7 +309,7 @@ void Controller::InitScene()
 
 		scene.cube[0].material.roughness = 0.35f;
 		scene.cube[0].material.metallness = 0.2f;
-		scene.cube[0].material.F0 = Vec3(0.85f, 0.85f, 0.85f);
+		scene.cube[0].material.F0 = Vec3(0.05f, 0.05f, 0.05f);
 
 		scene.cube[0].material.only_emmission = false;
 
@@ -323,7 +323,7 @@ void Controller::InitScene()
 
 		scene.cube[1].material.roughness = 0.35f;
 		scene.cube[1].material.metallness = 0.2f;
-		scene.cube[1].material.F0 = Vec3(0.85f, 0.85f, 0.85f);
+		scene.cube[1].material.F0 = Vec3(0.05f, 0.05f, 0.05f);
 
 		scene.cube[1].material.only_emmission = false;
 
@@ -336,7 +336,7 @@ void Controller::InitScene()
 		
 		scene.cube[2].material.roughness = 0.1f;
 		scene.cube[2].material.metallness = 0.2f;
-		scene.cube[2].material.F0 = Vec3(0.8f, 0.8f, 0.8f);
+		scene.cube[2].material.F0 = Vec3(0.08f, 0.08f, 0.08f);
 
 		scene.cube[2].material.only_emmission = false;
 
@@ -349,7 +349,7 @@ void Controller::InitScene()
 		
 		scene.cube[3].material.roughness = 0.2f;
 		scene.cube[3].material.metallness = 0.6f;
-		scene.cube[3].material.F0 = Vec3(0.9f, 0.9f, 0.9f);
+		scene.cube[3].material.F0 = Vec3(0.09f, 0.09f, 0.09f);
 
 		scene.cube[3].material.only_emmission = false;*/
 	}

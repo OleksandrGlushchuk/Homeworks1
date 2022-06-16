@@ -162,7 +162,7 @@ inline Vec3 CalculatePointLight(const Point_Light& light, const Vec3 &view_pos, 
 	r.direction = Vec3::Reflect(-PointToLight.normalized(), nearest_normal);
 	Vec3 PointToSpecLight = approximateClosestSphereDir(intersects, r.direction, cosf(solid_angle), PointToLight, PointToLight.normalized(), DistancePointToLight, light.light_radius);
 	
-	Vec3 PointToCamera = view_pos/*camera.position()*/ - nearest_point;
+	Vec3 PointToCamera = view_pos - nearest_point;
 	Vec3 HalfCameraLight = PointToCamera + PointToLight;
 	Vec3 HalfCameraSpecLight = PointToCamera + PointToSpecLight;
 	

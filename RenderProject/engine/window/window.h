@@ -19,7 +19,7 @@ public:
 		wndclass.hInstance = hinstance;
 		wndclass.lpfnWndProc = WndProc;
 		RegisterClass(&wndclass);
-		hwnd = CreateWindow(wndclass.lpszClassName, name, WS_OVERLAPPEDWINDOW, 0, 0, 320, 320, 0, 0, wndclass.hInstance, 0);
+		hwnd = CreateWindow(wndclass.lpszClassName, name, WS_OVERLAPPEDWINDOW, 0, 0, 400, 400, 0, 0, wndclass.hInstance, 0);
 		device_context = GetDC(hwnd);
 
 		ZeroMemory(&bitmap_info, sizeof(BITMAPINFO));

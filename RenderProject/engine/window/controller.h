@@ -16,7 +16,6 @@ class Controller
 	bool need_to_rotate = false;
 	bool need_to_move_object = false;
 	bool need_to_speed_up = false;
-	bool R_UP = true;
 	float camera_move_offset_val = 50.f;
 	float camera_angle_offset_val = 3.f;
 	float acceleration = 5.f;
