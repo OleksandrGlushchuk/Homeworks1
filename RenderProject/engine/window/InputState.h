@@ -4,7 +4,7 @@ class InputState
 {
 public:
 	bool KEY_W = 0, KEY_S = 0, KEY_A = 0, KEY_D = 0, KEY_Q = 0, KEY_E = 0, KEY_SPACE = 0, KEY_CONTROL = 0, KEY_NULL = 0,
-		KEY_PLUS = 0, KEY_MINUS = 0, KEY_R = 0, KEY_SHIFT = 0, KEY_1 = 0, KEY_2 = 0, KEY_3 = 0, KEY_4 = 0;
+		KEY_PLUS = 0, KEY_MINUS = 0, KEY_R = 0, KEY_SHIFT = 0, KEY_1 = 0, KEY_2 = 0, KEY_3 = 0, KEY_4 = 0, KEY_G = 0;
 	bool& operator[](WPARAM key)
 	{
 		if (key == 'W')
@@ -39,6 +39,8 @@ public:
 			return KEY_3;
 		if (key == '4')
 			return KEY_4;
+		if (key == 'G')
+			return KEY_G;
 		return KEY_NULL;
 	}
 };

@@ -54,11 +54,12 @@ public:
     Vec3& mult(const Matr<4>& matr, float w=1);
     Vec3& mult(const Matr<3>& matr);
 
+    inline static void GetFrisvadsBasis(const Vec3& n, Vec3& b1, Vec3& b2);
     Vec3(const float*const & vec)
     {
         e[0] = vec[0]; e[1] = vec[1]; e[2] = vec[2];
     }
-
+    
     float e[3];
 };
 
@@ -136,4 +137,13 @@ inline Vec3& Vec3::operator/=(const float t) {
 inline Vec3 Vec3::Reflect(const Vec3& vec, const Vec3& normal)
 {
     return vec - 2.f * Vec3::dot(vec, normal) * normal;
+}
+
+inline void Vec3::GetFrisvadsBasis(const Vec3& n, Vec3& b1, Vec3& b2)
+{
+    float sign = n.z() >= 0.0f ? 1.0f : -1.0f;
+    const float a = -1.0f / (sign + n.z());
+    const float b = n.x() * n.y() * a;
+    b1 = Vec3(1.0f + sign * n.x() * n.x() * a, sign * b, -sign * n.x());
+    b2 = Vec3(b, sign + n.y() * n.y() * a, -n.y());
 }

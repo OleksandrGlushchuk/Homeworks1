@@ -6,7 +6,7 @@ struct Transform
 {
     Matr<4> transform = Matr<4>::identity(),
             transformInv = Matr<4>::identity();
-    Quaternion rotation;
+    Quaternion rotation = Quaternion::identity();
     Vec3 position;
     Vec3 scale;
     const Vec3& right() 	const { return Vec3(transform[0]) / Vec3::length(transform[0]); }
