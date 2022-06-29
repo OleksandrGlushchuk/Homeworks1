@@ -34,7 +34,6 @@ public:
 		light.light_radius = radius;
 		light.radiance = radiance;
 		sphere.material.emmission = radiance;
-		sphere.material.only_emmission = true;
 	}
 	bool intersects(const ray& _ray, ObjRef& outRef, math::Intersection& outNearest, Material& outMaterial)
 	{
@@ -62,7 +61,6 @@ public:
 		light.pos = pos;
 		light.radiance = radiance;
 		sphere.material.emmission = radiance;
-		sphere.material.only_emmission = true;
 	}
 	bool intersects(const ray& _ray, ObjRef& outRef, math::Intersection& outNearest, Material& outMaterial)
 	{

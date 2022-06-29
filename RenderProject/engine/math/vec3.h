@@ -2,7 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-template<int sz>
+template<int SIZE>
 class Matr;
 
 class Vec3 {

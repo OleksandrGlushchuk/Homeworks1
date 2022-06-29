@@ -20,11 +20,11 @@ class Scene
 {
 	Camera camera;
 	std::vector<Sphere> sp = std::vector<Sphere>(65);
-	std::vector<Cube> cube = std::vector<Cube>(0);
+	std::vector<Cube> cube = std::vector<Cube>(4);
 
 	std::vector<Sphere_Point_Light> sphere_point_light = std::vector<Sphere_Point_Light>(2);
-	std::vector<Sphere_Spot_Light> sphere_spot_light = std::vector<Sphere_Spot_Light>(0);
-	std::vector<Directional_Light> dir_light = std::vector<Directional_Light>(0);
+	std::vector<Sphere_Spot_Light> sphere_spot_light = std::vector<Sphere_Spot_Light>(1);
+	std::vector<Directional_Light> dir_light = std::vector<Directional_Light>(1);
 
 	bool need_to_redraw;
 	bool smooth_reflection = false;
@@ -40,7 +40,7 @@ class Scene
 	float EV100 = 2.f;
 public:
 	void findIntersectionInternal(const ray& _ray, ObjRef& outRef, math::Intersection& outNearest, Material& outMaterial);
-	bool findIntersection(const ray& _ray, math::Intersection& outNearest, Material& outMaterial);
+	bool findIntersection(const ray& _ray, math::Intersection& outNearest, Material& outMaterial, ObjRef& outRef);
 	bool findIntersection(const ray& _ray, IntersectionQuery& query);
 
 	Vec3 CalculatePointLights(std::vector<Sphere_Point_Light>& _sphere_point_light, const Vec3& view_pos, const math::Intersection& nearest, const Material &nearest_material);

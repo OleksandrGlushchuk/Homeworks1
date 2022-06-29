@@ -188,22 +188,13 @@ inline Vec3 CalculateSpotLight(const Spot_Light& light, const Vec3& view_pos, co
 	return CalculatePointLight(light, view_pos, nearest_point, nearest_normal, nearest_mat) * smoothstep(light.outerCutoff, light.innerCutoff, Ldir_dot_LtoPixel);
 }
 
-///PointToLight must be non normalized
-inline Vec3 CalculateSmoothBRDF(const Vec3& input_light, const Vec3 &PointToLight, const Vec3& view_pos, const Vec3& nearest_point, const Vec3& nearest_normal, const Material& nearest_mat)
+
+inline Vec3 CalculateSmoothBRDF(const Vec3& input_light, const Vec3 &PointToLightNormalized, const Vec3& view_pos, const Vec3& nearest_point, const Vec3& nearest_normal, const Material& nearest_mat)
 {
-	Vec3 PointToCamera = view_pos - nearest_point;
-	Vec3 HalfCameraLight = PointToCamera + PointToLight;
+	float NdotL = Vec3::dot(nearest_normal, PointToLightNormalized);
 
-	Vec3 PtoL_normalized = PointToLight.normalized();
-	PointToCamera.normalize();
-	HalfCameraLight.normalize();
-	
-	float NdotL = Vec3::dot(nearest_normal, PtoL_normalized);
-	float NdotV = Vec3::dot(nearest_normal, PointToCamera);
-
-
-	Vec3 F_LdotH = fresnel(Vec3::dot(PtoL_normalized, HalfCameraLight), nearest_mat.F0);
-	return input_light * NdotL * F_LdotH;
+	Vec3 F_LdotN = fresnel(NdotL, nearest_mat.F0);
+	return input_light * F_LdotN;
 }
 
 ///PointToLight must be non normalized

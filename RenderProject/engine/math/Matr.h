@@ -5,16 +5,16 @@
 #include <limits>
 #include "vec3.h"
 
-template<int sz>
+template<int SIZE>
 class Matr
 {
-	float matr[sz][sz];
+	float matr[SIZE][SIZE];
 public:
 	Matr() {}
-	inline const int size() const { return sz; }
+	inline const int size() const { return SIZE; }
 	inline Matr operator*(float k) const
 	{
-		Matr<sz> m;
+		Matr<SIZE> m;
 
 		for (int i = 0; i < m.size(); i++)
 		{
@@ -31,7 +31,7 @@ public:
 	}
 	inline Matr operator*(const Matr& m) const
 	{
-		Matr<sz> n;
+		Matr<SIZE> n;
 		float sum = 0;
 		for (int i = 0; i < m.size(); i++)
 		{
@@ -57,14 +57,14 @@ public:
 		return matr[r];
 	}
 
-	inline Matr<sz-1> matr_without(const int r, const int c) const
+	inline Matr<SIZE-1> matr_without(const int r, const int c) const
 	{
-		Matr<sz-1> m;
-		for (int i = 0, rk = 0; i < sz; i++)
+		Matr<SIZE-1> m;
+		for (int i = 0, rk = 0; i < SIZE; i++)
 		{
 			if (r == i) continue;
 
-			for (int j = 0, rc = 0; j < sz; j++)
+			for (int j = 0, rc = 0; j < SIZE; j++)
 			{
 				if (c == j) continue;
 				m.matr[rk][rc] = matr[i][j];
@@ -85,7 +85,7 @@ public:
 
 	inline static void add_to_row(float* const& row, const Vec3& vec);
 
-	friend class Matr<sz + 1>;
+	friend class Matr<SIZE + 1>;
 };
 
 template<>
@@ -170,13 +170,13 @@ public:
 	friend class Matr<2>;
 };
 
-template<int sz>
-inline Matr<sz> Matr<sz>::identity()
+template<int SIZE>
+inline Matr<SIZE> Matr<SIZE>::identity()
 {
-	Matr<sz> m;
-	for (int i = 0; i < sz; i++)
+	Matr<SIZE> m;
+	for (int i = 0; i < SIZE; i++)
 	{
-		for (int j = 0; j < sz; j++)
+		for (int j = 0; j < SIZE; j++)
 		{
 			if (i == j)
 			{
@@ -189,20 +189,20 @@ inline Matr<sz> Matr<sz>::identity()
 	return m;
 }
 
-template<int sz>
-inline void Matr<sz>::fill_row(float* const& row, const std::initializer_list<float>& init)
+template<int SIZE>
+inline void Matr<SIZE>::fill_row(float* const& row, const std::initializer_list<float>& init)
 {
 	std::copy(init.begin(), init.end(), row);
 }
 
-template<int sz>
-inline float Matr<sz>::determinant() const
+template<int SIZE>
+inline float Matr<SIZE>::determinant() const
 {
-	if (sz == 1)
+	if (SIZE == 1)
 		return matr[0][0];
-	if (sz == 2)
+	if (SIZE == 2)
 		return matr[0][0] * matr[1][1] - matr[0][1] * matr[1][0];
-	if (sz == 3)
+	if (SIZE == 3)
 	{
 		return matr[0][0] * matr[1][1] * matr[2][2] +
 			matr[0][1] * matr[1][2] * matr[2][0] +
@@ -212,20 +212,20 @@ inline float Matr<sz>::determinant() const
 			matr[0][0] * matr[1][2] * matr[2][1];
 	}
 	float det = 0;
-	for (int i = 0; i < sz; i++)
+	for (int i = 0; i < SIZE; i++)
 	{
 		det += pow(-1, i) * matr[0][i] * this->matr_without(0, i).determinant();
 	}
 	return det;
 }
 
-template<int sz>
-inline Matr<sz> Matr<sz>::invert() const
+template<int SIZE>
+inline Matr<SIZE> Matr<SIZE>::invert() const
 {
-	Matr<sz> m;
-	for (int i = 0; i < sz; i++)
+	Matr<SIZE> m;
+	for (int i = 0; i < SIZE; i++)
 	{
-		for (int j = 0; j < sz; j++)
+		for (int j = 0; j < SIZE; j++)
 		{
 			m[j][i] = pow(-1, i + j) * matr_without(i, j).determinant();
 		}
@@ -233,8 +233,8 @@ inline Matr<sz> Matr<sz>::invert() const
 	return m / determinant();
 }
 
-template<int sz>
-inline void Matr<sz>::add_to_row(float* const& row, const Vec3& vec)
+template<int SIZE>
+inline void Matr<SIZE>::add_to_row(float* const& row, const Vec3& vec)
 {
 	row[0] += vec.e[0];
 	row[1] += vec.e[1];
