@@ -16,12 +16,12 @@ Controller controller(window,scene);
 int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPWSTR cmdline, _In_ int cmdshow)
 {
 	window = Window(L"homework-3", hinstance, WndProc);
+	controller.InitScene();
 	window.Show();
 	MSG msg;
 	Timer timer;
 	timer.start_timer();
 	float delta_time;
-	controller.InitScene();
 	while (true)
 	{
 		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))

@@ -144,6 +144,8 @@ void Controller::ProcessInput()
 void Controller::OnKeyDown(WPARAM key)
 {
 	input_state[key] = true;
+	if(key != 'G')
+		scene.global_illumination = false;
 }
 
 void Controller::OnKeyUp(WPARAM key)
@@ -160,6 +162,7 @@ void Controller::moveCamera(const Vec3& offset, const Angles& angles)
 
 void Controller::OnLMouseDown(WORD x, WORD y)
 {
+	scene.global_illumination = false;
 	need_to_rotate = true;
 	mouse_x = x;
 	mouse_y = y;
@@ -196,6 +199,7 @@ void Controller::RotateCamera()
 
 void Controller::OnRMouseDown(WORD x, WORD y)
 {
+	scene.global_illumination = false;
 	mouse_x = x;
 	mouse_y = y;
 	nearest_clicked_object.reset();
@@ -273,11 +277,11 @@ void Controller::InitScene()
 {
 	//SPHERES INITIALIZING
 	{
-		int col = scene.sp.size() / 5;
+		/*int col = scene.sp.size() / 5;
 		int row = scene.sp.size() / col;
 		int sp_index;
 		float radius = 15;
-		float rough = 0.01f;
+		float rough = 0.001f;
 		float metal = 1.f / row;
 		Vec3 f0(0.02f, 0.02f, 0.02f);
 		Vec3 albedo(1.0f, 0.843f, 0.0f);
@@ -288,38 +292,44 @@ void Controller::InitScene()
 				sp_index = z * col + x;
 				scene.sp[sp_index] = Sphere(Vec3(-100+x*2.5f*radius, 50, 170 - z * 2.5f * radius), radius);
 				scene.sp[sp_index].material.albedo = albedo;
-				scene.sp[sp_index].material.emmission = Vec3(0.09f, 0.07f, 0.05f);
+				scene.sp[sp_index].material.emmission = Vec3(0.f, 0.f, 0.f);
 				scene.sp[sp_index].material.metallness = metal + z * metal;
 				scene.sp[sp_index].material.roughness = rough + (1.f - rough) * float(x)/(col-1);
 				scene.sp[sp_index].material.F0 = Vec3::lerp(f0, albedo*0.1f, scene.sp[sp_index].material.metallness);
 
 			}
-		}
+		}*/
+		scene.sp[0] = Sphere(Vec3(35, 35, -10), 7);
+		scene.sp[0].material.albedo = Vec3(0.9f, 0.3f, 0.9f);
+		scene.sp[0].material.emmission = Vec3(0.f, 0.f, 0.f);
+		scene.sp[0].material.metallness = 0.3f;
+		scene.sp[0].material.roughness = 0.3f;
+		scene.sp[0].material.F0 = Vec3(0.02f, 0.02f, 0.02f);
 	}
 
 	//LIGHTS INITIALIZING
 	{
-		scene.sphere_point_light[0] = Sphere_Point_Light(Vec3(10, 180, -120), 55,Vec3(500.f,500.f,500.f));
+		/*scene.sphere_point_light[0] = Sphere_Point_Light(Vec3(10, 180, 60), 15,Vec3(2000.f,2000.f,2000.f));
 
-		scene.sphere_point_light[1] = Sphere_Point_Light(Vec3(300, 89, -80), 35, Vec3(500.f, 500.f, 500.f));
+		scene.sphere_point_light[1] = Sphere_Point_Light(Vec3(300, 89, -80), 10, Vec3(2000.f, 2000.f, 2000.f));*/
 
-		scene.sphere_spot_light[0] = Sphere_Spot_Light(Vec3(50, 10, -100), 25, Vec3(0, -0.1f, 1), Vec3(3000.f, 0.0f, 3000.0f));
-		scene.sphere_spot_light[0].light.outerCutoff = cosf(M_PI / 6.f);
-		scene.sphere_spot_light[0].light.innerCutoff = cosf(M_PI / 9.f);
+		scene.sphere_spot_light[0] = Sphere_Spot_Light(Vec3(10, 25, -50), 8, Vec3(-1, 1, 1), Vec3(100000.f, 100000.0f, 100000.0f));
+		scene.sphere_spot_light[0].light.outerCutoff = cosf(M_PI / 3.f);
+		scene.sphere_spot_light[0].light.innerCutoff = cosf(M_PI / 6.f);
 
 
-		scene.dir_light[0].radiance = Vec3(3.2f, 3.2f, 3.2f);
+		/*scene.dir_light[0].radiance = Vec3(3.2f, 3.2f, 3.2f);
 		scene.dir_light[0].direction = Vec3(0, 1, -1);
-		scene.dir_light[0].solid_angle = M_PI;
+		scene.dir_light[0].solid_angle = M_PI;*/
 	}
 
 	//CUBES INITIALIZING
 	{
 		scene.cube[0] = Cube(Vec3(10, 38, 30));
 		scene.cube[0].Rotate(Quaternion(M_PI_4, scene.cube[0].forward()));
-		scene.cube[0].Translate(Vec3(100, 40, -70));
+		scene.cube[0].Translate(Vec3(40, 40, -70));
 		scene.cube[0].material.albedo = Vec3(0.9f, 0.9f, 0.1f);
-		scene.cube[0].material.emmission = Vec3(0.1f, 0.1f, 0.05f);
+		scene.cube[0].material.emmission = Vec3(0.0f, 0.0f, 0.0f);
 
 		scene.cube[0].material.roughness = 0.35f;
 		scene.cube[0].material.metallness = 0.2f;
@@ -329,9 +339,9 @@ void Controller::InitScene()
 
 		scene.cube[1] = Cube(Vec3(10, 38, 30));
 		scene.cube[1].Rotate(Quaternion(-M_PI_4, scene.cube[1].forward()));
-		scene.cube[1].Translate(Vec3(120, 40, -70));
+		scene.cube[1].Translate(Vec3(60, 40, 0));
 		scene.cube[1].material.albedo = Vec3(0.9f, 0.9f, 0.1f);
-		scene.cube[1].material.emmission = Vec3(0.1f, 0.1f, 0.05f);
+		scene.cube[1].material.emmission = Vec3(0.0f, 0.0f, 0.0f);
 
 		scene.cube[1].material.roughness = 0.35f;
 		scene.cube[1].material.metallness = 0.2f;
@@ -340,9 +350,9 @@ void Controller::InitScene()
 
 
 		scene.cube[2] = Cube(Vec3(30, 40, 30));
-		scene.cube[2].Translate(Vec3(110, 10, -71));
+		scene.cube[2].Translate(Vec3(60, 10, 1));
 		scene.cube[2].material.albedo = Vec3(0.05f, 0.05f, 0.9f);
-		scene.cube[2].material.emmission = Vec3(0, 0, 0.1f);
+		scene.cube[2].material.emmission = Vec3(0, 0, 0);
 		
 		scene.cube[2].material.roughness = 0.9f;
 		scene.cube[2].material.metallness = 0.2f;
@@ -351,22 +361,48 @@ void Controller::InitScene()
 
 
 		scene.cube[3] = Cube(Vec3(30, 30, 30));
-		scene.cube[3].Translate(Vec3(100, 10, -101));
+		scene.cube[3].Translate(Vec3(33, 10, -10));
 		scene.cube[3].material.albedo = Vec3(0.9f, 0.05f, 0.1f);
-		scene.cube[3].material.emmission = Vec3(0.2f, 0, 0.05f);
+		scene.cube[3].material.emmission = Vec3(0, 0, 0);
 		
 		scene.cube[3].material.roughness = 0.88f;
 		scene.cube[3].material.metallness = 0.1f;
 		scene.cube[3].material.F0 = Vec3(0.02f, 0.02f, 0.02f);
 
+
+
+		scene.cube[4] = Cube(Vec3(20, 100, 200));
+		scene.cube[4].Translate(Vec3(-60, 40, 0));
+		scene.cube[4].material.albedo = Vec3(0.9f, 0.1f, 0.1f);
+		scene.cube[4].material.emmission = Vec3(0, 0, 0);
+		scene.cube[4].material.F0 = Vec3(0.001f, 0.001f, 0.001f);
+		scene.cube[4].material.metallness = 0.2f;
+		scene.cube[4].material.roughness = 0.9f;
+
+		scene.cube[5] = Cube(Vec3(200, 20, 200));
+		scene.cube[5].Translate(Vec3(0, 80, 0));
+		scene.cube[5].material.albedo = Vec3(0.1f, 0.1f, 0.9f);
+		scene.cube[5].material.emmission = Vec3(0, 0, 0);
+		scene.cube[5].material.F0 = Vec3(0.001f, 0.001f, 0.001f);
+		scene.cube[5].material.metallness = 0.2f;
+		scene.cube[5].material.roughness = 0.9f;
+
+		scene.cube[6] = Cube(Vec3(200, 100, 20));
+		scene.cube[6].Translate(Vec3(0, 40, 60));
+		scene.cube[6].material.albedo = Vec3(0.1f, 0.9f, 0.0f);
+		scene.cube[6].material.emmission = Vec3(0, 0, 0);
+		scene.cube[6].material.F0 = Vec3(0.001f, 0.001f, 0.001f);
+		scene.cube[6].material.metallness = 0.2f;
+		scene.cube[6].material.roughness = 0.9f;
+
 	}
 
 	//FLOOR INITIALIZING
 	{
-		scene.floor.material.albedo = Vec3(0.1f, 0.6f, 0.05f);
-		scene.floor.material.emmission = Vec3(0, 0.05f, 0);
-		scene.floor.material.roughness = 0.99f;
-		scene.floor.material.metallness = 0.01f;
+		scene.floor.material.albedo = Vec3(0.1f, 0.1f, 0.1f);
+		scene.floor.material.emmission = Vec3(0, 0, 0);
+		scene.floor.material.roughness = 0.8f;
+		scene.floor.material.metallness = 0.1f;
 		scene.floor.material.F0 = Vec3(0.01f, 0.01f, 0.01f);
 	}
 

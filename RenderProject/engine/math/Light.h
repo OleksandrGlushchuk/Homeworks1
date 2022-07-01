@@ -35,7 +35,7 @@ public:
 };
 
 // May return direction pointing beneath surface horizon (dot(N, dir) < 0), use clampDirToHorizon to fix it.
-// sphereCos is cosine of angular diameter.
+// sphereCos is cosine of half angular diameter.
 // sphereRelPos is position of a sphere relative to surface:
 // 'sphereDir == normalize(sphereRelPos)' and 'sphereDir * sphereDist == sphereRelPos'
 inline Vec3 approximateClosestSphereDir(bool& intersects, const Vec3& reflectionDir, float sphereCos,
@@ -98,9 +98,9 @@ inline float FindSolidAngle(float DistancePointToLight, float light_radius)
 	return 2.f * M_PI * (1.f - sqrtf(DistancePointToLight * DistancePointToLight - light_radius * light_radius) / DistancePointToLight);
 }
 
-inline float FindAngularDiameter(float light_radius, float DistancePointToLight)
+inline float FindCosHalfAngularDiameter(float DistancePointToLight, float light_radius)
 {
-	return 2.f * atanf(light_radius / DistancePointToLight);
+	return  sqrtf(DistancePointToLight * DistancePointToLight - light_radius * light_radius) / DistancePointToLight; 
 }
 
 inline Vec3 CalculateDirectionalLight(const Directional_Light& light, const Vec3& view_pos, const Vec3& nearest_point, const Vec3& nearest_normal, const Material& nearest_mat)
@@ -131,23 +131,21 @@ inline Vec3 CalculateDirectionalLight(const Directional_Light& light, const Vec3
 inline Vec3 CalculatePointLight(const Point_Light& light, const Vec3 &view_pos, const Vec3& nearest_point, const Vec3& nearest_normal, const Material& nearest_mat)
 {
 	Vec3 PointToLight = light.pos - nearest_point;
+	Vec3 PointToCamera = view_pos - nearest_point;
+	Vec3 HalfCameraLight = PointToCamera + PointToLight;
+
 	float DistancePointToLight = Vec3::length(nearest_point - light.pos);
 	float solid_angle;
-
 	DistancePointToLight = std::max<float>(DistancePointToLight, light.light_radius);
 	solid_angle = FindSolidAngle(DistancePointToLight, light.light_radius);
 
 	bool intersects = false;
-	ray r;
-	r.origin = nearest_point + 0.01f * nearest_normal;
-	r.direction = Vec3::Reflect(-PointToLight.normalized(), nearest_normal);
-	Vec3 PointToSpecLight = approximateClosestSphereDir(intersects, r.direction, cosf(FindAngularDiameter(light.light_radius,DistancePointToLight)), 
+	Vec3 reflection_dir = Vec3::Reflect(-PointToCamera.normalized(), nearest_normal);
+	Vec3 PointToSpecLight = approximateClosestSphereDir(intersects, reflection_dir, FindCosHalfAngularDiameter(DistancePointToLight,light.light_radius),
 		PointToLight, PointToLight.normalized(), DistancePointToLight, light.light_radius);
+
 	
-	Vec3 PointToCamera = view_pos - nearest_point;
-	Vec3 HalfCameraLight = PointToCamera + PointToLight;
-	Vec3 HalfCameraSpecLight = PointToCamera + PointToSpecLight;
-	
+
 	PointToCamera.normalize();
 	PointToLight.normalize();
 
@@ -156,23 +154,25 @@ inline Vec3 CalculatePointLight(const Point_Light& light, const Vec3 &view_pos, 
 	float NdotV = Vec3::dot(nearest_normal, PointToCamera);
 	if (NdotV <= 0.f) return Vec3(0.f, 0.f, 0.f);
 
+
+	Vec3 HalfCameraSpecLight = PointToCamera + PointToSpecLight;
 	HalfCameraLight.normalize();
 	HalfCameraSpecLight.normalize();
-	
+	PointToSpecLight.normalize();
 	
 	float NdotSpecL = Vec3::dot(nearest_normal, PointToSpecLight);
 	clampDirToHorizon(PointToSpecLight, NdotSpecL, nearest_normal, 0);
 
 	
 	float NdotSpecH = Vec3::dot(nearest_normal, HalfCameraSpecLight);
-	float NdotH = Vec3::dot(nearest_normal, HalfCameraSpecLight);
+	float NdotH = Vec3::dot(nearest_normal, HalfCameraLight);
 	float rough2 = nearest_mat.roughness * nearest_mat.roughness;
 
 
 	float D = ggx(rough2, NdotSpecH);
 	Vec3 F_LdotH = fresnel(Vec3::dot(PointToLight, HalfCameraLight), nearest_mat.F0);
 	Vec3 F_LdotN = fresnel(NdotL, nearest_mat.F0);
-	float G = smith(rough2, NdotV, NdotL);
+	float G = smith(rough2, NdotV, NdotSpecL);
 
 	return light.radiance * NdotL * (LambertBRDF(F_LdotN, nearest_mat, solid_angle) + CookTorranceBRDF(F_LdotH, G, D, solid_angle, NdotV, NdotSpecL));
 }
@@ -200,15 +200,8 @@ inline Vec3 CalculateSmoothBRDF(const Vec3& input_light, const Vec3 &PointToLigh
 ///PointToLight must be non normalized
 inline Vec3 CalculateBRDF(const Vec3& input_light, float solid_angle, const Vec3& PointToLight, const Vec3& view_pos, const Vec3& nearest_point, const Vec3& nearest_normal, const Material& nearest_mat)
 {
-
-	bool intersects = false;
-	ray r;
-	r.origin = nearest_point + 0.01f * nearest_normal;
-	r.direction = Vec3::Reflect(-PointToLight.normalized(), nearest_normal);
-
 	Vec3 PointToCamera = view_pos - nearest_point;
 	Vec3 HalfCameraLight = PointToCamera + PointToLight;
-	Vec3 HalfCameraSpecLight = PointToCamera + PointToLight;
 
 	PointToCamera.normalize();
 	Vec3 PtoL_normalized = PointToLight.normalized();
@@ -220,12 +213,11 @@ inline Vec3 CalculateBRDF(const Vec3& input_light, float solid_angle, const Vec3
 
 	HalfCameraLight.normalize();
 
-	float NdotSpecH = Vec3::dot(nearest_normal, HalfCameraSpecLight);
-	float NdotH = Vec3::dot(nearest_normal, HalfCameraSpecLight);
+	float NdotH = Vec3::dot(nearest_normal, HalfCameraLight);
 	float rough2 = nearest_mat.roughness * nearest_mat.roughness;
 
 
-	float D = ggx(rough2, NdotSpecH);
+	float D = ggx(rough2, NdotH);
 	Vec3 F_LdotH = fresnel(Vec3::dot(PtoL_normalized, HalfCameraLight), nearest_mat.F0);
 	float G = smith(rough2, NdotV, NdotL);
 

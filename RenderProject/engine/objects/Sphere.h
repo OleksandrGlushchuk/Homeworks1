@@ -57,7 +57,7 @@ public:
 	Sphere_Spot_Light(const Vec3& pos, float radius, const Vec3& direction, const Vec3 &radiance) : sphere(pos, radius)
 	{
 		light.light_radius = radius;
-		light.direction = direction;
+		light.direction = direction.normalized();
 		light.pos = pos;
 		light.radiance = radiance;
 		sphere.material.emmission = radiance;

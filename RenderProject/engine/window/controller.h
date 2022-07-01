@@ -13,6 +13,7 @@ class Controller
 	IntersectionQuery nearest_clicked_object;
 	IntersectionQuery new_object_intersection;
 	float distance_object_to_camera;
+
 	bool need_to_rotate = false;
 	bool need_to_move_object = false;
 	bool need_to_speed_up = false;
