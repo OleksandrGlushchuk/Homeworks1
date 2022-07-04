@@ -214,17 +214,20 @@ Vec3 Scene::CalculateLighting(const ray &ray_to_object, const Vec3& view_pos, co
 	sum += CalculateDirectionalLights(dir_light, view_pos, nearest, nearest_material);
 
 	sum += CalculateSpotLights(sphere_spot_light, view_pos, nearest, nearest_material);
+
+	Vec3 ambient;
+
 	if (global_illumination)
 	{
-		Vec3 global_ambient = CalculateGlobalIllumination(NUMBER_OF_SAMPLES, ray_to_object, view_pos, nearest, nearest_material);
-
-		result_light = nearest_material.emmission + (global_ambient) * nearest_material.albedo + sum;
+		ambient = CalculateGlobalIllumination(NUMBER_OF_SAMPLES, ray_to_object, view_pos, nearest, nearest_material);
 	}
 	else
 	{
-		result_light = nearest_material.emmission + scene_ambient * nearest_material.albedo + sum;
+		ambient = scene_ambient * nearest_material.albedo;
 	}
 	
+	result_light = nearest_material.emmission + ambient + sum;
+
 	if (smooth_reflection)
 	{
 		if (nearest_material.roughness <= MAX_REFLECTIVE_ROUGHNESS && smooth_reflection_depth > 0)
@@ -241,14 +244,13 @@ Vec3 Scene::CalculateLighting(const ray &ray_to_object, const Vec3& view_pos, co
 			float smooth_reflection_attenuate = ((MAX_REFLECTIVE_ROUGHNESS - nearest_material.roughness) * 1.f / MAX_REFLECTIVE_ROUGHNESS);
 			if (find_Intersection_Without_Light_Sources(r, reflected_nearest, reflected_nearest_material))
 			{
-				reflected_light = CalculateSmoothBRDF(CalculateLighting(r, r.origin, reflected_nearest, reflected_nearest_material, smooth_reflection_depth - 1),
-					(reflected_nearest.point - nearest.point).normalized(), view_pos, nearest.point, nearest.normal, nearest_material) * smooth_reflection_attenuate;
+				reflected_light = CalculateLighting(r, r.origin, reflected_nearest, reflected_nearest_material, smooth_reflection_depth - 1);
 			}
 			else
 			{
-				reflected_light = CalculateSmoothBRDF(background_color, r.direction.normalized(), view_pos, nearest.point, nearest.normal, nearest_material) * smooth_reflection_attenuate;
+				reflected_light = background_color;
 			}
-			result_light += reflected_light;
+			result_light += CalculateSmoothBRDF(reflected_light, r.direction, view_pos, nearest.point, nearest.normal, nearest_material) * smooth_reflection_attenuate;
 		}
 	}
 	return result_light;
@@ -282,14 +284,13 @@ Vec3 Scene::CalculateLightingWithoutGI(const ray& ray_to_object, const Vec3& vie
 			float smooth_reflection_attenuate = ((MAX_REFLECTIVE_ROUGHNESS - nearest_material.roughness) * 1.f / MAX_REFLECTIVE_ROUGHNESS);
 			if (find_Intersection_Without_Light_Sources(r, reflected_nearest, reflected_nearest_material))
 			{
-				reflected_light = CalculateSmoothBRDF(CalculateLighting(r, r.origin, reflected_nearest, reflected_nearest_material, smooth_reflection_depth - 1),
-					(reflected_nearest.point - nearest.point).normalized(), view_pos, nearest.point, nearest.normal, nearest_material) * smooth_reflection_attenuate;
+				reflected_light = CalculateLightingWithoutGI(r, r.origin, reflected_nearest, reflected_nearest_material, smooth_reflection_depth - 1);
 			}
 			else
 			{
-				reflected_light = CalculateSmoothBRDF(background_color, r.direction.normalized(), view_pos, nearest.point, nearest.normal, nearest_material) * smooth_reflection_attenuate;
+				reflected_light = background_color;
 			}
-			result_light += reflected_light;
+			result_light += CalculateSmoothBRDF(reflected_light, r.direction, view_pos, nearest.point, nearest.normal, nearest_material) * smooth_reflection_attenuate;
 		}
 	}
 	return result_light;
@@ -324,6 +325,7 @@ Vec3 Scene::CalculateGlobalIllumination(const int number_of_samples, const ray& 
 	sampled_nearest.reset();
 	ray sampled_ray;
 	sampled_ray.origin = nearest.point + 0.1f * nearest.normal;
+	Vec3 incoming_light;
 
 	for (int j = 0; j < number_of_samples; j++)
 	{
@@ -336,16 +338,16 @@ Vec3 Scene::CalculateGlobalIllumination(const int number_of_samples, const ray& 
 			sampled_ray.direction.e[0] * n_x.e[2] + sampled_ray.direction.e[1] * n_y.e[2] + sampled_ray.direction.e[2] * nearest.normal.e[2]
 		);
 
+
 		if (find_Intersection_Without_Light_Sources(sampled_ray, sampled_nearest, sampled_nearest_material))
 		{
-			indirect_lighting += CalculateBRDF( CalculateLightingWithoutGI(sampled_ray, nearest.point, sampled_nearest, sampled_nearest_material, MAX_DEPTH_FOR_SMOOTH_REFLECTION),
-				d_omega, sampled_nearest.point - nearest.point, view_pos, nearest.point, nearest.normal, nearest_material) * Vec3::dot(sampled_ray.direction, nearest.normal);
+			incoming_light = CalculateLightingWithoutGI(sampled_ray, nearest.point, sampled_nearest, sampled_nearest_material, MAX_DEPTH_FOR_SMOOTH_REFLECTION);
 		}
 		else
 		{
-			indirect_lighting += CalculateBRDF(scene_ambient, d_omega, sampled_ray.direction, view_pos, nearest.point, nearest.normal, nearest_material) *
-				Vec3::dot(sampled_ray.direction, nearest.normal);
+			incoming_light = scene_ambient;
 		}
+		indirect_lighting += CalculateBRDF(incoming_light, d_omega, sampled_ray.direction, view_pos, nearest.point, nearest.normal, nearest_material);
 	}
 	return (indirect_lighting);
 }

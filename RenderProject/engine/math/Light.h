@@ -197,16 +197,13 @@ inline Vec3 CalculateSmoothBRDF(const Vec3& input_light, const Vec3 &PointToLigh
 	return input_light * F_LdotN;
 }
 
-///PointToLight must be non normalized
-inline Vec3 CalculateBRDF(const Vec3& input_light, float solid_angle, const Vec3& PointToLight, const Vec3& view_pos, const Vec3& nearest_point, const Vec3& nearest_normal, const Material& nearest_mat)
+
+inline Vec3 CalculateBRDF(const Vec3& input_light, float solid_angle, const Vec3& PointToLightNormalized, const Vec3& view_pos, const Vec3& nearest_point, const Vec3& nearest_normal, const Material& nearest_mat)
 {
 	Vec3 PointToCamera = view_pos - nearest_point;
-	Vec3 HalfCameraLight = PointToCamera + PointToLight;
+	Vec3 HalfCameraLight = PointToCamera.normalize() + PointToLightNormalized;
 
-	PointToCamera.normalize();
-	Vec3 PtoL_normalized = PointToLight.normalized();
-
-	float NdotL = Vec3::dot(nearest_normal, PtoL_normalized);
+	float NdotL = Vec3::dot(nearest_normal, PointToLightNormalized);
 	if (NdotL <= 0.f) return Vec3(0.f, 0.f, 0.f);
 	float NdotV = Vec3::dot(nearest_normal, PointToCamera);
 	if (NdotV <= 0.f) return Vec3(0.f, 0.f, 0.f);
@@ -218,7 +215,7 @@ inline Vec3 CalculateBRDF(const Vec3& input_light, float solid_angle, const Vec3
 
 
 	float D = ggx(rough2, NdotH);
-	Vec3 F_LdotH = fresnel(Vec3::dot(PtoL_normalized, HalfCameraLight), nearest_mat.F0);
+	Vec3 F_LdotH = fresnel(Vec3::dot(PointToLightNormalized, HalfCameraLight), nearest_mat.F0);
 	float G = smith(rough2, NdotV, NdotL);
 
 	return input_light * NdotL * (LambertBRDF(F_LdotH, nearest_mat, solid_angle) + CookTorranceBRDF(F_LdotH, G, D, solid_angle, NdotV, NdotL));

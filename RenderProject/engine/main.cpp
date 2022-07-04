@@ -1,6 +1,7 @@
 #include "window/window.h"
 #include "window/controller.h"
 #include "window/Scene.h"
+//#include "window/Window.hpp"
 #include "window/Timer.h"
 #include <thread>
 #include <chrono>
@@ -18,6 +19,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 	window = Window(L"homework-3", hinstance, WndProc);
 	controller.InitScene();
 	window.Show();
+	
+	/*engine::windows::Window window(L"homework-4", hinstance, WndProc);
+	window.Show();*/
+
 	MSG msg;
 	Timer timer;
 	timer.start_timer();
@@ -35,9 +40,15 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 		if (timer.FrameTimeElapsed(FRAME_DURATION))
 		{
 			controller.DrawScene();
+
 		}
 		delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count() - delta_time + 0.01f;
 		controller.delta_time = delta_time;
+
+		/*window.BeginFrame();
+
+
+		window.EndFrame();*/
 
 		std::this_thread::yield();
 	}

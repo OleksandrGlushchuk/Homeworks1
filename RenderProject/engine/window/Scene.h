@@ -34,7 +34,7 @@ class Scene
 	Vec3 background_color = scene_ambient;
 
 	int MAX_DEPTH_FOR_SMOOTH_REFLECTION = 50;
-	int NUMBER_OF_SAMPLES = 250;
+	int NUMBER_OF_SAMPLES = 1000;
 	float MAX_REFLECTIVE_ROUGHNESS = 0.1f;
 	float EV100 = 2.f;
 public:

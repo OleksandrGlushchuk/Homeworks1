@@ -313,7 +313,7 @@ void Controller::InitScene()
 
 		scene.sphere_point_light[1] = Sphere_Point_Light(Vec3(300, 89, -80), 10, Vec3(2000.f, 2000.f, 2000.f));*/
 
-		scene.sphere_spot_light[0] = Sphere_Spot_Light(Vec3(10, 25, -50), 8, Vec3(-1, 1, 1), Vec3(100000.f, 100000.0f, 100000.0f));
+		scene.sphere_spot_light[0] = Sphere_Spot_Light(Vec3(10, 25, -50), 8, Vec3(-1, 1, 1), Vec3(70000.f, 70000.0f, 70000.0f));
 		scene.sphere_spot_light[0].light.outerCutoff = cosf(M_PI / 3.f);
 		scene.sphere_spot_light[0].light.innerCutoff = cosf(M_PI / 6.f);
 

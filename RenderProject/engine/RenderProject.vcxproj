@@ -149,12 +149,18 @@
     <ClCompile Include="math\sphere.cpp" />
     <ClCompile Include="math\Triangle.cpp" />
     <ClCompile Include="math\vec3.cpp" />
+    <ClCompile Include="render\d3d.cpp" />
+    <ClCompile Include="render\globals.cpp" />
     <ClCompile Include="window\controller.cpp" />
     <ClCompile Include="window\ParallelExecutor.cpp" />
     <ClCompile Include="window\Scene.cpp" />
     <ClCompile Include="window\window.cpp" />
+    <ClCompile Include="window\WindowD3D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\win.hpp" />
+    <ClInclude Include="include\win_def.hpp" />
+    <ClInclude Include="include\win_undef.hpp" />
     <ClInclude Include="math\camera.h" />
     <ClInclude Include="math\Cube.h" />
     <ClInclude Include="math\Floor.h" />
@@ -175,12 +181,16 @@
     <ClInclude Include="objects\ObjectMover.h" />
     <ClInclude Include="objects\ObjRef.h" />
     <ClInclude Include="objects\Sphere.h" />
+    <ClInclude Include="render\d3d.hpp" />
+    <ClInclude Include="render\DxRes.hpp" />
+    <ClInclude Include="render\globals.hpp" />
     <ClInclude Include="window\controller.h" />
     <ClInclude Include="window\InputState.h" />
     <ClInclude Include="window\ParallelExecutor.h" />
     <ClInclude Include="window\Scene.h" />
     <ClInclude Include="window\Timer.h" />
     <ClInclude Include="window\window.h" />
+    <ClInclude Include="window\Window.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
