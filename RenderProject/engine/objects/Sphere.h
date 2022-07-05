@@ -28,11 +28,12 @@ public:
 	Sphere sphere;
 	Point_Light light;
 	Sphere_Point_Light() {}
-	Sphere_Point_Light(const Vec3& pos, float radius) : sphere(pos, radius)
+	Sphere_Point_Light(const Vec3& pos, float radius, const Vec3 &radiance) : sphere(pos, radius)
 	{
 		light.pos = pos;
-		sphere.material.emmission = Vec3(255, 255, 255);
-		sphere.material.only_emmission = true;
+		light.light_radius = radius;
+		light.radiance = radiance;
+		sphere.material.emmission = radiance;
 	}
 	bool intersects(const ray& _ray, ObjRef& outRef, math::Intersection& outNearest, Material& outMaterial)
 	{
@@ -53,12 +54,13 @@ public:
 	Sphere sphere;
 	Spot_Light light;
 	Sphere_Spot_Light() {}
-	Sphere_Spot_Light(const Vec3& pos, float radius, const Vec3& direction) : sphere(pos, radius)
+	Sphere_Spot_Light(const Vec3& pos, float radius, const Vec3& direction, const Vec3 &radiance) : sphere(pos, radius)
 	{
-		light.direction = direction;
+		light.light_radius = radius;
+		light.direction = direction.normalized();
 		light.pos = pos;
-		sphere.material.emmission = Vec3(255, 255, 255);
-		sphere.material.only_emmission = true;
+		light.radiance = radiance;
+		sphere.material.emmission = radiance;
 	}
 	bool intersects(const ray& _ray, ObjRef& outRef, math::Intersection& outNearest, Material& outMaterial)
 	{

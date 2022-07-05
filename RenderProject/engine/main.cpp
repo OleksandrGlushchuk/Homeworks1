@@ -15,13 +15,14 @@ Controller controller(window,scene);
 
 int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPWSTR cmdline, _In_ int cmdshow)
 {
-	window = Window(L"homework-2", hinstance, WndProc);
+	window = Window(L"homework-3", hinstance, WndProc);
+	controller.InitScene();
 	window.Show();
+
 	MSG msg;
 	Timer timer;
 	timer.start_timer();
 	float delta_time;
-	controller.InitScene();
 	while (true)
 	{
 		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -35,10 +36,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 		if (timer.FrameTimeElapsed(FRAME_DURATION))
 		{
 			controller.DrawScene();
-		}
-		delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count() - delta_time;
-		controller.delta_time = delta_time;
 
+		}
+		delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count() - delta_time + 0.01f;
+		controller.delta_time = delta_time;
 		std::this_thread::yield();
 	}
 	return TRUE;
@@ -63,7 +64,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		break;
 
 	case WM_MOUSEMOVE:
-		if (wparam == MK_LBUTTON || wparam == MK_LBUTTON | MK_RBUTTON)
+		if (wparam == MK_LBUTTON || wparam == (MK_LBUTTON | MK_RBUTTON))
 			controller.OnLMouseMove(LOWORD(lparam), HIWORD(lparam));
 		if (wparam == MK_RBUTTON)
 			controller.OnRMouseMove(LOWORD(lparam), HIWORD(lparam));
@@ -78,12 +79,18 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		break;
 
 	case WM_KEYDOWN:
-		controller.OnKeyDown(wparam);
+		if((HIWORD(lparam) & KF_REPEAT) != KF_REPEAT)
+			controller.OnKeyDown(wparam);
 		break;
 
 	case WM_KEYUP:
 		controller.OnKeyUp(wparam);
 		break;
+
+	case WM_MOUSEWHEEL:
+		controller.OnMouseWheel(GET_WHEEL_DELTA_WPARAM(wparam));
+		break;
+
 	default: return DefWindowProc(hwnd, msg, wparam, lparam);
 	}
 	return 0;

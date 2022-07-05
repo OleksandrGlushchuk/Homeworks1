@@ -13,11 +13,16 @@ class Controller
 	IntersectionQuery nearest_clicked_object;
 	IntersectionQuery new_object_intersection;
 	float distance_object_to_camera;
+
 	bool need_to_rotate = false;
 	bool need_to_move_object = false;
-	float camera_move_offset_val = 3.f;
+	bool need_to_speed_up = false;
+	float camera_move_offset_val = 50.f;
 	float camera_angle_offset_val = 3.f;
+	float acceleration = 5.f;
 	WORD mouse_x = 0, mouse_y = 0;
+	uint32_t image_compression = 2;
+	Vec3 start_rotation = Vec3(0, 0, 1), end_rotation = Vec3(0, 0, 1), dir_rotation = Vec3(0, 0, 1);
 public:
 	float delta_time;
 	void RotateCamera();
@@ -33,6 +38,8 @@ public:
 	void OnRMouseDown(WORD x, WORD y);
 	void OnRMouseMove(WORD x, WORD y);
 	void OnRMouseUp(WORD x, WORD y);
+
+	void OnMouseWheel(short wheel_data);
 
 	void OnChangeWindowSize();
 	void moveCamera(const Vec3& offset, const Angles& angles);

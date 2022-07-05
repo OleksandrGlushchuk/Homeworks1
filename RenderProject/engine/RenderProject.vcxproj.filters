@@ -33,9 +33,6 @@
     <ClCompile Include="math\Cube.cpp">
       <Filter>math</Filter>
     </ClCompile>
-    <ClCompile Include="math\Matr.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
     <ClCompile Include="math\sphere.cpp">
       <Filter>math</Filter>
     </ClCompile>
@@ -50,6 +47,12 @@
     </ClCompile>
     <ClCompile Include="window\window.cpp">
       <Filter>window</Filter>
+    </ClCompile>
+    <ClCompile Include="window\ParallelExecutor.cpp">
+      <Filter>window</Filter>
+    </ClCompile>
+    <ClCompile Include="math\vec3.cpp">
+      <Filter>math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -66,9 +69,6 @@
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="math\Light.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="math\Material.h">
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="math\Matr.h">
@@ -127,6 +127,12 @@
     </ClInclude>
     <ClInclude Include="window\InputState.h">
       <Filter>window</Filter>
+    </ClInclude>
+    <ClInclude Include="window\ParallelExecutor.h">
+      <Filter>window</Filter>
+    </ClInclude>
+    <ClInclude Include="math\LightingPostProcess.h">
+      <Filter>math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

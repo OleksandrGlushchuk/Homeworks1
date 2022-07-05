@@ -14,6 +14,7 @@ class Camera
 {
 	bool need_to_update_matrices = true;
 	bool need_to_update_basis = true;
+	bool need_to_roll = false;
 	float fov, aspect, p_near, p_far;
 public:
 	const Vec3& right() 	const { return m_viewInv[0]; }
@@ -21,15 +22,16 @@ public:
 	const Vec3& forward() 	const { return m_viewInv[2]; }
 	const Vec3& position()	const { return m_viewInv[3]; }
 
-	Matr m_proj = Matr(4), m_projInv = Matr(4);
-	Matr m_view = Matr(4), m_viewInv = Matr(4);
-	Matr m_viewProj = Matr(4), m_viewProjInv = Matr(4);
+	Matr<4> m_proj = Matr<4>::identity(),		m_projInv = Matr<4>::identity(),
+			m_view = Matr<4>::identity(),		m_viewInv = Matr<4>::identity(),
+			m_viewProj = Matr<4>::identity(),	m_viewProjInv = Matr<4>::identity();
 	Quaternion m_rotation;
 	Vec3 TopLeft, BottomLeft, BottomRight;
-
-	Camera();
+	Vec3 BR_M_BL, TL_M_BL;
+	Camera() {};
 	Camera(float _fov, float _aspect, float _p_near, float _p_far);
 
+	void updateCorners();
 	void updateAspect(float _aspect);
 	void updateMatrices();
 	void addRelativeOffset(const Vec3 &offset);
