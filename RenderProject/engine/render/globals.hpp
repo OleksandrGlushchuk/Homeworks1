@@ -13,5 +13,6 @@ namespace engine
 		DxResPtr<ID3D11Debug> m_devdebug;
 	public:
 		void initD3D();
+		~Globals();
 	};
 }

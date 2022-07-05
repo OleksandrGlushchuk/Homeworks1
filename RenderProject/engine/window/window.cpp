@@ -41,7 +41,8 @@ namespace engine::windows
 		{
 			m_renderTargetView1.release();
 			m_backBuffer.release();
-			HRESULT result = m_swapChain1->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+
+			HRESULT result = m_swapChain1->ResizeBuffers(0, std::max<UINT>(screen.right,8), std::max<UINT>(screen.bottom, 8), DXGI_FORMAT_UNKNOWN, 0);
 			ALWAYS_ASSERT(result >= 0 && "ResizeBuffers");
 		}
 

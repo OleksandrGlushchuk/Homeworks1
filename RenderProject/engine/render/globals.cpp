@@ -1,4 +1,5 @@
 #include "globals.hpp"
+#include <Windows.h>
 // Say NVidia or AMD driver to prefer a dedicated GPU instead of an integrated.
 // This has effect on laptops.
 extern "C"
@@ -54,5 +55,21 @@ namespace engine
 		s_factory = m_factory5.ptr();
 		s_device = m_device5.ptr();
 		s_deviceContext = m_devcon4.ptr();
+	}
+
+	Globals::~Globals()
+	{
+		if (s_factory){
+			s_factory->Release();
+			s_factory = nullptr;
+		}
+		if (s_device) {
+			s_device->Release();
+			s_device = nullptr;
+		}
+		if (s_deviceContext) {
+			s_deviceContext->Release();
+			s_deviceContext = nullptr;
+		}
 	}
 }
