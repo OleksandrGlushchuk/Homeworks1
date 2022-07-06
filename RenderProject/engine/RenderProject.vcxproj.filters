@@ -22,6 +22,18 @@
     <Filter Include="objects">
       <UniqueIdentifier>{5dc25d20-7801-4318-8751-579965f082a7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="render">
+      <UniqueIdentifier>{fdebd8b0-964f-426f-a347-8c2efed0fe70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{20009e2c-8e38-403d-99f6-bae919473383}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="d3dobjects">
+      <UniqueIdentifier>{d4bbed9b-2bbe-4b51-99c3-7f429ace1e24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{11041ce1-1a43-4c90-b39d-5dc23dd8ce13}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -53,6 +65,15 @@
     </ClCompile>
     <ClCompile Include="math\vec3.cpp">
       <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="render\d3d.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\globals.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="d3dobjects\TriangleD3D.cpp">
+      <Filter>d3dobjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -134,5 +155,37 @@
     <ClInclude Include="math\LightingPostProcess.h">
       <Filter>math</Filter>
     </ClInclude>
+    <ClInclude Include="render\d3d.hpp">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\DxRes.hpp">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\globals.hpp">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\win.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\win_def.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\win_undef.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dobjects\TriangleD3D.h">
+      <Filter>d3dobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dobjects\VertexMesh.h">
+      <Filter>d3dobjects</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="d3dobjects\shaders\ps_triangle.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="d3dobjects\shaders\vs_triangle.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

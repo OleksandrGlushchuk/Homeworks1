@@ -1,5 +1,6 @@
 #pragma once
 #include "../math/Intersection.h"
+#include "../objects/ObjectMover.h"
 #include "Material.h"
 #include <memory>
 struct IntersectionQuery
