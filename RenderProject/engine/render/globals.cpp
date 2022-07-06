@@ -60,15 +60,12 @@ namespace engine
 	Globals::~Globals()
 	{
 		if (s_factory){
-			s_factory->Release();
 			s_factory = nullptr;
 		}
 		if (s_device) {
-			s_device->Release();
 			s_device = nullptr;
 		}
 		if (s_deviceContext) {
-			s_deviceContext->Release();
 			s_deviceContext = nullptr;
 		}
 	}
