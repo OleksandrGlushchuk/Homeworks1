@@ -59,14 +59,8 @@ namespace engine
 
 	Globals::~Globals()
 	{
-		if (s_factory){
-			s_factory = nullptr;
-		}
-		if (s_device) {
-			s_device = nullptr;
-		}
-		if (s_deviceContext) {
-			s_deviceContext = nullptr;
-		}
+		s_factory = nullptr;
+		s_device = nullptr;
+		s_deviceContext = nullptr;
 	}
 }
