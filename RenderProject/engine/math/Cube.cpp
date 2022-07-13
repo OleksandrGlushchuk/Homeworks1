@@ -1,7 +1,7 @@
 #include "Cube.h"
 std::vector<math::Triangle> math::Cube::mesh({
 		math::Triangle(Vec3(-1,-1,-1),Vec3(-1,1,-1),Vec3(1,-1,-1),Vec3(0,0,-1)),	math::Triangle(Vec3(1,-1,-1),Vec3(-1,1,-1),Vec3(1,1,-1),Vec3(0,0,-1)),
-		math::Triangle(Vec3(-1,1,-1),	Vec3(-1,1,1),Vec3(1,1,-1),Vec3(0,1,0)),		math::Triangle(Vec3(1,1,-1),Vec3(-1,1,1),Vec3(1,1,1),Vec3(0,1,0)),
+		math::Triangle(Vec3(-1,1,-1),Vec3(-1,1,1),Vec3(1,1,-1),Vec3(0,1,0)),		math::Triangle(Vec3(1,1,-1),Vec3(-1,1,1),Vec3(1,1,1),Vec3(0,1,0)),
 		math::Triangle(Vec3(-1,-1,1),Vec3(1,-1,1),Vec3(-1,1,1),Vec3(0,0,1)),		math::Triangle(Vec3(1,-1,1),Vec3(1,1,1),Vec3(-1,1,1),Vec3(0,0,1)),
 		math::Triangle(Vec3(-1,-1,-1),Vec3(1,-1,-1),Vec3(-1,-1,1),Vec3(0,-1,0)),	math::Triangle(Vec3(1,-1,-1),Vec3(1,-1,1),Vec3(-1,-1,1),Vec3(0,-1,0)),
 		math::Triangle(Vec3(-1,-1,-1),Vec3(-1,-1,1),Vec3(-1,1,1),Vec3(-1,0,0)),		math::Triangle(Vec3(-1,-1,-1),Vec3(-1,1,1),Vec3(-1,1,-1),Vec3(-1,0,0)),

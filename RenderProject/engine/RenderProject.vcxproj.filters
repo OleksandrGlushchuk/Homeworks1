@@ -34,6 +34,9 @@
     <Filter Include="shaders">
       <UniqueIdentifier>{11041ce1-1a43-4c90-b39d-5dc23dd8ce13}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DDSTextureLoader11">
+      <UniqueIdentifier>{e2739557-3749-44cf-a78d-2699d215ce51}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -74,6 +77,18 @@
     </ClCompile>
     <ClCompile Include="d3dobjects\TriangleD3D.cpp">
       <Filter>d3dobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="d3dobjects\CubeD3D.cpp">
+      <Filter>d3dobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="DDSTextureLoader\DDSTextureLoader11.cpp">
+      <Filter>DDSTextureLoader11</Filter>
+    </ClCompile>
+    <ClCompile Include="d3dobjects\Sky.cpp">
+      <Filter>d3dobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="render\TextureManager.cpp">
+      <Filter>render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -176,16 +191,39 @@
     <ClInclude Include="d3dobjects\TriangleD3D.h">
       <Filter>d3dobjects</Filter>
     </ClInclude>
-    <ClInclude Include="d3dobjects\VertexMesh.h">
+    <ClInclude Include="d3dobjects\Mesh.h">
       <Filter>d3dobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dobjects\CubeD3D.h">
+      <Filter>d3dobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="DDSTextureLoader\DDSTextureLoader11.h">
+      <Filter>DDSTextureLoader11</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dobjects\Sky.h">
+      <Filter>d3dobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="render\TextureManager.h">
+      <Filter>render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="d3dobjects\shaders\ps_triangle.hlsl">
+    <FxCompile Include="d3dobjects\shaders\cube.hlsl">
       <Filter>shaders</Filter>
     </FxCompile>
-    <FxCompile Include="d3dobjects\shaders\vs_triangle.hlsl">
+    <FxCompile Include="d3dobjects\shaders\triangle.hlsl">
       <Filter>shaders</Filter>
     </FxCompile>
+    <FxCompile Include="d3dobjects\shaders\Sky.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="d3dobjects\shaders\globals.hlsli">
+      <Filter>window</Filter>
+    </None>
+    <None Include="globals.hlsli">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

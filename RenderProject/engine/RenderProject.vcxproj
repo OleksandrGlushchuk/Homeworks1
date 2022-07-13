@@ -143,7 +143,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="d3dobjects\CubeD3D.cpp" />
+    <ClCompile Include="d3dobjects\Sky.cpp" />
     <ClCompile Include="d3dobjects\TriangleD3D.cpp" />
+    <ClCompile Include="DDSTextureLoader\DDSTextureLoader11.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math\camera.cpp" />
     <ClCompile Include="math\Cube.cpp" />
@@ -152,14 +155,18 @@
     <ClCompile Include="math\vec3.cpp" />
     <ClCompile Include="render\d3d.cpp" />
     <ClCompile Include="render\globals.cpp" />
+    <ClCompile Include="render\TextureManager.cpp" />
     <ClCompile Include="window\controller.cpp" />
     <ClCompile Include="window\ParallelExecutor.cpp" />
     <ClCompile Include="window\Scene.cpp" />
     <ClCompile Include="window\window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="d3dobjects\CubeD3D.h" />
+    <ClInclude Include="d3dobjects\Sky.h" />
     <ClInclude Include="d3dobjects\TriangleD3D.h" />
-    <ClInclude Include="d3dobjects\VertexMesh.h" />
+    <ClInclude Include="d3dobjects\Mesh.h" />
+    <ClInclude Include="DDSTextureLoader\DDSTextureLoader11.h" />
     <ClInclude Include="include\win.hpp" />
     <ClInclude Include="include\win_def.hpp" />
     <ClInclude Include="include\win_undef.hpp" />
@@ -186,6 +193,7 @@
     <ClInclude Include="render\d3d.hpp" />
     <ClInclude Include="render\DxRes.hpp" />
     <ClInclude Include="render\globals.hpp" />
+    <ClInclude Include="render\TextureManager.h" />
     <ClInclude Include="window\controller.h" />
     <ClInclude Include="window\InputState.h" />
     <ClInclude Include="window\ParallelExecutor.h" />
@@ -194,14 +202,24 @@
     <ClInclude Include="window\window.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="d3dobjects\shaders\ps_triangle.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    <FxCompile Include="d3dobjects\shaders\cube.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="d3dobjects\shaders\vs_triangle.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    <FxCompile Include="d3dobjects\shaders\Sky.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="d3dobjects\shaders\triangle.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="d3dobjects\shaders\globals.hlsli" />
+    <None Include="globals.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

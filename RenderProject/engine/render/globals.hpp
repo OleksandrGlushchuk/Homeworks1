@@ -1,4 +1,7 @@
+#pragma once
+
 #include "DxRes.hpp"
+#include "TextureManager.h"
 
 namespace engine
 {
@@ -11,7 +14,10 @@ namespace engine
 		DxResPtr<ID3D11DeviceContext> m_devcon;
 		DxResPtr<ID3D11DeviceContext4> m_devcon4;
 		DxResPtr<ID3D11Debug> m_devdebug;
+		static Globals m_instance;
+		Globals() {}
 	public:
+		static Globals& instance();
 		void initD3D();
 		~Globals();
 	};

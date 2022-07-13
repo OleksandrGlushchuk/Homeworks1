@@ -10,6 +10,11 @@ extern "C"
 
 namespace engine
 {
+	Globals Globals::m_instance;
+	Globals& Globals::instance()
+	{
+		return m_instance;
+	}
 	void Globals::initD3D()
 	{
 		HRESULT result;

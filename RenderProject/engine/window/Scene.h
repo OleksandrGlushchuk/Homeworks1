@@ -1,22 +1,13 @@
 ﻿#pragma once
 #include "window.h"
-//#include "ParallelExecutor.h"
-//
-//#include "../math/camera.h"
-//#include "../math/vec3.h"
-//#include "../math/ray.h"
-//#include "../math/Intersection.h"
-//#include "../math/Light.h"
-//#include "../math/LightingPostProcess.h"
-//
-//#include "../objects/ObjectMover.h"
-//#include "../objects/Sphere.h"
-//#include "../objects/Floor.h"
-//#include "../objects/Cube.h"
-//#include "../objects/ObjRef.h"
-//#include "../objects/IntersectionQuery.h"
+#include "../math/camera.h"
+#include "../math/ray.h"
+#include "../objects/IntersectionQuery.h"
 
 #include "../d3dobjects/TriangleD3D.h"
+#include "../d3dobjects/CubeD3D.h"
+#include "../d3dobjects/Sky.h"
+#include <vector>
 
 //class Scene
 //{
@@ -72,9 +63,16 @@ namespace engine::windows
 {
 	class SceneD3D
 	{
-		Triangle triangle;
+		std::vector<Cube> cubes;
+		Sky sky;
+		Camera camera;
+		bool need_to_redraw;
 	public:
-		void DrawObjects();
+		void Redraw();
+		void Draw();
+
+		void findIntersectionInternal(const ray& _ray, ObjRef& outRef, math::Intersection& outNearest);
+		bool findIntersection(const ray& _ray, IntersectionQuery& query);
 		friend class ControllerD3D;
 	};
 }

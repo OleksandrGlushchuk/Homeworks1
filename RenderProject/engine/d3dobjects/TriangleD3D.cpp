@@ -1,10 +1,10 @@
 #include "TriangleD3D.h"
+
 void Triangle::CreateMesh()
 {
-	mesh[0].SetVertex(-1, -1, 1, 0, 0);
-	mesh[1].SetVertex(0, 1, 0, 1, 0);
-	mesh[2].SetVertex(1, -1, 0, 0, 1);
-
+	mesh[0].SetVertex(-1, -1, 2.1f, 0, 0);
+	mesh[1].SetVertex(0, 1, 2.1f, 0.5f, 1);
+	mesh[2].SetVertex(1, -1, 2.1f, 1, 0);
 
 	auto vertexBufferDesc = CD3D11_BUFFER_DESC(mesh.MeshSize(), D3D11_BIND_VERTEX_BUFFER);
 
@@ -18,34 +18,43 @@ void Triangle::CreateMesh()
 void Triangle::CreateShaders()
 {
 	engine::DxResPtr<ID3DBlob> error;
-	HRESULT result = D3DCompileFromFile(L"d3dobjects/shaders/vs_triangle.hlsl", nullptr, nullptr, "main", "vs_5_0", 0, 0, m_vertexBlob.reset(), error.reset());
+
+	HRESULT result = D3DCompileFromFile(L"d3dobjects/shaders/triangle.hlsl", nullptr, nullptr, "vs_main", "vs_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, m_vertexShaderBlob.reset(), error.reset());
 	ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
 
-	result = engine::s_device->CreateVertexShader(m_vertexBlob->GetBufferPointer(), m_vertexBlob->GetBufferSize(), nullptr, m_vertexShader.reset());
+	result = engine::s_device->CreateVertexShader(m_vertexShaderBlob->GetBufferPointer(), m_vertexShaderBlob->GetBufferSize(), nullptr, m_vertexShader.reset());
 	ALWAYS_ASSERT(result >= 0 && "CreateVertexShader");
 
-
-
-	result = D3DCompileFromFile(L"d3dobjects/shaders/ps_triangle.hlsl", nullptr, nullptr, "main", "ps_5_0", 0, 0, m_pixelBlob.reset(), error.reset());
+	result = D3DCompileFromFile(L"d3dobjects/shaders/triangle.hlsl", nullptr, nullptr, "ps_main", "ps_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, m_pixelShaderBlob.reset(), error.reset());
 	ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
 
-	result = engine::s_device->CreatePixelShader(m_pixelBlob->GetBufferPointer(), m_pixelBlob->GetBufferSize(), nullptr, m_pixelShader.reset());
+	result = engine::s_device->CreatePixelShader(m_pixelShaderBlob->GetBufferPointer(), m_pixelShaderBlob->GetBufferSize(), nullptr, m_pixelShader.reset());
 	ALWAYS_ASSERT(result >= 0 && "CreatePixelShader");
 }
 
 void Triangle::CreateInputLayout()
 {
+	/////----HINT----//////
+	/*typedef struct D3D11_INPUT_ELEMENT_DESC
+	{
+	LPCSTR SemanticName;
+	UINT SemanticIndex;
+	DXGI_FORMAT Format;
+	UINT InputSlot;
+	UINT AlignedByteOffset;
+	D3D11_INPUT_CLASSIFICATION InputSlotClass;
+	UINT InstanceDataStepRate;
+	} 	D3D11_INPUT_ELEMENT_DESC;*/
+
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"POSITION", 0, mesh.POSITION_FORMAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TEXCOORD", 0, mesh.TEXTURE_FORMAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
-	HRESULT result = engine::s_device->CreateInputLayout(layout, 2, m_vertexBlob->GetBufferPointer(), m_vertexBlob->GetBufferSize(), m_inputLayout.reset());
+	HRESULT result = engine::s_device->CreateInputLayout(layout, 2, m_vertexShaderBlob->GetBufferPointer(), m_vertexShaderBlob->GetBufferSize(), m_inputLayout.reset());
 	ALWAYS_ASSERT(result >= 0 && "CreateInputLayout");
 }
-
-
 
 void Triangle::Initialize()
 {
@@ -61,6 +70,10 @@ void Triangle::Draw()
 	engine::s_deviceContext->IASetInputLayout(m_inputLayout.ptr());
 	engine::s_deviceContext->VSSetShader(m_vertexShader.ptr(), nullptr, 0);
 	engine::s_deviceContext->PSSetShader(m_pixelShader.ptr(), nullptr, 0);
+
+	engine::TextureManager::instance().SetSamplerState("ss0");
+	engine::TextureManager::instance().SetTexture("brick");
+
 
 	UINT stride = mesh.VertexSize();
 	UINT offset = 0;

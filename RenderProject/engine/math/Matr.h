@@ -75,11 +75,25 @@ public:
 		return m;
 	}
 
+	inline Matr operator=(const Matr& m)
+	{
+		for (int i = 0; i < SIZE; i++)
+		{
+			for (int j = 0; j < SIZE; j++)
+			{
+				matr[i][j] = m.matr[i][j];
+			}
+		}
+		return *this;
+	}
+
 	inline float determinant() const;
 
 	inline Matr invert() const;
 
 	inline static Matr identity();
+
+	inline Matr transpose() const;
 
 	inline static void fill_row(float * const & row, const std::initializer_list<float> &init);
 
@@ -187,6 +201,20 @@ inline Matr<SIZE> Matr<SIZE>::identity()
 		}
 	}
 	return m;
+}
+
+template<int SIZE>
+inline Matr<SIZE> Matr<SIZE>::transpose() const
+{
+	Matr<SIZE> result;
+	for (int row = 0; row < SIZE; row++)
+	{
+		for (int col = 0; col < SIZE; col++)
+		{
+			result.matr[col][row] = matr[row][col];
+		}
+	}
+	return result;
 }
 
 template<int SIZE>
