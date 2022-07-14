@@ -1,16 +1,6 @@
-TextureCube tex : register(t0);
-SamplerState samplerState : register(s0);
+#include "globals.hlsli"
 
-cbuffer CameraBuffer : register(b0)
-{
-    matrix g_viewProj;
-    float3 BL;
-    float pad0;
-    float3 Right;
-    float pad1;
-    float3 Top;
-    float pad2;
-};
+TextureCube tex : register(t0);
 
 struct VS_INPUT
 {
@@ -27,12 +17,12 @@ PS_INPUT vs_main(VS_INPUT input)
 {
     PS_INPUT output;
     
-    output.dir = BL + (input.position.x + 1.f) * 0.5f * Right + (input.position.y + 1.f) * 0.5f * Top;
-    output.position = float4(input.position, 1.0f, 1.0);
+    output.dir = g_BL + (input.position.x + 1.f) * 0.5f * g_Right + (input.position.y + 1.f) * 0.5f * g_Top;
+    output.position = float4(input.position, 0, 1.0f);
     return output;
 }
 
 float4 ps_main(PS_INPUT input) : SV_Target
 {
-    return tex.Sample(samplerState, input.dir);
+    return tex.Sample(g_samplerState, input.dir);
 }

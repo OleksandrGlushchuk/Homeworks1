@@ -1,20 +1,12 @@
+#include "globals.hlsli"
+
+Texture2D shaderTexture : register(t0);
+
 cbuffer TransformMatrixBuffer : register(b1)
 {
-	matrix TransformMatrix;
+    matrix TransformMatrix;
 };
 
-cbuffer CameraBuffer : register(b0)
-{
-	matrix g_viewProj;
-	float3 BL;
-	float pad0;
-	float3 Right;
-	float pad1;
-	float3 Top;
-	float pad2;
-};
-
-//#include "globals.hlsli"
 
 struct VS_INPUT
 {
@@ -36,13 +28,9 @@ PS_INPUT vs_main(VS_INPUT input)
 	return output;
 }
 
-Texture2D shaderTexture : register(t0);
-SamplerState SampleType : register(s0);
-
-
 float4 ps_main(PS_INPUT input) : SV_TARGET
 {
 	float4 textureColor;
-	textureColor = shaderTexture.Sample(SampleType, input.tex_coord);
+    textureColor = shaderTexture.Sample(g_samplerState, input.tex_coord);
 	return textureColor;
 }

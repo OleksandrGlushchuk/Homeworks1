@@ -46,16 +46,3 @@ public:
 
 	friend class Controller;
 };
-
-struct CameraBuffer
-{
-	Matr<4> viewProj;
-	Vec3 BL;
-	float padding0 = 0;
-	Vec3 Right;
-	float padding1 = 0;
-	Vec3 Top;
-	float padding2 = 0;
-	CameraBuffer() {}
-	CameraBuffer(const Matr<4>& _viewProj, const Vec3& _BL, const Vec3& _Right, const Vec3& _Top) : viewProj(_viewProj), BL(_BL), Right(_Right), Top(_Top) {}
-};

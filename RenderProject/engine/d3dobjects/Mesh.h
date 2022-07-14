@@ -68,6 +68,27 @@ namespace MeshType
 		inline static const DXGI_FORMAT COLOR_FORMAT = DXGI_FORMAT_UNKNOWN;
 	};
 
+	struct Vertex3D
+	{
+		Vertex3D() {}
+
+		Vertex3D(const std::initializer_list<float>& init)
+		{
+			std::copy(init.begin(), init.end(), coord);
+		}
+
+		float coord[3];
+		inline void SetVertex(const float _x, const float _y, const float _z)
+		{
+			coord[0] = _x;
+			coord[1] = _y;
+			coord[2] = _z;
+		}
+		inline static const DXGI_FORMAT POSITION_FORMAT = DXGI_FORMAT_R32G32B32_FLOAT;
+		inline static const DXGI_FORMAT TEXTURE_FORMAT = DXGI_FORMAT_UNKNOWN;
+		inline static const DXGI_FORMAT COLOR_FORMAT = DXGI_FORMAT_UNKNOWN;
+	};
+
 	struct ColoredVertex3D
 	{
 		ColoredVertex3D() {}

@@ -12,6 +12,9 @@ class Sky
 	engine::DxResPtr<ID3D11InputLayout> m_inputLayout;
 
 	Mesh<3, MeshType::Vertex2D> fullScreenTriangle;
+
+	std::string m_samplerStateKey;
+
 	void CreateMesh();
 	void CreateShaders();
 	void CreateInputLayout();

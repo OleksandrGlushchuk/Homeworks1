@@ -63,7 +63,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		PostQuitMessage(0);
 		break;
 	case WM_KEYDOWN:
-		controller.OnKeyDown(wparam);
+		if ((HIWORD(lparam) & KF_REPEAT) != KF_REPEAT)
+			controller.OnKeyDown(wparam);
 		break;
 	case WM_KEYUP:
 		controller.OnKeyUp(wparam);

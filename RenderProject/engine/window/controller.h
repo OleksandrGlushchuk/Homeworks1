@@ -4,6 +4,7 @@
 #include "InputState.h"
 #include "../objects/IntersectionQuery.h"
 #include "../math/ray.h"
+#include "../d3dobjects/PerFrameBuffer.h"
 
 namespace engine::windows
 {
@@ -11,27 +12,32 @@ namespace engine::windows
 	{
 		engine::windows::WindowD3D& wnd;
 		engine::windows::SceneD3D& scene;
-		engine::DxResPtr<ID3D11Buffer> m_cameraBuffer;
+		engine::DxResPtr<ID3D11Buffer> m_perFrameBuffer;
 
+		WORD mouse_x = 0, mouse_y = 0;
 		InputState input_state;
 
+		//---OBJECT MOVER---//
 		ray ray_clicked_to_object;
 		IntersectionQuery nearest_clicked_object;
 		IntersectionQuery new_object_intersection;
 		float distance_object_to_camera;
-
-		bool need_to_rotate = false;
 		bool need_to_move_object = false;
+		//-----------------//
+
+		//---CAMERA MOVER---//
+		bool need_to_rotate = false;
 		bool need_to_speed_up = false;
 		float camera_move_offset_val = 0.05f;
 		float camera_angle_offset_val = 3.f;
 		float acceleration = 5.f;
-		WORD mouse_x = 0, mouse_y = 0;
 		Vec3 start_rotation = Vec3(0, 0, 1), end_rotation = Vec3(0, 0, 1), dir_rotation = Vec3(0, 0, 1);
+		//-----------------//
+
+		D3D11_FILTER sample_filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 
 		void InitCameraBuffer();
 		void UpdateCameraBuffer();
-		ray RayFromCameraToPixel(WORD x, WORD y);
 	public:
 		float delta_time;
 		ControllerD3D(engine::windows::WindowD3D &_wnd, engine::windows::SceneD3D& _scene) : wnd(_wnd), scene(_scene){}

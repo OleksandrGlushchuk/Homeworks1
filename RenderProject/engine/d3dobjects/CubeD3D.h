@@ -27,7 +27,8 @@ class Cube
 	bool math_intersection(math::Intersection& nearest, const ray& r) const;
 	Transform m_transform;
 
-	std::string m_samplerStateKey = "ss0";
+	std::string m_samplerStateKey;
+	const std::string* m_samplerStateKeyPtr = &engine::TextureManager::instance().GetGlobalSamplerStateKey();
 	std::string m_textureKey = "brick";
 public:
 	Cube(){}
@@ -52,7 +53,12 @@ public:
 	const Vec3& top() 		const { return m_transform.top(); }
 	const Vec3& forward() 	const { return m_transform.forward(); }
 
-	inline void SetSamplerState(const std::string& _samplerStateKey) { m_samplerStateKey = _samplerStateKey; }
+	inline void SetSamplerState(const std::string& _samplerStateKey) 
+	{ 
+		m_samplerStateKey = _samplerStateKey;
+		m_samplerStateKeyPtr = &m_samplerStateKey;
+
+	}
 	inline void SetTexture(const std::string& _textureKey) { m_textureKey = _textureKey; }
 
 	void UpdateTransformMatrixBuffer();

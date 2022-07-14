@@ -21,10 +21,13 @@ namespace engine
 	}
 	void TextureManager::SetSamplerState(const std::string& samplerStateKey)
 	{
+		ALWAYS_ASSERT(m_samplerState.find(samplerStateKey) != m_samplerState.end() && "Bad samplerStateKey");
 		engine::s_deviceContext->PSSetSamplers(0, 1, &m_samplerState[samplerStateKey].ptr());
+		
 	}
 	void TextureManager::SetTexture(const std::string& textureKey)
 	{
+		ALWAYS_ASSERT(m_shaderResourceView.find(textureKey) != m_shaderResourceView.end() && "Bad textureKey");
 		engine::s_deviceContext->PSSetShaderResources(0, 1, &m_shaderResourceView[textureKey].ptr());
 	}
 }

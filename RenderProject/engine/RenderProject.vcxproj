@@ -163,6 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dobjects\CubeD3D.h" />
+    <ClInclude Include="d3dobjects\PerFrameBuffer.h" />
     <ClInclude Include="d3dobjects\Sky.h" />
     <ClInclude Include="d3dobjects\TriangleD3D.h" />
     <ClInclude Include="d3dobjects\Mesh.h" />
@@ -218,8 +219,9 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="d3dobjects\shaders\globals.hlsli" />
-    <None Include="globals.hlsli" />
+    <None Include="d3dobjects\shaders\globals.hlsli">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

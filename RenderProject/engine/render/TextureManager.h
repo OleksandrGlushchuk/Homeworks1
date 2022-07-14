@@ -12,6 +12,8 @@ namespace engine
 		std::map<std::string, engine::DxResPtr<ID3D11SamplerState> > m_samplerState;
 		std::map<std::string, engine::DxResPtr<ID3D11ShaderResourceView> > m_shaderResourceView;
 
+		std::string m_globalSamplerStateKey;
+
 		static TextureManager m_instance;
 		TextureManager() {}
 	public:
@@ -21,5 +23,8 @@ namespace engine
 
 		void SetSamplerState(const std::string& samplerStateKey);
 		void SetTexture(const std::string& textureKey);
+
+		inline void SetGlobalSamplerStateKey(const std::string& _globalSamplerStateKey) { m_globalSamplerStateKey = _globalSamplerStateKey; }
+		inline const std::string& GetGlobalSamplerStateKey() const { return m_globalSamplerStateKey; }
 	};
 }

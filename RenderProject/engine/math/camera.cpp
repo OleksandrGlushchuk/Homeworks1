@@ -13,9 +13,18 @@ void Camera::updateCorners()
 	TopLeft = Vec3(-1, 1, 1);
 	BottomLeft = Vec3(-1, -1, 1); BottomRight = Vec3(1, -1, 1);
 
-	TopLeft.mult(m_viewProjInv, 1) / m_viewProjInv[3][3] - position();
-	BottomLeft.mult(m_viewProjInv, 1) / m_viewProjInv[3][3] - position();
-	BottomRight.mult(m_viewProjInv, 1) / m_viewProjInv[3][3] - position();
+	float w;
+	TopLeft.mult(m_viewProjInv, 1, &w);
+	TopLeft /= w;
+	TopLeft -= position();
+
+	BottomLeft.mult(m_viewProjInv, 1, &w);
+	BottomLeft /= w;
+	BottomLeft -= position();
+
+	BottomRight.mult(m_viewProjInv, 1, &w);
+	BottomRight /= w;
+	BottomRight -= position();
 
 	BR_M_BL = BottomRight - BottomLeft;
 	TL_M_BL = TopLeft - BottomLeft;
@@ -125,14 +134,14 @@ void Camera::addRelativeAngles(const Angles& angles)
 
 void Camera::setPerspective(float fov, float aspect, float p_near, float p_far)
 {
-	/*Matr<4>::fill_row(m_proj[0], { (1.f / tanf(fov / 2.f)) / aspect,	0,							0,									0 });
-	Matr<4>::fill_row(m_proj[1], { 0,									1.f / tanf(fov / 2.f),		0,									0 });
-	Matr<4>::fill_row(m_proj[2], { 0,									0,							p_near / (p_near - p_far),			1 });
-	Matr<4>::fill_row(m_proj[3], { 0,									0,							-p_far * p_near / (p_near - p_far),	0 });*/
-
 	Matr<4>::fill_row(m_proj[0], { (1.f / tanf(fov / 2.f)) / aspect,	0,							0,									0 });
 	Matr<4>::fill_row(m_proj[1], { 0,									1.f / tanf(fov / 2.f),		0,									0 });
+	Matr<4>::fill_row(m_proj[2], { 0,									0,							p_near / (p_near - p_far),			1 });
+	Matr<4>::fill_row(m_proj[3], { 0,									0,							-p_far * p_near / (p_near - p_far),	0 });
+
+	/*Matr<4>::fill_row(m_proj[0], { (1.f / tanf(fov / 2.f)) / aspect,	0,							0,									0 });
+	Matr<4>::fill_row(m_proj[1], { 0,									1.f / tanf(fov / 2.f),		0,									0 });
 	Matr<4>::fill_row(m_proj[2], { 0,									0,							p_far / (p_far - p_near),			1 });
-	Matr<4>::fill_row(m_proj[3], { 0,									0,							-p_near * p_far / (p_far - p_near),	0 });
+	Matr<4>::fill_row(m_proj[3], { 0,									0,							-p_near * p_far / (p_far - p_near),	0 });*/
 	m_projInv = m_proj.invert();
 }

@@ -1,5 +1,4 @@
 #include "controller.h"
-#include <DirectXMath.h>
 const float p_near = 0.01f, p_far = 10000.f, fovy = M_PI / 3.f;
 
 namespace engine::windows
@@ -7,31 +6,31 @@ namespace engine::windows
 	void ControllerD3D::InitCameraBuffer()
 	{
 		D3D11_BUFFER_DESC cameraBufferDesc;
-		cameraBufferDesc.ByteWidth = sizeof(CameraBuffer);
+		cameraBufferDesc.ByteWidth = sizeof(PerFrameBuffer);
 		cameraBufferDesc.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
 		cameraBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_FLAG::D3D11_CPU_ACCESS_WRITE;
 		cameraBufferDesc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_CONSTANT_BUFFER;
 		cameraBufferDesc.MiscFlags = 0;
 		cameraBufferDesc.StructureByteStride = 0;
 
-		HRESULT result = engine::s_device->CreateBuffer(&cameraBufferDesc, nullptr, m_cameraBuffer.reset());
+		HRESULT result = engine::s_device->CreateBuffer(&cameraBufferDesc, nullptr, m_perFrameBuffer.reset());
 		ALWAYS_ASSERT(result >= 0 && "CreateBuffer");
 	}
 
 	void ControllerD3D::UpdateCameraBuffer()
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedSubresource;
-		HRESULT result = engine::s_deviceContext->Map(m_cameraBuffer.ptr(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
+		HRESULT result = engine::s_deviceContext->Map(m_perFrameBuffer.ptr(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
 		ALWAYS_ASSERT(result >= 0 && "Map");
 
-		*(CameraBuffer*)(mappedSubresource.pData) = CameraBuffer(scene.camera.m_viewProj, scene.camera.BottomLeft, scene.camera.BR_M_BL, scene.camera.TL_M_BL);
-		engine::s_deviceContext->Unmap(m_cameraBuffer.ptr(), 0);
+		*(PerFrameBuffer*)(mappedSubresource.pData) = PerFrameBuffer(scene.camera.m_viewProj, scene.camera.BottomLeft, scene.camera.BR_M_BL, scene.camera.TL_M_BL, scene.camera.m_viewProjInv);
+		engine::s_deviceContext->Unmap(m_perFrameBuffer.ptr(), 0);
 	}
 
 	void ControllerD3D::DrawScene()
 	{
 		ProcessInput();
-		engine::s_deviceContext->VSSetConstantBuffers(0, 1, &m_cameraBuffer.ptr());
+		engine::s_deviceContext->VSSetConstantBuffers(0, 1, &m_perFrameBuffer.ptr());
 		scene.Draw();
 	}
 
@@ -54,6 +53,7 @@ namespace engine::windows
 
 	void ControllerD3D::InitSamplerStates()
 	{
+		{
 		D3D11_SAMPLER_DESC samplerDesc;
 		samplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_ANISOTROPIC;
 		samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
@@ -64,8 +64,61 @@ namespace engine::windows
 		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 		samplerDesc.MipLODBias = 0;
 
+		engine::TextureManager::instance().InitSamplerState(samplerDesc, "ss_a");
+		engine::TextureManager::instance().SetGlobalSamplerStateKey("ss_a");
+		}
 
-		engine::TextureManager::instance().InitSamplerState(samplerDesc, "ss0");
+		{
+			D3D11_SAMPLER_DESC samplerDesc;
+			samplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_POINT;
+			samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
+			samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
+			samplerDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
+			samplerDesc.MaxAnisotropy = 1;
+			samplerDesc.MinLOD = 0;
+			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+			samplerDesc.MipLODBias = 0;
+			engine::TextureManager::instance().InitSamplerState(samplerDesc, "ss_mmmp");
+		}
+
+		{
+			D3D11_SAMPLER_DESC samplerDesc;
+			samplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
+			samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
+			samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
+			samplerDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
+			samplerDesc.MaxAnisotropy = 1;
+			samplerDesc.MinLOD = 0;
+			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+			samplerDesc.MipLODBias = 0;
+			engine::TextureManager::instance().InitSamplerState(samplerDesc, "ss_mpmlmp");
+		}
+
+		{
+			D3D11_SAMPLER_DESC samplerDesc;
+			samplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+			samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
+			samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
+			samplerDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
+			samplerDesc.MaxAnisotropy = 1;
+			samplerDesc.MinLOD = 0;
+			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+			samplerDesc.MipLODBias = 0;
+			engine::TextureManager::instance().InitSamplerState(samplerDesc, "ss_mmlmp");
+		}
+		
+		{
+			D3D11_SAMPLER_DESC samplerDesc;
+			samplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+			samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
+			samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
+			samplerDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
+			samplerDesc.MaxAnisotropy = 1;
+			samplerDesc.MinLOD = 0;
+			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+			samplerDesc.MipLODBias = 0;
+			engine::TextureManager::instance().InitSamplerState(samplerDesc, "ss_mmml");
+		}
 	}
 
 	void ControllerD3D::InitTextures()
@@ -110,6 +163,7 @@ namespace engine::windows
 		scene.cubes[5] = Cube(Vec3(2.9f, 0.29f, 2.85f));
 		scene.cubes[5].Translate(Vec3(0.f, -2.65f, 3.0f));
 		scene.cubes[5].SetTexture("chess");
+
 
 		scene.cubes[6] = Cube(0.7f);
 		scene.cubes[6].Translate(Vec3(0.6f, -2.0f, 3.5f));
@@ -168,6 +222,31 @@ namespace engine::windows
 				offset.e[1] += camera_move_offset_val * ((need_to_speed_up) ? acceleration : 1.f);
 			}
 		}
+
+		//SAMPLE_FILTRATION
+		{
+			if (input_state['1'])
+			{
+				engine::TextureManager::instance().SetGlobalSamplerStateKey("ss_a");
+			}
+			if (input_state['2'])
+			{
+				engine::TextureManager::instance().SetGlobalSamplerStateKey("ss_mmmp");
+			}
+			if (input_state['3'])
+			{
+				engine::TextureManager::instance().SetGlobalSamplerStateKey("ss_mpmlmp");
+			}
+			if (input_state['4'])
+			{
+				engine::TextureManager::instance().SetGlobalSamplerStateKey("ss_mmlmp");
+			}
+			if (input_state['5'])
+			{
+				engine::TextureManager::instance().SetGlobalSamplerStateKey("ss_mmml");
+			}
+		}
+
 		RotateCamera();
 		if (scene.need_to_redraw)
 		{
@@ -224,19 +303,6 @@ namespace engine::windows
 		need_to_rotate = false;
 	}
 
-	ray ControllerD3D::RayFromCameraToPixel(WORD x, WORD y)
-	{
-		ray r;
-		r.origin = Vec3(
-			(x + 0.5f) / (wnd.screen.right),
-			1.f - (y + 0.5f) / (wnd.screen.bottom),
-			1.f
-		);
-		r.origin = scene.camera.BottomLeft + scene.camera.BR_M_BL * r.origin[0] + scene.camera.TL_M_BL * r.origin[1];
-		r.direction = (r.origin - scene.camera.position()).normalized();
-		return r;
-	}
-
 	void ControllerD3D::OnRMouseDown(WORD x, WORD y)
 	{
 		mouse_x = x;
@@ -247,10 +313,10 @@ namespace engine::windows
 		float xx = (x + 0.5f) / ((wnd.screen.right) / 2.f) - 1.f;
 		float yy = (y + 0.5f) / ((wnd.screen.bottom) / (-2.f)) + 1.f;
 
-		ray_clicked_to_object.origin = Vec3(xx, yy, 0);
+		ray_clicked_to_object.origin = Vec3(xx, yy, 1);
 
 		float w;
-		ray_clicked_to_object.origin.mult(scene.camera.m_viewProjInv, 1, &w) / w;
+		ray_clicked_to_object.origin.mult(scene.camera.m_viewProjInv, 1, &w);
 		ray_clicked_to_object.origin /= w;
 
 		ray_clicked_to_object.direction = ray_clicked_to_object.origin - scene.camera.position();
@@ -278,7 +344,7 @@ namespace engine::windows
 			float xx = (x + 0.5f) / ((wnd.screen.right) / 2.f) - 1.f;
 			float yy = (y + 0.5f) / ((wnd.screen.bottom) / (-2.f)) + 1.f;
 
-			ray_clicked_to_object.origin = Vec3(xx, yy, 0);
+			ray_clicked_to_object.origin = Vec3(xx, yy, 1);
 
 			float w;
 			ray_clicked_to_object.origin.mult(scene.camera.m_viewProjInv, 1, &w);

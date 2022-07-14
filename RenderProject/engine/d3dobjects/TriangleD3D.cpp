@@ -19,13 +19,13 @@ void Triangle::CreateShaders()
 {
 	engine::DxResPtr<ID3DBlob> error;
 
-	HRESULT result = D3DCompileFromFile(L"d3dobjects/shaders/triangle.hlsl", nullptr, nullptr, "vs_main", "vs_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, m_vertexShaderBlob.reset(), error.reset());
+	HRESULT result = D3DCompileFromFile(L"d3dobjects/shaders/triangle.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "vs_main", "vs_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, m_vertexShaderBlob.reset(), error.reset());
 	ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
 
 	result = engine::s_device->CreateVertexShader(m_vertexShaderBlob->GetBufferPointer(), m_vertexShaderBlob->GetBufferSize(), nullptr, m_vertexShader.reset());
 	ALWAYS_ASSERT(result >= 0 && "CreateVertexShader");
 
-	result = D3DCompileFromFile(L"d3dobjects/shaders/triangle.hlsl", nullptr, nullptr, "ps_main", "ps_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, m_pixelShaderBlob.reset(), error.reset());
+	result = D3DCompileFromFile(L"d3dobjects/shaders/triangle.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "ps_main", "ps_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, m_pixelShaderBlob.reset(), error.reset());
 	ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
 
 	result = engine::s_device->CreatePixelShader(m_pixelShaderBlob->GetBufferPointer(), m_pixelShaderBlob->GetBufferSize(), nullptr, m_pixelShader.reset());

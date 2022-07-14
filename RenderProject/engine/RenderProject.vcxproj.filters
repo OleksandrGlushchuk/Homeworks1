@@ -206,6 +206,9 @@
     <ClInclude Include="render\TextureManager.h">
       <Filter>render</Filter>
     </ClInclude>
+    <ClInclude Include="d3dobjects\PerFrameBuffer.h">
+      <Filter>d3dobjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="d3dobjects\shaders\cube.hlsl">
@@ -220,9 +223,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="d3dobjects\shaders\globals.hlsli">
-      <Filter>window</Filter>
-    </None>
-    <None Include="globals.hlsli">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>
