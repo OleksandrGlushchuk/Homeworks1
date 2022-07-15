@@ -298,6 +298,7 @@ namespace engine::windows
 				}
 				if (need_to_rotate_object)
 				{
+					rotate_angles.pitch *= delta_time; rotate_angles.roll *= delta_time; rotate_angles.yaw *= delta_time;
 					if (need_to_rotate_object_relative_to_camera_axes)
 					{
 						nearest_clicked_object.rotator->rotate(rotate_angles, scene.camera.right(), scene.camera.top(), scene.camera.forward());
@@ -314,7 +315,7 @@ namespace engine::windows
 		RotateCamera();
 		if (scene.need_to_redraw)
 		{
-			moveCamera(/*delta_time * */offset, angle);
+			moveCamera(delta_time * offset, angle);
 			UpdateCameraBuffer();
 			if (need_to_move_object)
 			{
@@ -356,7 +357,7 @@ namespace engine::windows
 		mouse_y = y;
 		end_rotation.e[0] = x;
 		end_rotation.e[1] = y;
-		dir_rotation = /*delta_time **/ 0.02f * (start_rotation - end_rotation) * 2.f * M_PI / wnd.screen.right;
+		dir_rotation = delta_time * (start_rotation - end_rotation) * 2.f * M_PI / wnd.screen.right;
 		scene.need_to_redraw = true;
 	}
 

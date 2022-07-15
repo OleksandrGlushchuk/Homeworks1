@@ -21,11 +21,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 	window = engine::windows::WindowD3D(L"homework-5", hinstance, WndProc);
 	controller.InitScene();
 	window.Show();
-	float delta_time;
+
 	MSG msg;
-	//Timer timer;
-	//timer.start_timer();
-	//float delta_time;
+	Timer timer;
+	timer.start_timer();
+	float delta_time;
 	while (true)
 	{
 		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -37,15 +37,16 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 			DispatchMessage(&msg);
 
 		}
-		//delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count();
-		//if (timer.FrameTimeElapsed(FRAME_DURATION))
+		delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count();
+		if (timer.FrameTimeElapsed(FRAME_DURATION))
 		{
 
 			window.BeginFrame();
 			controller.DrawScene();
 			window.EndFrame();
+			controller.delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count() - delta_time + FRAME_DURATION;
 		}
-		//delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count() - delta_time + 0.01f;
+		
 		
 		std::this_thread::yield();
 	}

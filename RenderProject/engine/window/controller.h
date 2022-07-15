@@ -25,18 +25,21 @@ namespace engine::windows
 		bool need_to_move_object = false;
 		//-----------------//
 
+		//---OBJECT ROTATOR---//
+		float object_rotate_angle = 0.2f;
+		bool need_to_rotate_object = false;
+		bool need_to_rotate_object_relative_to_camera_axes = false;
+		//-----------------//
+
 		//---CAMERA MOVER---//
 		bool need_to_rotate = false;
 		bool need_to_speed_up = false;
-		float camera_move_offset_val = 0.05f;
+		float camera_move_offset_val = 1.0f;
 		float camera_angle_offset_val = 3.f;
 		float acceleration = 5.f;
 		Vec3 start_rotation = Vec3(0, 0, 1), end_rotation = Vec3(0, 0, 1), dir_rotation = Vec3(0, 0, 1);
 		//-----------------//
 
-		float object_rotate_angle = 0.01f;
-		bool need_to_rotate_object = false;
-		bool need_to_rotate_object_relative_to_camera_axes = false;
 
 		void InitCameraBuffer();
 		void UpdateCameraBuffer();
