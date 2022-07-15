@@ -41,9 +41,15 @@ public:
 
 	void Rotate(const Quaternion& q);
 
+	void Rotate(const Angles& angles, const Vec3& _right, const Vec3& _top, const Vec3& _forward);
+
 	void Translate(const Vec3& dv);
 
 	void SetPosition(const Vec3& pos);
+
+	void TranslateRelative(const Vec3& dv);
+
+	void Scale(const Vec3& scale);
 
 	bool intersects(const ray& _ray, ObjRef& outRef, math::Intersection& outNearest);
 
@@ -52,6 +58,7 @@ public:
 	const Vec3& right() 	const { return m_transform.right(); }
 	const Vec3& top() 		const { return m_transform.top(); }
 	const Vec3& forward() 	const { return m_transform.forward(); }
+	const Vec3& position() const { return m_transform.position; }
 
 	inline void SetSamplerState(const std::string& _samplerStateKey) 
 	{ 

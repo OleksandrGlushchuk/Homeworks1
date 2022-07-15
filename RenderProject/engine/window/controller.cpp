@@ -247,6 +247,70 @@ namespace engine::windows
 			}
 		}
 
+		//OBJECT_ROTATION
+		{
+			if (input_state['C'])
+			{
+				if (need_to_rotate_object_relative_to_camera_axes)
+				{
+					need_to_rotate_object_relative_to_camera_axes = false;
+					input_state['C'] = false;
+				}
+				else
+				{
+					need_to_rotate_object_relative_to_camera_axes = true;
+					input_state['C'] = false;
+				}
+			}
+
+			if (need_to_move_object)
+			{
+				Angles rotate_angles(0, 0, 0);
+				if (input_state[VK_LEFT])
+				{
+					rotate_angles.yaw -= object_rotate_angle;
+					need_to_rotate_object = true;
+				}
+				if (input_state[VK_RIGHT])
+				{
+					rotate_angles.yaw += object_rotate_angle;
+					need_to_rotate_object = true;
+				}
+				if (input_state[VK_UP])
+				{
+					rotate_angles.pitch -= object_rotate_angle;
+					need_to_rotate_object = true;
+				}
+				if (input_state[VK_DOWN])
+				{
+					rotate_angles.pitch += object_rotate_angle;
+					need_to_rotate_object = true;
+				}
+				if (input_state[VK_CONTROL])
+				{
+					rotate_angles.roll -= object_rotate_angle;
+					need_to_rotate_object = true;
+				}
+				if (input_state[VK_SPACE])
+				{
+					rotate_angles.roll += object_rotate_angle;
+					need_to_rotate_object = true;
+				}
+				if (need_to_rotate_object)
+				{
+					if (need_to_rotate_object_relative_to_camera_axes)
+					{
+						nearest_clicked_object.rotator->rotate(rotate_angles, scene.camera.right(), scene.camera.top(), scene.camera.forward());
+					}
+					else
+					{
+						nearest_clicked_object.rotator->rotate(rotate_angles, nearest_clicked_object.rotator->get_right(), nearest_clicked_object.rotator->get_top(), nearest_clicked_object.rotator->get_forward());
+					}
+					need_to_rotate_object = false;
+				}
+			}
+		}
+
 		RotateCamera();
 		if (scene.need_to_redraw)
 		{

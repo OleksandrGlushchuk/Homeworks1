@@ -6,7 +6,7 @@ void Triangle::CreateMesh()
 	mesh[1].SetVertex(0, 1, 2.1f, 0.5f, 1);
 	mesh[2].SetVertex(1, -1, 2.1f, 1, 0);
 
-	auto vertexBufferDesc = CD3D11_BUFFER_DESC(mesh.MeshSize(), D3D11_BIND_VERTEX_BUFFER);
+	auto vertexBufferDesc = CD3D11_BUFFER_DESC(mesh.MeshSize(), D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE::D3D11_USAGE_IMMUTABLE);
 
 	D3D11_SUBRESOURCE_DATA vertexData = { 0 };
 	vertexData.pSysMem = mesh.GetPointerToVertices();

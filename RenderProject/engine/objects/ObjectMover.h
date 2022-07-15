@@ -1,49 +1,14 @@
 #pragma once
 #include "../math/vec3.h"
 #include "../d3dobjects/CubeD3D.h"
-//#include "../math/Light.h"
-//#include "Cube.h"
-//#include "sphere.h"
 class IObjectMover
 {
 public:
 	virtual void move(const Vec3& offset) = 0;
+	virtual void move_relative(const Vec3& offset) = 0;
+	virtual void set_position(const Vec3& pos) = 0;
+	virtual const Vec3& get_position() const = 0;
 };
-
-//class SphereMover : public IObjectMover
-//{
-//public:
-//	SphereMover(Sphere* _sphere) : sphere(_sphere) {}
-//	virtual void move(const Vec3& offset) override
-//	{
-//		sphere->center += offset;
-//	}
-//	Sphere* sphere;
-//};
-//
-//class Sphere_Point_Light_Mover : public IObjectMover
-//{
-//public:
-//	Sphere_Point_Light_Mover(Sphere_Point_Light* _spl):spl(_spl){}
-//	virtual void move(const Vec3& offset) override
-//	{
-//		spl->sphere.center += offset;
-//		spl->light.pos += offset;
-//	}
-//	Sphere_Point_Light* spl;
-//};
-//
-//class Sphere_Spot_Light_Mover : public IObjectMover
-//{
-//public:
-//	Sphere_Spot_Light_Mover(Sphere_Spot_Light* _ssl) :ssl(_ssl) {}
-//	virtual void move(const Vec3& offset) override
-//	{
-//		ssl->sphere.center += offset;
-//		ssl->light.pos += offset;
-//	}
-//	Sphere_Spot_Light* ssl;
-//};
 
 class CubeMover : public IObjectMover
 {
@@ -53,5 +18,20 @@ public:
 	{
 		cube->Translate(offset);
 	}
+	virtual void move_relative(const Vec3& offset) override
+	{
+		cube->TranslateRelative(offset);
+	}
+	virtual void set_position(const Vec3& pos) override
+	{
+		cube->SetPosition(pos);
+	}
+	virtual const Vec3& get_position() const override
+	{
+		return cube->position();
+	}
+
+
+
 	Cube* cube;
 };

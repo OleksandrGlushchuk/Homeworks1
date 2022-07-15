@@ -209,6 +209,9 @@
     <ClInclude Include="d3dobjects\PerFrameBuffer.h">
       <Filter>d3dobjects</Filter>
     </ClInclude>
+    <ClInclude Include="objects\ObjectRotator.h">
+      <Filter>objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="d3dobjects\shaders\cube.hlsl">

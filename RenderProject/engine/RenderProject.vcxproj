@@ -189,6 +189,7 @@
     <ClInclude Include="objects\IntersectionQuery.h" />
     <ClInclude Include="objects\Material.h" />
     <ClInclude Include="objects\ObjectMover.h" />
+    <ClInclude Include="objects\ObjectRotator.h" />
     <ClInclude Include="objects\ObjRef.h" />
     <ClInclude Include="objects\Sphere.h" />
     <ClInclude Include="render\d3d.hpp" />

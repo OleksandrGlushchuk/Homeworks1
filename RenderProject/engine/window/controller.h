@@ -34,7 +34,9 @@ namespace engine::windows
 		Vec3 start_rotation = Vec3(0, 0, 1), end_rotation = Vec3(0, 0, 1), dir_rotation = Vec3(0, 0, 1);
 		//-----------------//
 
-		D3D11_FILTER sample_filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		float object_rotate_angle = 0.01f;
+		bool need_to_rotate_object = false;
+		bool need_to_rotate_object_relative_to_camera_axes = false;
 
 		void InitCameraBuffer();
 		void UpdateCameraBuffer();

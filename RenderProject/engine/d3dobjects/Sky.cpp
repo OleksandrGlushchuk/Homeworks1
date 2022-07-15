@@ -6,7 +6,7 @@ void Sky::CreateMesh()
 	fullScreenTriangle[1].SetVertex(-1, 3);
 	fullScreenTriangle[2].SetVertex(3, -1);
 
-	auto bufferDesc = CD3D11_BUFFER_DESC(fullScreenTriangle.MeshSize(), D3D11_BIND_FLAG::D3D11_BIND_VERTEX_BUFFER);
+	auto bufferDesc = CD3D11_BUFFER_DESC(fullScreenTriangle.MeshSize(), D3D11_BIND_FLAG::D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE::D3D11_USAGE_IMMUTABLE);
 	D3D11_SUBRESOURCE_DATA vertexData = { 0 };
 	vertexData.pSysMem = fullScreenTriangle.GetPointerToVertices();
 	HRESULT result = engine::s_device->CreateBuffer(&bufferDesc, &vertexData , m_vertexBuffer.reset());

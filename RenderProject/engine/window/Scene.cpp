@@ -444,6 +444,7 @@ bool engine::windows::SceneD3D::findIntersection(const ray& _ray, IntersectionQu
 			if (query.mover == nullptr)
 			{
 				query.mover.reset(new CubeMover(cube));
+				query.rotator.reset(new CubeRotator(cube));
 			}
 			break;
 		}

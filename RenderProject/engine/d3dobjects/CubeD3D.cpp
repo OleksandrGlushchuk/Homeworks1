@@ -3,23 +3,23 @@
 
 Mesh<36, MeshType::TexturedVertex3D> Cube::m_mesh = Mesh<36, MeshType::TexturedVertex3D>({
 	//FRONT
-	{-1, -1, -1, 0, 0}, {-1, 1, -1, 0, 1 }, {1, -1, -1, 1, 0},
-	{-1, 1, -1, 0, 1}, {1, 1, -1, 1, 1}, {1, -1, -1, 1, 0},
+	{-0.5f, -0.5f, -0.5f, 0, 1}, {-0.5f, 0.5f, -0.5f, 0, 0 }, {0.5f, -0.5f, -0.5f, 1, 1},
+	{-0.5f, 0.5f, -0.5f, 0, 0}, {0.5f, 0.5f, -0.5f, 1, 0}, {0.5f, -0.5f, -0.5f, 1, 1},
 	//BACK
-	{-1, -1, 1, 1, 0}, {1, -1, 1, 0, 0}, {-1, 1, 1, 1, 1},
-	{-1, 1, 1, 1, 1}, {1, -1, 1, 0, 0}, {1, 1, 1, 0, 1},
+	{-0.5f, -0.5f, 0.5f, 1, 1}, {0.5f, -0.5f, 0.5f, 0, 1}, {-0.5f, 0.5f, 0.5f, 1, 0},
+	{-0.5f, 0.5f, 0.5f, 1, 0}, {0.5f, -0.5f, 0.5f, 0, 1}, {0.5f, 0.5f, 0.5f, 0, 0},
 	//UP
-	{-1, 1, -1, 0, 0}, {-1, 1, 1, 0, 1}, {1, 1, -1, 1, 0},
-	{1, 1, -1, 1, 0}, {-1, 1, 1, 0, 1}, {1, 1, 1, 1, 1},
+	{-0.5f, 0.5f, -0.5f, 0, 1}, {-0.5f, 0.5f, 0.5f, 0, 0}, {0.5f, 0.5f, -0.5f, 1, 1},
+	{0.5f, 0.5f, -0.5f, 1, 1}, {-0.5f, 0.5f, 0.5f, 0, 0}, {0.5f, 0.5f, 0.5f, 1, 0},
 	//DOWN
-	{-1, -1, -1, 0, 1}, {1, -1, -1, 1, 1}, {-1, -1, 1, 0, 0},
-	{-1, -1, 1, 0, 0}, {1, -1, -1, 1, 1}, {1, -1, 1, 1, 0},
+	{-0.5f, -0.5f, -0.5f, 0, 0}, {0.5f, -0.5f, -0.5f, 1, 0}, {-0.5f, -0.5f, 0.5f, 0, 1},
+	{-0.5f, -0.5f, 0.5f, 0, 1}, {0.5f, -0.5f, -0.5f, 1, 0}, {0.5f, -0.5f, 0.5f, 1, 1},
 	//LEFT
-	{-1, -1, 1, 0, 0}, {-1, 1, 1, 0, 1}, {-1, 1, -1, 1, 1},
-	{-1, 1, -1, 1, 1}, {-1, -1, -1, 1, 0}, {-1, -1, 1, 0, 0},
+	{-0.5f, -0.5f, 0.5f, 0, 1}, {-0.5f, 0.5f, 0.5f, 0, 0}, {-0.5f, 0.5f, -0.5f, 1, 0},
+	{-0.5f, 0.5f, -0.5f, 1, 0}, {-0.5f, -0.5f, -0.5f, 1, 1}, {-0.5f, -0.5f, 0.5f, 0, 1},
 	//RIGHT
-	{1, 1, -1, 0, 1}, {1, 1, 1, 1, 1}, {1, -1, 1, 1, 0},
-	{1, -1, 1, 1, 0}, {1, -1, -1, 0, 0}, {1, 1, -1, 0, 1}
+	{0.5f, 0.5f, -0.5f, 0, 0}, {0.5f, 0.5f, 0.5f, 1, 0}, {0.5f, -0.5f, 0.5f, 1, 1},
+	{0.5f, -0.5f, 0.5f, 1, 1}, {0.5f, -0.5f, -0.5f, 0, 1}, {0.5f, 0.5f, -0.5f, 0, 0}
 	});
 
 engine::DxResPtr<ID3D11Buffer> Cube::vertexBuffer;
@@ -27,7 +27,7 @@ engine::DxResPtr<ID3D11Buffer> Cube::vertexBuffer;
 Cube::Cube(float size)
 {
 	m_transform.position = Vec3(0, 0, 0);
-	m_transform.scale = Vec3(size / 2.f, size / 2.f, size / 2.f);
+	m_transform.scale = Vec3(size, size, size);
 	m_transform.UpdateMatrices();
 	Initialize();
 }
@@ -35,14 +35,14 @@ Cube::Cube(float size)
 Cube::Cube(const Vec3& scale)
 {
 	m_transform.position = Vec3(0, 0, 0);
-	m_transform.scale = scale / 2.f;
+	m_transform.scale = scale;
 	m_transform.UpdateMatrices();
 	Initialize();
 }
 
 void Cube::CreateMesh()
 {
-	auto vertexBufferDesc = CD3D11_BUFFER_DESC(m_mesh.MeshSize(), D3D11_BIND_VERTEX_BUFFER);
+	auto vertexBufferDesc = CD3D11_BUFFER_DESC(m_mesh.MeshSize(), D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE::D3D11_USAGE_IMMUTABLE);
 	D3D11_SUBRESOURCE_DATA vertexData = { 0 };
 	vertexData.pSysMem = m_mesh.GetPointerToVertices();
 	HRESULT result = engine::s_device->CreateBuffer(&vertexBufferDesc, &vertexData, Cube::vertexBuffer.reset());
@@ -165,10 +165,34 @@ bool Cube::intersects(const ray& _ray, ObjRef& outRef, math::Intersection& outNe
 	return found;
 }
 
+void Cube::TranslateRelative(const Vec3& dv)
+{
+	m_transform.position += dv.x() * m_transform.right() + dv.y() * m_transform.top() + dv.z() * m_transform.forward();
+	m_transform.UpdateMatrices();
+	UpdateTransformMatrixBuffer();
+}
+
 void Cube::Rotate(const Quaternion& q)
 {
 	m_transform.rotation *= q;
 	m_transform.rotation.normalize();
+	m_transform.UpdateMatrices();
+	UpdateTransformMatrixBuffer();
+}
+
+void Cube::Rotate(const Angles& angles, const Vec3& _right, const Vec3& _top, const Vec3& _forward)
+{
+	m_transform.rotation *= Quaternion(angles.roll, _forward);
+	m_transform.rotation *= Quaternion(angles.pitch, _right);
+	m_transform.rotation *= Quaternion(angles.yaw, _top);
+	m_transform.rotation.normalize();
+	m_transform.UpdateMatrices();
+	UpdateTransformMatrixBuffer();
+}
+
+void Cube::Scale(const Vec3& scale)
+{
+	m_transform.scale *= scale;
 	m_transform.UpdateMatrices();
 	UpdateTransformMatrixBuffer();
 }
