@@ -8,23 +8,19 @@ namespace engine
 	class TextureManager
 	{
 		engine::DxResPtr<ID3D11Resource> m_texture;
-		
-		std::map<std::string, engine::DxResPtr<ID3D11SamplerState> > m_samplerState;
 		std::map<std::string, engine::DxResPtr<ID3D11ShaderResourceView> > m_shaderResourceView;
 
-		std::string m_globalSamplerStateKey;
-
-		static TextureManager m_instance;
+		static TextureManager *s_instance;
 		TextureManager() {}
 	public:
+		static void init();
+		static void deinit();
 		static TextureManager& instance();
 		void InitSamplerState(D3D11_SAMPLER_DESC& samplerDesc, const std::string& samplerStateKey);
 		void InitTexture(const std::wstring& fileName, const std::string& textureKey);
 
-		void SetSamplerState(const std::string& samplerStateKey);
-		void SetTexture(const std::string& textureKey);
+		void SetGlobalSamplerState(const std::string& _globalSamplerStateKey);
 
-		inline void SetGlobalSamplerStateKey(const std::string& _globalSamplerStateKey) { m_globalSamplerStateKey = _globalSamplerStateKey; }
-		inline const std::string& GetGlobalSamplerStateKey() const { return m_globalSamplerStateKey; }
+		const engine::DxResPtr<ID3D11ShaderResourceView>& GetTexture(const std::string& textureKey);
 	};
 }

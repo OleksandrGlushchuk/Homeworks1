@@ -11,14 +11,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 
 
-engine::windows::WindowD3D window;
-engine::windows::SceneD3D scene;
-engine::windows::ControllerD3D controller(window, scene);
+engine::windows::Window window;
+engine::windows::Scene scene;
+engine::windows::Controller controller(window, scene);
 
 int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPWSTR cmdline, _In_ int cmdshow)
 {
+	engine::init();
+
 	engine::Globals::instance().initD3D();
-	window = engine::windows::WindowD3D(L"homework-5", hinstance, WndProc);
+	window = engine::windows::Window(L"homework-5", hinstance, WndProc);
 	controller.InitScene();
 	window.Show();
 
@@ -31,6 +33,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			if (msg.message == WM_QUIT) {
+				engine::deinit();
 				return msg.wParam;
 			}
 			TranslateMessage(&msg);
@@ -50,6 +53,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 		
 		std::this_thread::yield();
 	}
+	engine::deinit();
 	return TRUE;
 }
 

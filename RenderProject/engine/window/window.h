@@ -4,7 +4,7 @@
 
 namespace engine::windows
 {
-	class WindowD3D
+	class Window
 	{
 		HWND m_wndHandle = nullptr;
 		DxResPtr<IDXGISwapChain1> m_swapChain1;
@@ -28,8 +28,8 @@ namespace engine::windows
 
 		void initDepthStencilBuffer();
 	public:
-		WindowD3D() {}
-		WindowD3D(LPCWSTR name, HINSTANCE hinstance, WNDPROC WndProc, WNDCLASS _wndclass =
+		Window() {}
+		Window(LPCWSTR name, HINSTANCE hinstance, WNDPROC WndProc, WNDCLASS _wndclass =
 			{ CS_HREDRAW | CS_VREDRAW | CS_OWNDC,
 			0, 0, 0, 0, 0,
 			LoadCursor(NULL, IDC_ARROW), 0, 0, L"MyClass" }) : wndclass(_wndclass)
@@ -58,6 +58,6 @@ namespace engine::windows
 
 		void OnResize();
 
-		friend class ControllerD3D;
+		friend class Controller;
 	};
 }

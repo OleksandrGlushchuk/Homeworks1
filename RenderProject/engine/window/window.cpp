@@ -2,7 +2,7 @@
 
 namespace engine::windows
 {
-	void WindowD3D::initSwapchain()
+	void Window::initSwapchain()
 	{
 		DXGI_SWAP_CHAIN_DESC1 desc;
 
@@ -25,7 +25,7 @@ namespace engine::windows
 		ALWAYS_ASSERT(res >= 0 && "CreateSwapChainForHwnd");
 	}
 
-	void WindowD3D::initBackBuffer() // may be called after resizing
+	void Window::initBackBuffer() // may be called after resizing
 	{
 		if (m_backBuffer.valid())
 		{
@@ -42,13 +42,13 @@ namespace engine::windows
 		m_backBuffer->GetDesc(&m_backbufferDesc);
 	}
 
-	void WindowD3D::initRenderTargetView()
+	void Window::initRenderTargetView()
 	{
 		HRESULT result = s_device->CreateRenderTargetView1(m_backBuffer, nullptr, m_renderTargetView1.reset());
 		ALWAYS_ASSERT(result >= 0 && "CreateRenderTargetView1");
 	}
 
-	void WindowD3D::initDepthStencilResource()
+	void Window::initDepthStencilResource()
 	{
 		D3D11_TEXTURE2D_DESC depthBufferDesc;
 
@@ -68,7 +68,7 @@ namespace engine::windows
 		ALWAYS_ASSERT(result >= 0 && "CreateTexture2D");
 	}
 
-	void WindowD3D::initDepthStencilState()
+	void Window::initDepthStencilState()
 	{
 
 		D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
@@ -94,7 +94,7 @@ namespace engine::windows
 		ALWAYS_ASSERT(result >= 0 && "CreateDepthStencilState");
 	}
 
-	void WindowD3D::initDepthStencilView()
+	void Window::initDepthStencilView()
 	{
 		D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 		memset(&depthStencilViewDesc, 0, sizeof(depthStencilViewDesc));
@@ -106,14 +106,14 @@ namespace engine::windows
 		ALWAYS_ASSERT(result >= 0 && "CreateDepthStencilView");
 	}
 
-	void WindowD3D::initDepthStencilBuffer()
+	void Window::initDepthStencilBuffer()
 	{
 		initDepthStencilResource();
 		initDepthStencilState();
 		initDepthStencilView();
 	}
 
-	void WindowD3D::BeginFrame()
+	void Window::BeginFrame()
 	{
 		engine::s_deviceContext->OMSetDepthStencilState(m_depthStencilState.ptr(), 1);
 		engine::s_deviceContext->OMSetRenderTargets(1, (ID3D11RenderTargetView* const*)&m_renderTargetView1.ptr(), m_depthStencilView.ptr());
@@ -127,13 +127,13 @@ namespace engine::windows
 
 	}
 
-	void WindowD3D::EndFrame()
+	void Window::EndFrame()
 	{
 		//Swapping buffers
 		m_swapChain1->Present(1, 0);
 	}
 
-	void WindowD3D::OnResize()
+	void Window::OnResize()
 	{
 		GetClientRect(m_wndHandle, &screen);
 		initDepthStencilResource();

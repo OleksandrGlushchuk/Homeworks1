@@ -1,7 +1,7 @@
 #pragma once
 #include "../math/vec3.h"
 #include "../math/Quaternion.h"
-#include "../d3dobjects/CubeD3D.h"
+#include "../objects/Cube.h"
 
 class IObjectRotator
 {

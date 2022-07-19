@@ -4,15 +4,13 @@
 #include "InputState.h"
 #include "../objects/IntersectionQuery.h"
 #include "../math/ray.h"
-#include "../d3dobjects/PerFrameBuffer.h"
 
 namespace engine::windows
 {
-	class ControllerD3D
+	class Controller
 	{
-		engine::windows::WindowD3D& wnd;
-		engine::windows::SceneD3D& scene;
-		engine::DxResPtr<ID3D11Buffer> m_perFrameBuffer;
+		engine::windows::Window& wnd;
+		engine::windows::Scene& scene;
 
 		WORD mouse_x = 0, mouse_y = 0;
 		InputState input_state;
@@ -40,15 +38,14 @@ namespace engine::windows
 		Vec3 start_rotation = Vec3(0, 0, 1), end_rotation = Vec3(0, 0, 1), dir_rotation = Vec3(0, 0, 1);
 		//-----------------//
 
-
-		void InitCameraBuffer();
-		void UpdateCameraBuffer();
-	public:
-		float delta_time;
-		ControllerD3D(engine::windows::WindowD3D &_wnd, engine::windows::SceneD3D& _scene) : wnd(_wnd), scene(_scene){}
-
 		void RotateCamera();
 		void moveCamera(const Vec3& offset, const Angles& angles);
+
+		void InitPerFrameBuffer();
+		void UpdatePerFrameBuffer();
+	public:
+		float delta_time;
+		Controller(engine::windows::Window &_wnd, engine::windows::Scene& _scene) : wnd(_wnd), scene(_scene){}
 
 		void ProcessInput();
 		void OnKeyDown(WPARAM key);
@@ -66,8 +63,6 @@ namespace engine::windows
 
 		void DrawScene();
 		void OnChangeWindowSize();
-		void InitSamplerStates();
-		void InitTextures();
 		void InitScene();
 	};
 }

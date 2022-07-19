@@ -1,7 +1,15 @@
-#include "CubeD3D.h"
+#include "Cube.h"
 #include <initializer_list>
 
-Mesh<36, MeshType::TexturedVertex3D> Cube::m_mesh = Mesh<36, MeshType::TexturedVertex3D>({
+engine::DxResPtr<ID3D11InputLayout> Cube::s_inputLayout;
+engine::DxResPtr<ID3D11Buffer> Cube::s_vertexBuffer;
+
+engine::DxResPtr<ID3D11VertexShader> Cube::s_vertexShader;
+engine::DxResPtr<ID3D11PixelShader> Cube::s_pixelShader;
+engine::DxResPtr<ID3DBlob> Cube::s_vertexShaderBlob;
+engine::DxResPtr<ID3DBlob> Cube::s_pixelShaderBlob;
+
+Mesh<36, MeshType::TexturedVertex3D> Cube::s_mesh = Mesh<36, MeshType::TexturedVertex3D>({
 	//FRONT
 	{-0.5f, -0.5f, -0.5f, 0, 1}, {-0.5f, 0.5f, -0.5f, 0, 0 }, {0.5f, -0.5f, -0.5f, 1, 1},
 	{-0.5f, 0.5f, -0.5f, 0, 0}, {0.5f, 0.5f, -0.5f, 1, 0}, {0.5f, -0.5f, -0.5f, 1, 1},
@@ -22,14 +30,12 @@ Mesh<36, MeshType::TexturedVertex3D> Cube::m_mesh = Mesh<36, MeshType::TexturedV
 	{0.5f, -0.5f, 0.5f, 1, 1}, {0.5f, -0.5f, -0.5f, 0, 1}, {0.5f, 0.5f, -0.5f, 0, 0}
 	});
 
-engine::DxResPtr<ID3D11Buffer> Cube::vertexBuffer;
-
 Cube::Cube(float size)
 {
 	m_transform.position = Vec3(0, 0, 0);
 	m_transform.scale = Vec3(size, size, size);
 	m_transform.UpdateMatrices();
-	Initialize();
+	CreateConstantBuffer();
 }
 
 Cube::Cube(const Vec3& scale)
@@ -37,45 +43,27 @@ Cube::Cube(const Vec3& scale)
 	m_transform.position = Vec3(0, 0, 0);
 	m_transform.scale = scale;
 	m_transform.UpdateMatrices();
-	Initialize();
+	CreateConstantBuffer();
 }
 
-void Cube::CreateMesh()
+void Cube::CreateVertexBuffer()
 {
-	auto vertexBufferDesc = CD3D11_BUFFER_DESC(m_mesh.MeshSize(), D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE::D3D11_USAGE_IMMUTABLE);
+	auto vertexBufferDesc = CD3D11_BUFFER_DESC(s_mesh.MeshSize(), D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE::D3D11_USAGE_IMMUTABLE);
 	D3D11_SUBRESOURCE_DATA vertexData = { 0 };
-	vertexData.pSysMem = m_mesh.GetPointerToVertices();
-	HRESULT result = engine::s_device->CreateBuffer(&vertexBufferDesc, &vertexData, Cube::vertexBuffer.reset());
+	vertexData.pSysMem = s_mesh.GetPointerToVertices();
+	HRESULT result = engine::s_device->CreateBuffer(&vertexBufferDesc, &vertexData, Cube::s_vertexBuffer.reset());
 	ALWAYS_ASSERT(result >= 0 && "CreateBuffer");
-}
-
-void Cube::CreateShaders()
-{
-	engine::DxResPtr<ID3DBlob> error;
-
-	HRESULT result = D3DCompileFromFile(L"d3dobjects/shaders/cube.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "vs_main", "vs_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, m_vertexShaderBlob.reset(), error.reset());
-	ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
-	
-	result = engine::s_device->CreateVertexShader(m_vertexShaderBlob->GetBufferPointer(), m_vertexShaderBlob->GetBufferSize(), nullptr, m_vertexShader.reset());
-	ALWAYS_ASSERT(result >= 0 && "CreateVertexShader");
-
-
-	result = D3DCompileFromFile(L"d3dobjects/shaders/cube.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "ps_main", "ps_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, m_pixelShaderBlob.reset(), error.reset());
-	ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
-
-	result = engine::s_device->CreatePixelShader(m_pixelShaderBlob->GetBufferPointer(), m_pixelShaderBlob->GetBufferSize(), nullptr, m_pixelShader.reset());
-	ALWAYS_ASSERT(result >= 0 && "CreatePixelShader");
 }
 
 void Cube::CreateInputLayout()
 {
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
-		{"POSITION", 0, m_mesh.POSITION_FORMAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TEXCOORD", 0, m_mesh.TEXTURE_FORMAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"POSITION", 0, s_mesh.POSITION_FORMAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TEXCOORD", 0, s_mesh.TEXTURE_FORMAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
-	HRESULT result = engine::s_device->CreateInputLayout(layout, 2, m_vertexShaderBlob->GetBufferPointer(), m_vertexShaderBlob->GetBufferSize(), m_inputLayout.reset());
+	HRESULT result = engine::s_device->CreateInputLayout(layout, 2, s_vertexShaderBlob->GetBufferPointer(), s_vertexShaderBlob->GetBufferSize(), s_inputLayout.reset());
 	ALWAYS_ASSERT(result >= 0 && "CreateInputLayout");
 }
 
@@ -95,13 +83,6 @@ void Cube::CreateConstantBuffer()
 	ALWAYS_ASSERT(result >= 0 && "CreateBuffer");
 }
 
-void Cube::Initialize()
-{
-	CreateConstantBuffer();
-	CreateShaders();
-	CreateInputLayout();
-}
-
 bool Cube::math_intersection(math::Intersection& nearest, const ray& r) const
 {
 	Vec3 v0, v1, v2;
@@ -111,9 +92,9 @@ bool Cube::math_intersection(math::Intersection& nearest, const ray& r) const
 	int k = 0;
 	for (int i = 0; i < 36; i += 3)
 	{
-		v0 = Vec3(m_mesh[i].coord[0], m_mesh[i].coord[1], m_mesh[i].coord[2]);
-		v1 = Vec3(m_mesh[i + 1].coord[0], m_mesh[i + 1].coord[1], m_mesh[i + 1].coord[2]);
-		v2 = Vec3(m_mesh[i + 2].coord[0], m_mesh[i + 2].coord[1], m_mesh[i + 2].coord[2]);
+		v0 = Vec3(s_mesh[i].coord[0], s_mesh[i].coord[1], s_mesh[i].coord[2]);
+		v1 = Vec3(s_mesh[i + 1].coord[0], s_mesh[i + 1].coord[1], s_mesh[i + 1].coord[2]);
+		v2 = Vec3(s_mesh[i + 2].coord[0], s_mesh[i + 2].coord[1], s_mesh[i + 2].coord[2]);
 		math::Triangle tr(v0, v1, v2, Vec3(Vec3::cross(v1 - v0, v2 - v0)));
 		if (tr.intersection(nearest, rr))
 		{
@@ -201,17 +182,16 @@ void Cube::Draw()
 {
 	engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	engine::s_deviceContext->IASetInputLayout(m_inputLayout.ptr());
+	engine::s_deviceContext->IASetInputLayout(s_inputLayout.ptr());
 	engine::s_deviceContext->VSSetConstantBuffers(1, 1, &m_transformMatrixBuffer.ptr());
-	engine::s_deviceContext->VSSetShader(m_vertexShader.ptr(), nullptr, 0);
-	engine::s_deviceContext->PSSetShader(m_pixelShader.ptr(), nullptr, 0);
+	engine::s_deviceContext->VSSetShader(s_vertexShader.ptr(), nullptr, 0);
+	engine::s_deviceContext->PSSetShader(s_pixelShader.ptr(), nullptr, 0);
 
-	engine::TextureManager::instance().SetSamplerState(*m_samplerStateKeyPtr);
-	engine::TextureManager::instance().SetTexture(m_textureKey);
+	engine::s_deviceContext->PSSetShaderResources(0, 1, &m_shaderResourceView.ptr());
 
-	UINT stride = m_mesh.VertexSize();
+	UINT stride = s_mesh.VertexSize();
 	UINT offset = 0;
-	engine::s_deviceContext->IASetVertexBuffers(0, 1, &Cube::vertexBuffer.ptr(), &stride, &offset);
+	engine::s_deviceContext->IASetVertexBuffers(0, 1, &Cube::s_vertexBuffer.ptr(), &stride, &offset);
 	engine::s_deviceContext->Draw(36, 0);
 }
 

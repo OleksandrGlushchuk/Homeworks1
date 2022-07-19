@@ -3,38 +3,39 @@ const float p_near = 0.01f, p_far = 10000.f, fovy = M_PI / 3.f;
 
 namespace engine::windows
 {
-	void ControllerD3D::InitCameraBuffer()
+	void Controller::InitPerFrameBuffer()
 	{
-		D3D11_BUFFER_DESC cameraBufferDesc;
-		cameraBufferDesc.ByteWidth = sizeof(PerFrameBuffer);
-		cameraBufferDesc.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
-		cameraBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_FLAG::D3D11_CPU_ACCESS_WRITE;
-		cameraBufferDesc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_CONSTANT_BUFFER;
-		cameraBufferDesc.MiscFlags = 0;
-		cameraBufferDesc.StructureByteStride = 0;
+		D3D11_BUFFER_DESC perFrameBufferDesc;
+		perFrameBufferDesc.ByteWidth = sizeof(PerFrameBuffer);
+		perFrameBufferDesc.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
+		perFrameBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_FLAG::D3D11_CPU_ACCESS_WRITE;
+		perFrameBufferDesc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_CONSTANT_BUFFER;
+		perFrameBufferDesc.MiscFlags = 0;
+		perFrameBufferDesc.StructureByteStride = 0;
 
-		HRESULT result = engine::s_device->CreateBuffer(&cameraBufferDesc, nullptr, m_perFrameBuffer.reset());
+		HRESULT result = engine::s_device->CreateBuffer(&perFrameBufferDesc, nullptr, engine::Globals::instance().m_perFrameBuffer.reset());
 		ALWAYS_ASSERT(result >= 0 && "CreateBuffer");
 	}
 
-	void ControllerD3D::UpdateCameraBuffer()
+	void Controller::UpdatePerFrameBuffer()
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedSubresource;
-		HRESULT result = engine::s_deviceContext->Map(m_perFrameBuffer.ptr(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
+		HRESULT result = engine::s_deviceContext->Map(engine::Globals::instance().m_perFrameBuffer.ptr(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
 		ALWAYS_ASSERT(result >= 0 && "Map");
 
 		*(PerFrameBuffer*)(mappedSubresource.pData) = PerFrameBuffer(scene.camera.m_viewProj, scene.camera.BottomLeft, scene.camera.BR_M_BL, scene.camera.TL_M_BL, scene.camera.m_viewProjInv);
-		engine::s_deviceContext->Unmap(m_perFrameBuffer.ptr(), 0);
+		engine::s_deviceContext->Unmap(engine::Globals::instance().m_perFrameBuffer.ptr(), 0);
 	}
 
-	void ControllerD3D::DrawScene()
+	void Controller::DrawScene()
 	{
 		ProcessInput();
-		engine::s_deviceContext->VSSetConstantBuffers(0, 1, &m_perFrameBuffer.ptr());
+		UpdatePerFrameBuffer();
+		engine::Globals::instance().bind();
 		scene.Draw();
 	}
 
-	void ControllerD3D::OnChangeWindowSize()
+	void Controller::OnChangeWindowSize()
 	{
 		wnd.OnResize();
 
@@ -44,140 +45,80 @@ namespace engine::windows
 		scene.camera.updateBasis();
 		scene.camera.updateMatrices();
 
-		UpdateCameraBuffer();
+		UpdatePerFrameBuffer();
 
 		wnd.BeginFrame();
 		DrawScene();
 		wnd.EndFrame();
 	}
 
-	void ControllerD3D::InitSamplerStates()
+	void Controller::InitScene()
 	{
-		{
-		D3D11_SAMPLER_DESC samplerDesc;
-		samplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_ANISOTROPIC;
-		samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
-		samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
-		samplerDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
-		samplerDesc.MaxAnisotropy = 16;
-		samplerDesc.MinLOD = 0;
-		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-		samplerDesc.MipLODBias = 0;
+		engine::Globals::instance().InitSamplerStates();
+		engine::Globals::instance().InitTextures();
+		engine::Globals::instance().InitShaders();
 
-		engine::TextureManager::instance().InitSamplerState(samplerDesc, "ss_a");
-		engine::TextureManager::instance().SetGlobalSamplerStateKey("ss_a");
+		//CUBES
+		{
+			engine::ShaderManager::instance().GetShaderBlobs("cube", Cube::s_vertexShaderBlob, Cube::s_pixelShaderBlob);
+			engine::ShaderManager::instance().GetShaders("cube", Cube::s_vertexShader, Cube::s_pixelShader);
+			Cube::CreateVertexBuffer();
+			Cube::CreateInputLayout();
+
+			scene.cubes.resize(7);
+
+			scene.cubes[0] = Cube(Vec3(0.3f, 3, 3));
+			scene.cubes[0].Translate(Vec3(-1, 1, 3));
+			scene.cubes[0].Rotate(Quaternion(M_PI_4, scene.cubes[0].forward()));
+			scene.cubes[0].SetTexture("roof");
+
+			scene.cubes[1] = Cube(Vec3(0.3f, 3, 3.01f));
+			scene.cubes[1].Translate(Vec3(1, 1, 3));
+			scene.cubes[1].Rotate(Quaternion(M_PI_4, -scene.cubes[1].forward()));
+			scene.cubes[1].SetTexture("roof");
+
+			scene.cubes[2] = Cube(Vec3(0.5f, 3, 2.9f));
+			scene.cubes[2].Translate(Vec3(-1.3f, -1.3, 3.0f));
+			scene.cubes[2].SetTexture("brick");
+
+			scene.cubes[3] = Cube(Vec3(0.5f, 3, 2.9f));
+			scene.cubes[3].Translate(Vec3(1.3f, -1.3, 3.0f));
+			scene.cubes[3].SetTexture("brick");
+
+			scene.cubes[4] = Cube(Vec3(2.9f, 3, 0.48f));
+			scene.cubes[4].Translate(Vec3(0.f, -1.31, 4.2f));
+			scene.cubes[4].SetTexture("brick");
+
+			scene.cubes[5] = Cube(Vec3(2.9f, 0.29f, 2.85f));
+			scene.cubes[5].Translate(Vec3(0.f, -2.65f, 3.0f));
+			scene.cubes[5].SetTexture("chess");
+
+			scene.cubes[6] = Cube(0.7f);
+			scene.cubes[6].Translate(Vec3(0.6f, -2.0f, 3.5f));
+			scene.cubes[6].SetTexture("redstone");
 		}
 
+		//SKY
 		{
-			D3D11_SAMPLER_DESC samplerDesc;
-			samplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_POINT;
-			samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
-			samplerDesc.MaxAnisotropy = 1;
-			samplerDesc.MinLOD = 0;
-			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-			samplerDesc.MipLODBias = 0;
-			engine::TextureManager::instance().InitSamplerState(samplerDesc, "ss_mmmp");
+			engine::ShaderManager::instance().GetShaderBlobs("sky", Sky::s_vertexShaderBlob, Sky::s_pixelShaderBlob);
+			engine::ShaderManager::instance().GetShaders("sky", Sky::s_vertexShader, Sky::s_pixelShader);
+			Sky::CreateVertexBuffer();
+			Sky::CreateInputLayout();
+
+			scene.sky.SetTexture("sky");
 		}
 
-		{
-			D3D11_SAMPLER_DESC samplerDesc;
-			samplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
-			samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
-			samplerDesc.MaxAnisotropy = 1;
-			samplerDesc.MinLOD = 0;
-			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-			samplerDesc.MipLODBias = 0;
-			engine::TextureManager::instance().InitSamplerState(samplerDesc, "ss_mpmlmp");
-		}
-
-		{
-			D3D11_SAMPLER_DESC samplerDesc;
-			samplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-			samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
-			samplerDesc.MaxAnisotropy = 1;
-			samplerDesc.MinLOD = 0;
-			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-			samplerDesc.MipLODBias = 0;
-			engine::TextureManager::instance().InitSamplerState(samplerDesc, "ss_mmlmp");
-		}
+		/*engine::ShaderManager::instance().GetShaderBlobs("triangle", Triangle<MeshType::TexturedVertex3D>::s_vertexShaderBlob, Triangle<MeshType::TexturedVertex3D>::s_pixelShaderBlob);
+		engine::ShaderManager::instance().GetShaders("triangle", Triangle<MeshType::TexturedVertex3D>::s_vertexShader, Triangle<MeshType::TexturedVertex3D>::s_pixelShader);
+		scene.triangle = Triangle<MeshType::TexturedVertex3D>({ {-1,-1,1,0,1},{0.f,1,1,0.5f,0},{1,-1,1,1,1} });
+		scene.triangle.SetTexture("chess");*/
 		
-		{
-			D3D11_SAMPLER_DESC samplerDesc;
-			samplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-			samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
-			samplerDesc.MaxAnisotropy = 1;
-			samplerDesc.MinLOD = 0;
-			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-			samplerDesc.MipLODBias = 0;
-			engine::TextureManager::instance().InitSamplerState(samplerDesc, "ss_mmml");
-		}
-	}
-
-	void ControllerD3D::InitTextures()
-	{
-		engine::TextureManager::instance().InitTexture(L"d3dobjects/textures/brick.dds", "brick");
-		engine::TextureManager::instance().InitTexture(L"d3dobjects/textures/skymap.dds", "sky");
-		engine::TextureManager::instance().InitTexture(L"d3dobjects/textures/chess.dds", "chess");
-		engine::TextureManager::instance().InitTexture(L"d3dobjects/textures/roof.dds", "roof");
-		engine::TextureManager::instance().InitTexture(L"d3dobjects/textures/redstone.dds", "redstone");
-	}
-
-	void ControllerD3D::InitScene()
-	{
-		InitSamplerStates();
-		InitTextures();
-		scene.cubes.resize(7);
-
-		Cube::CreateMesh();
-
-		scene.cubes[0] = Cube(Vec3(0.3f, 3, 3));
-		scene.cubes[0].Translate(Vec3(-1, 1, 3));
-		scene.cubes[0].Rotate(Quaternion(M_PI_4, scene.cubes[0].forward()));
-		scene.cubes[0].SetTexture("roof");
-
-		scene.cubes[1] = Cube(Vec3(0.3f, 3, 3.01f));
-		scene.cubes[1].Translate(Vec3(1, 1, 3));
-		scene.cubes[1].Rotate(Quaternion(M_PI_4, -scene.cubes[1].forward()));
-		scene.cubes[1].SetTexture("roof");
-
-		scene.cubes[2] = Cube(Vec3(0.5f, 3, 2.9f));
-		scene.cubes[2].Translate(Vec3(-1.3f, -1.3, 3.0f));
-		scene.cubes[2].SetTexture("brick");
-
-		scene.cubes[3] = Cube(Vec3(0.5f, 3, 2.9f));
-		scene.cubes[3].Translate(Vec3(1.3f, -1.3, 3.0f));
-		scene.cubes[3].SetTexture("brick");
-
-		scene.cubes[4] = Cube(Vec3(2.9f, 3, 0.48f));
-		scene.cubes[4].Translate(Vec3(0.f, -1.31, 4.2f));
-		scene.cubes[4].SetTexture("brick");
-
-		scene.cubes[5] = Cube(Vec3(2.9f, 0.29f, 2.85f));
-		scene.cubes[5].Translate(Vec3(0.f, -2.65f, 3.0f));
-		scene.cubes[5].SetTexture("chess");
-
-
-		scene.cubes[6] = Cube(0.7f);
-		scene.cubes[6].Translate(Vec3(0.6f, -2.0f, 3.5f));
-		scene.cubes[6].SetTexture("redstone");
-
-		scene.sky.Initialize();
-
 		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
 		scene.camera = Camera(fovy, aspect, p_near, p_far);
-		InitCameraBuffer();
-		UpdateCameraBuffer();
+		InitPerFrameBuffer();
 	}
 
-	void ControllerD3D::ProcessInput()
+	void Controller::ProcessInput()
 	{
 		Vec3 offset = Vec3(0, 0, 0);
 		Angles angle(0, 0, 0);
@@ -227,23 +168,23 @@ namespace engine::windows
 		{
 			if (input_state['1'])
 			{
-				engine::TextureManager::instance().SetGlobalSamplerStateKey("ss_a");
+				engine::TextureManager::instance().SetGlobalSamplerState("ss_a");
 			}
 			if (input_state['2'])
 			{
-				engine::TextureManager::instance().SetGlobalSamplerStateKey("ss_mmmp");
+				engine::TextureManager::instance().SetGlobalSamplerState("ss_mmmp");
 			}
 			if (input_state['3'])
 			{
-				engine::TextureManager::instance().SetGlobalSamplerStateKey("ss_mpmlmp");
+				engine::TextureManager::instance().SetGlobalSamplerState("ss_mpmlmp");
 			}
 			if (input_state['4'])
 			{
-				engine::TextureManager::instance().SetGlobalSamplerStateKey("ss_mmlmp");
+				engine::TextureManager::instance().SetGlobalSamplerState("ss_mmlmp");
 			}
 			if (input_state['5'])
 			{
-				engine::TextureManager::instance().SetGlobalSamplerStateKey("ss_mmml");
+				engine::TextureManager::instance().SetGlobalSamplerState("ss_mmml");
 			}
 		}
 
@@ -316,7 +257,6 @@ namespace engine::windows
 		if (scene.need_to_redraw)
 		{
 			moveCamera(delta_time * offset, angle);
-			UpdateCameraBuffer();
 			if (need_to_move_object)
 			{
 				OnRMouseMove(mouse_x, mouse_y);
@@ -324,24 +264,24 @@ namespace engine::windows
 		}
 	}
 
-	void ControllerD3D::OnKeyDown(WPARAM key)
+	void Controller::OnKeyDown(WPARAM key)
 	{
 		input_state[key] = true;
 	}
 
-	void ControllerD3D::OnKeyUp(WPARAM key)
+	void Controller::OnKeyUp(WPARAM key)
 	{
 		input_state[key] = false;
 	}
 
-	void ControllerD3D::moveCamera(const Vec3& offset, const Angles& angles)
+	void Controller::moveCamera(const Vec3& offset, const Angles& angles)
 	{
 		scene.camera.addRelativeAngles(angles);
 		scene.camera.addRelativeOffset(offset);
 		scene.camera.updateMatrices();
 	}
 
-	void ControllerD3D::OnLMouseDown(WORD x, WORD y)
+	void Controller::OnLMouseDown(WORD x, WORD y)
 	{
 		need_to_rotate = true;
 		mouse_x = x;
@@ -351,7 +291,7 @@ namespace engine::windows
 		dir_rotation = Vec3(0, 0, 1);
 	}
 
-	void ControllerD3D::OnLMouseMove(WORD x, WORD y)
+	void Controller::OnLMouseMove(WORD x, WORD y)
 	{
 		mouse_x = x;
 		mouse_y = y;
@@ -361,14 +301,14 @@ namespace engine::windows
 		scene.need_to_redraw = true;
 	}
 
-	void ControllerD3D::OnLMouseUp(WORD x, WORD y)
+	void Controller::OnLMouseUp(WORD x, WORD y)
 	{
 		mouse_x = x;
 		mouse_y = y;
 		need_to_rotate = false;
 	}
 
-	void ControllerD3D::OnRMouseDown(WORD x, WORD y)
+	void Controller::OnRMouseDown(WORD x, WORD y)
 	{
 		mouse_x = x;
 		mouse_y = y;
@@ -398,7 +338,7 @@ namespace engine::windows
 		}
 	}
 
-	void ControllerD3D::OnRMouseMove(WORD x, WORD y)
+	void Controller::OnRMouseMove(WORD x, WORD y)
 	{
 		if (need_to_rotate)
 			OnLMouseMove(x, y);
@@ -425,14 +365,14 @@ namespace engine::windows
 		}
 	}
 
-	void ControllerD3D::OnRMouseUp(WORD x, WORD y)
+	void Controller::OnRMouseUp(WORD x, WORD y)
 	{
 		mouse_x = x;
 		mouse_y = y;
 		need_to_move_object = false;
 	}
 
-	void ControllerD3D::OnMouseWheel(short wheel_data)
+	void Controller::OnMouseWheel(short wheel_data)
 	{
 		short count = wheel_data / WHEEL_DELTA;
 		if (count < 0)
@@ -441,7 +381,7 @@ namespace engine::windows
 			camera_move_offset_val *= abs(count) * 1.1f;
 	}
 
-	void ControllerD3D::RotateCamera()
+	void Controller::RotateCamera()
 	{
 		if (need_to_rotate)
 		{
