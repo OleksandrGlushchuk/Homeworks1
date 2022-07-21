@@ -80,7 +80,7 @@ namespace engine::windows
 
 		//SKY
 		{
-			Sky::Init();
+			scene.sky.Init();
 			scene.sky.SetTexture("sky");
 		}
 

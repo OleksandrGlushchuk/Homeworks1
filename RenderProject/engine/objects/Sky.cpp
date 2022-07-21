@@ -1,9 +1,4 @@
 #include "Sky.h"
-engine::DxResPtr<ID3D11Buffer> Sky::s_vertexBuffer;
-engine::DxResPtr<ID3D11VertexShader> Sky::s_vertexShader;
-engine::DxResPtr<ID3D11PixelShader> Sky::s_pixelShader;
-engine::DxResPtr<ID3DBlob> Sky::s_vertexShaderBlob;
-engine::DxResPtr<ID3DBlob> Sky::s_pixelShaderBlob;
 
 void Sky::InitTextures()
 {

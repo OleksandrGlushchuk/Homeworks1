@@ -4,19 +4,18 @@
 
 class Sky
 {
-	static engine::DxResPtr<ID3D11Buffer> s_vertexBuffer;
-	static engine::DxResPtr<ID3D11VertexShader> s_vertexShader;
-	static engine::DxResPtr<ID3D11PixelShader> s_pixelShader;
-	static engine::DxResPtr<ID3DBlob> s_vertexShaderBlob;
-	static engine::DxResPtr<ID3DBlob> s_pixelShaderBlob;
+	engine::DxResPtr<ID3D11VertexShader> s_vertexShader;
+	engine::DxResPtr<ID3D11PixelShader> s_pixelShader;
+	engine::DxResPtr<ID3DBlob> s_vertexShaderBlob;
+	engine::DxResPtr<ID3DBlob> s_pixelShaderBlob;
 
 	engine::DxResPtr<ID3D11ShaderResourceView> m_shaderResourceView;
-	static void InitTextures();
-	static void InitShaders();
+	void InitTextures();
+	void InitShaders();
 public:
 
 	Sky(){}
-	static void Init();
+	void Init();
 	inline void SetTexture(const std::string& _textureKey)
 	{
 		m_shaderResourceView.release();
