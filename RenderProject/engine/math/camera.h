@@ -3,13 +3,6 @@
 #include "Matr.h"
 #include "Quaternion.h"
 
-class Angles
-{
-public:
-	float roll, pitch, yaw;
-	Angles(float _roll=0, float _pitch=0, float _yaw=0):roll(_roll),pitch(_pitch),yaw(_yaw){}
-};
-
 class Camera
 {
 	bool need_to_update_matrices = true;

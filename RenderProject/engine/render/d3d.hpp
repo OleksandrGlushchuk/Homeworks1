@@ -30,6 +30,8 @@ if (!(expression))\
 
 namespace engine
 {
+	void init();
+	void deinit();
 	// global pointers to most used D3D11 objects for convenience:
 	extern ID3D11Device5* s_device;
 	extern ID3D11DeviceContext4* s_deviceContext;

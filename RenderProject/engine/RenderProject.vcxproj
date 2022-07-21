@@ -29,26 +29,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -143,28 +143,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="d3dobjects\TriangleD3D.cpp" />
+    <ClCompile Include="DDSTextureLoader\DDSTextureLoader11.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math\camera.cpp" />
-    <ClCompile Include="math\Cube.cpp" />
     <ClCompile Include="math\sphere.cpp" />
     <ClCompile Include="math\Triangle.cpp" />
     <ClCompile Include="math\vec3.cpp" />
+    <ClCompile Include="objects\Cube.cpp" />
+    <ClCompile Include="objects\Sky.cpp" />
     <ClCompile Include="render\d3d.cpp" />
     <ClCompile Include="render\globals.cpp" />
+    <ClCompile Include="render\ShaderManager.cpp" />
+    <ClCompile Include="render\TextureManager.cpp" />
     <ClCompile Include="window\controller.cpp" />
-    <ClCompile Include="window\ParallelExecutor.cpp" />
     <ClCompile Include="window\Scene.cpp" />
     <ClCompile Include="window\window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="d3dobjects\TriangleD3D.h" />
-    <ClInclude Include="d3dobjects\VertexMesh.h" />
+    <ClInclude Include="DDSTextureLoader\DDSTextureLoader11.h" />
     <ClInclude Include="include\win.hpp" />
     <ClInclude Include="include\win_def.hpp" />
     <ClInclude Include="include\win_undef.hpp" />
     <ClInclude Include="math\camera.h" />
-    <ClInclude Include="math\Cube.h" />
     <ClInclude Include="math\Floor.h" />
     <ClInclude Include="math\Intersection.h" />
     <ClInclude Include="math\Light.h" />
@@ -177,31 +177,48 @@
     <ClInclude Include="math\Triangle.h" />
     <ClInclude Include="math\vec3.h" />
     <ClInclude Include="objects\Cube.h" />
-    <ClInclude Include="objects\Floor.h" />
     <ClInclude Include="objects\IntersectionQuery.h" />
-    <ClInclude Include="objects\Material.h" />
+    <ClInclude Include="objects\Mesh.h" />
     <ClInclude Include="objects\ObjectMover.h" />
+    <ClInclude Include="objects\ObjectRotator.h" />
     <ClInclude Include="objects\ObjRef.h" />
-    <ClInclude Include="objects\Sphere.h" />
+    <ClInclude Include="objects\Sky.h" />
+    <ClInclude Include="objects\Triangle.h" />
     <ClInclude Include="render\d3d.hpp" />
     <ClInclude Include="render\DxRes.hpp" />
     <ClInclude Include="render\globals.hpp" />
+    <ClInclude Include="render\PerFrameBuffer.h" />
+    <ClInclude Include="render\ShaderManager.h" />
+    <ClInclude Include="render\TextureManager.h" />
     <ClInclude Include="window\controller.h" />
     <ClInclude Include="window\InputState.h" />
-    <ClInclude Include="window\ParallelExecutor.h" />
     <ClInclude Include="window\Scene.h" />
     <ClInclude Include="window\Timer.h" />
     <ClInclude Include="window\window.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="d3dobjects\shaders\ps_triangle.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    <FxCompile Include="source\shaders\cube.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="d3dobjects\shaders\vs_triangle.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    <FxCompile Include="source\shaders\sky.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="source\shaders\triangle.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="source\shaders\globals.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="source\textures\brick.dds" />
+    <Image Include="source\textures\chess.dds" />
+    <Image Include="source\textures\redstone.dds" />
+    <Image Include="source\textures\roof.dds" />
+    <Image Include="source\textures\skymap.dds" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

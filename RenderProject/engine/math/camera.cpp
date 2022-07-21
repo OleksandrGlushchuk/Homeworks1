@@ -13,9 +13,18 @@ void Camera::updateCorners()
 	TopLeft = Vec3(-1, 1, 1);
 	BottomLeft = Vec3(-1, -1, 1); BottomRight = Vec3(1, -1, 1);
 
-	TopLeft.mult(m_viewProjInv, 1) / m_viewProjInv[3][3] - position();
-	BottomLeft.mult(m_viewProjInv, 1) / m_viewProjInv[3][3] - position();
-	BottomRight.mult(m_viewProjInv, 1) / m_viewProjInv[3][3] - position();
+	float w;
+	TopLeft.mult(m_viewProjInv, 1, &w);
+	TopLeft /= w;
+	TopLeft -= position();
+
+	BottomLeft.mult(m_viewProjInv, 1, &w);
+	BottomLeft /= w;
+	BottomLeft -= position();
+
+	BottomRight.mult(m_viewProjInv, 1, &w);
+	BottomRight /= w;
+	BottomRight -= position();
 
 	BR_M_BL = BottomRight - BottomLeft;
 	TL_M_BL = TopLeft - BottomLeft;
