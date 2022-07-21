@@ -13,10 +13,10 @@ namespace engine::windows
 {
 	class Scene
 	{
+		Camera camera;
 		std::vector<Cube> cubes;
 		Sky sky;
-		Camera camera;
-		bool need_to_redraw;
+		//Triangle<MeshType::TexturedVertex3D> triangle;
 	public:
 		void Draw();
 

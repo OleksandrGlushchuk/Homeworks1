@@ -1,6 +1,7 @@
 #pragma once
 #include "../render/globals.hpp"
 #include "Mesh.h"
+#include "Cube.h"
 
 template<typename meshType=MeshType::TexturedVertex3D>
 class Triangle
@@ -9,15 +10,18 @@ class Triangle
 	engine::DxResPtr<ID3D11ShaderResourceView> m_shaderResourceView;
 	engine::DxResPtr<ID3D11InputLayout> s_inputLayout;
 
-	Mesh<3, meshType> m_mesh;
-
-	void CreateVertexBuffer();
-public:
 	static engine::DxResPtr<ID3D11VertexShader> s_vertexShader;
 	static engine::DxResPtr<ID3D11PixelShader> s_pixelShader;
 	static engine::DxResPtr<ID3DBlob> s_vertexShaderBlob;
 	static engine::DxResPtr<ID3DBlob> s_pixelShaderBlob;
 
+	Mesh<3, meshType> m_mesh;
+
+	void CreateVertexBuffer();
+	static void InitShaders();
+	static void InitTextures();
+public:
+	static void Init();
 	Triangle() {};
 	Triangle(const std::initializer_list<meshType>& init)
 	{
@@ -54,6 +58,27 @@ inline void Triangle<meshType>::CreateVertexBuffer()
 	vertexData.pSysMem = m_mesh.GetPointerToVertices();
 	HRESULT result = engine::s_device->CreateBuffer(&vertexBufferDesc, &vertexData, m_vertexBuffer.reset());
 	ALWAYS_ASSERT(result >= 0 && "CreateBuffer");
+}
+
+template<>
+inline void Triangle<MeshType::TexturedVertex3D>::InitShaders()
+{
+	engine::ShaderManager::instance().InitShaders(L"source/shaders/triangle.hlsl", "triangle");
+	engine::ShaderManager::instance().GetShaderBlobs("triangle", Triangle<MeshType::TexturedVertex3D>::s_vertexShaderBlob, Triangle<MeshType::TexturedVertex3D>::s_pixelShaderBlob);
+	engine::ShaderManager::instance().GetShaders("triangle", Triangle<MeshType::TexturedVertex3D>::s_vertexShader, Triangle<MeshType::TexturedVertex3D>::s_pixelShader);
+}
+
+template<typename meshType>
+inline void Triangle<meshType>::InitTextures()
+{
+	Cube::InitTextures();
+}
+
+template<typename meshType>
+inline void Triangle<meshType>::Init()
+{
+	InitTextures();
+	InitShaders();
 }
 
 template<>

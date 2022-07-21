@@ -15,6 +15,9 @@ namespace engine
 	{
 		ALWAYS_ASSERT(s_instance == nullptr);
 		s_instance = new Globals;
+		s_instance->initD3D();
+		s_instance->InitSamplerStates();
+		s_instance->InitPerFrameBuffer();
 	}
 	void Globals::deinit()
 	{
@@ -75,7 +78,6 @@ namespace engine
 
 	void Globals::InitSamplerStates()
 	{
-
 		{
 			D3D11_SAMPLER_DESC samplerDesc;
 			samplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_ANISOTROPIC;
@@ -87,8 +89,8 @@ namespace engine
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 			samplerDesc.MipLODBias = 0;
 
-			engine::TextureManager::instance().InitSamplerState(samplerDesc, "ss_a");
-			engine::TextureManager::instance().SetGlobalSamplerState("ss_a");
+			InitSamplerState(samplerDesc, "ss_a");
+			SetGlobalSamplerState("ss_a");
 		}
 
 		{
@@ -101,7 +103,8 @@ namespace engine
 			samplerDesc.MinLOD = 0;
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 			samplerDesc.MipLODBias = 0;
-			engine::TextureManager::instance().InitSamplerState(samplerDesc, "ss_mmmp");
+
+			InitSamplerState(samplerDesc, "ss_mmmp");
 		}
 
 		{
@@ -114,7 +117,8 @@ namespace engine
 			samplerDesc.MinLOD = 0;
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 			samplerDesc.MipLODBias = 0;
-			engine::TextureManager::instance().InitSamplerState(samplerDesc, "ss_mpmlmp");
+
+			InitSamplerState(samplerDesc, "ss_mpmlmp");
 		}
 
 		{
@@ -127,7 +131,8 @@ namespace engine
 			samplerDesc.MinLOD = 0;
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 			samplerDesc.MipLODBias = 0;
-			engine::TextureManager::instance().InitSamplerState(samplerDesc, "ss_mmlmp");
+
+			InitSamplerState(samplerDesc, "ss_mmlmp");
 		}
 
 		{
@@ -140,29 +145,41 @@ namespace engine
 			samplerDesc.MinLOD = 0;
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 			samplerDesc.MipLODBias = 0;
-			engine::TextureManager::instance().InitSamplerState(samplerDesc, "ss_mmml");
+
+			InitSamplerState(samplerDesc, "ss_mmml");
 		}
 	}
 
-	void Globals::InitTextures()
+	void Globals::InitSamplerState(D3D11_SAMPLER_DESC& samplerDesc, const std::string& samplerStateKey)
 	{
-		engine::TextureManager::instance().InitTexture(L"source/textures/brick.dds", "brick");
-		engine::TextureManager::instance().InitTexture(L"source/textures/skymap.dds", "sky");
-		engine::TextureManager::instance().InitTexture(L"source/textures/chess.dds", "chess");
-		engine::TextureManager::instance().InitTexture(L"source/textures/roof.dds", "roof");
-		engine::TextureManager::instance().InitTexture(L"source/textures/redstone.dds", "redstone");
+		HRESULT result = engine::s_device->CreateSamplerState(&samplerDesc, m_samplerState[samplerStateKey].reset());
+		ALWAYS_ASSERT(result >= 0 && "CreateSamplerState");
 	}
 
-	void Globals::InitShaders()
+	void Globals::SetGlobalSamplerState(const std::string& _globalSamplerStateKey)
 	{
-		engine::ShaderManager::instance().InitShaders(L"source/shaders/cube.hlsl", "cube");
-		engine::ShaderManager::instance().InitShaders(L"source/shaders/sky.hlsl", "sky");
-		engine::ShaderManager::instance().InitShaders(L"source/shaders/triangle.hlsl", "triangle");
+		std::map< std::string, engine::DxResPtr<ID3D11SamplerState> >::iterator result;
+		ALWAYS_ASSERT((result = m_samplerState.find(_globalSamplerStateKey)) != m_samplerState.end() && "Bad globalSamplerStateKey");
+		engine::Globals::instance().m_globalSamplerState = result->second;
+	}
+
+	void Globals::InitPerFrameBuffer()
+	{
+		D3D11_BUFFER_DESC perFrameBufferDesc;
+		perFrameBufferDesc.ByteWidth = sizeof(PerFrameBuffer);
+		perFrameBufferDesc.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
+		perFrameBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_FLAG::D3D11_CPU_ACCESS_WRITE;
+		perFrameBufferDesc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_CONSTANT_BUFFER;
+		perFrameBufferDesc.MiscFlags = 0;
+		perFrameBufferDesc.StructureByteStride = 0;
+
+		HRESULT result = engine::s_device->CreateBuffer(&perFrameBufferDesc, nullptr, m_perFrameBuffer.reset());
+		ALWAYS_ASSERT(result >= 0 && "CreateBuffer");
 	}
 
 	void Globals::bind()
 	{
-		engine::s_deviceContext->VSSetConstantBuffers(0, 1, &engine::Globals::instance().m_perFrameBuffer.ptr());
+		engine::s_deviceContext->VSSetConstantBuffers(0, 1, &m_perFrameBuffer.ptr());
 		engine::s_deviceContext->PSSetSamplers(0, 1, &m_globalSamplerState.ptr());
 	}
 

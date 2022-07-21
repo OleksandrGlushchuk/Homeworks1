@@ -10,6 +10,11 @@
 
 class Cube
 {
+	static engine::DxResPtr<ID3D11VertexShader> s_vertexShader;
+	static engine::DxResPtr<ID3D11PixelShader> s_pixelShader;
+	static engine::DxResPtr<ID3DBlob> s_vertexShaderBlob;
+	static engine::DxResPtr<ID3DBlob> s_pixelShaderBlob;
+
 	static engine::DxResPtr<ID3D11Buffer> s_vertexBuffer;
 	static engine::DxResPtr<ID3D11InputLayout> s_inputLayout;
 	static Mesh<36, MeshType::TexturedVertex3D> s_mesh;
@@ -20,13 +25,13 @@ class Cube
 
 	void CreateConstantBuffer();
 	bool math_intersection(math::Intersection& nearest, const ray& r) const;
-	Transform m_transform;
 
+	static void CreateVertexBuffer();
+	static void CreateInputLayout();
+	static void InitShaders();
+	Transform m_transform;
+	static bool cubes_textures_initialized;
 public:
-	static engine::DxResPtr<ID3D11VertexShader> s_vertexShader;
-	static engine::DxResPtr<ID3D11PixelShader> s_pixelShader;
-	static engine::DxResPtr<ID3DBlob> s_vertexShaderBlob;
-	static engine::DxResPtr<ID3DBlob> s_pixelShaderBlob;
 
 	Cube(){}
 
@@ -34,8 +39,8 @@ public:
 
 	Cube(const Vec3& scale);
 
-	static void CreateVertexBuffer();
-	static void CreateInputLayout();
+	static void Init();
+	static void InitTextures();
 
 	void Rotate(const Quaternion& q);
 

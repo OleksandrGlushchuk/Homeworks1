@@ -4,7 +4,7 @@ void engine::windows::Scene::Draw()
 {
 	for (auto& c : cubes)
 		c.Draw();
-
+	//triangle.Draw();
 	sky.Draw();
 }
 

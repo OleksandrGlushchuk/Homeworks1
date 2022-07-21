@@ -3,19 +3,6 @@ const float p_near = 0.01f, p_far = 10000.f, fovy = M_PI / 3.f;
 
 namespace engine::windows
 {
-	void Controller::InitPerFrameBuffer()
-	{
-		D3D11_BUFFER_DESC perFrameBufferDesc;
-		perFrameBufferDesc.ByteWidth = sizeof(PerFrameBuffer);
-		perFrameBufferDesc.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
-		perFrameBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_FLAG::D3D11_CPU_ACCESS_WRITE;
-		perFrameBufferDesc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_CONSTANT_BUFFER;
-		perFrameBufferDesc.MiscFlags = 0;
-		perFrameBufferDesc.StructureByteStride = 0;
-
-		HRESULT result = engine::s_device->CreateBuffer(&perFrameBufferDesc, nullptr, engine::Globals::instance().m_perFrameBuffer.reset());
-		ALWAYS_ASSERT(result >= 0 && "CreateBuffer");
-	}
 
 	void Controller::UpdatePerFrameBuffer()
 	{
@@ -39,7 +26,7 @@ namespace engine::windows
 	{
 		wnd.OnResize();
 
-		need_to_rotate = false;
+		need_to_rotate_camera = false;
 		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
 		scene.camera.updateAspect(aspect);
 		scene.camera.updateBasis();
@@ -54,16 +41,9 @@ namespace engine::windows
 
 	void Controller::InitScene()
 	{
-		engine::Globals::instance().InitSamplerStates();
-		engine::Globals::instance().InitTextures();
-		engine::Globals::instance().InitShaders();
-
 		//CUBES
 		{
-			engine::ShaderManager::instance().GetShaderBlobs("cube", Cube::s_vertexShaderBlob, Cube::s_pixelShaderBlob);
-			engine::ShaderManager::instance().GetShaders("cube", Cube::s_vertexShader, Cube::s_pixelShader);
-			Cube::CreateVertexBuffer();
-			Cube::CreateInputLayout();
+			Cube::Init();
 
 			scene.cubes.resize(7);
 
@@ -100,49 +80,44 @@ namespace engine::windows
 
 		//SKY
 		{
-			engine::ShaderManager::instance().GetShaderBlobs("sky", Sky::s_vertexShaderBlob, Sky::s_pixelShaderBlob);
-			engine::ShaderManager::instance().GetShaders("sky", Sky::s_vertexShader, Sky::s_pixelShader);
-			Sky::CreateVertexBuffer();
-			Sky::CreateInputLayout();
-
+			Sky::Init();
 			scene.sky.SetTexture("sky");
 		}
 
-		/*engine::ShaderManager::instance().GetShaderBlobs("triangle", Triangle<MeshType::TexturedVertex3D>::s_vertexShaderBlob, Triangle<MeshType::TexturedVertex3D>::s_pixelShaderBlob);
-		engine::ShaderManager::instance().GetShaders("triangle", Triangle<MeshType::TexturedVertex3D>::s_vertexShader, Triangle<MeshType::TexturedVertex3D>::s_pixelShader);
+		/*Triangle<MeshType::TexturedVertex3D>::Init();
 		scene.triangle = Triangle<MeshType::TexturedVertex3D>({ {-1,-1,1,0,1},{0.f,1,1,0.5f,0},{1,-1,1,1,1} });
+		scene.triangle.CreateInputLayout();
 		scene.triangle.SetTexture("chess");*/
 		
 		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
 		scene.camera = Camera(fovy, aspect, p_near, p_far);
-		InitPerFrameBuffer();
 	}
 
 	void Controller::ProcessInput()
 	{
 		Vec3 offset = Vec3(0, 0, 0);
-		Angles angle(0, 0, 0);
+		Angles angle;
 		//MOVEMENT
 		{
 			if (input_state['A'])
 			{
 				offset.e[0] -= camera_move_offset_val * ((need_to_speed_up) ? acceleration : 1.f);
-				scene.need_to_redraw = true;
+				need_to_move_camera = true;
 			}
 			if (input_state['D'])
 			{
 				offset.e[0] += camera_move_offset_val * ((need_to_speed_up) ? acceleration : 1.f);
-				scene.need_to_redraw = true;
+				need_to_move_camera = true;
 			}
 			if (input_state['W'])
 			{
 				offset.e[2] += camera_move_offset_val * ((need_to_speed_up) ? acceleration : 1.f);
-				scene.need_to_redraw = true;
+				need_to_move_camera = true;
 			}
 			if (input_state['S'])
 			{
 				offset.e[2] -= camera_move_offset_val * ((need_to_speed_up) ? acceleration : 1.f);
-				scene.need_to_redraw = true;
+				need_to_move_camera = true;
 			}
 			if (input_state[VK_SHIFT])
 			{
@@ -154,12 +129,12 @@ namespace engine::windows
 			}
 			if (input_state['Q'])
 			{
-				scene.need_to_redraw = true;
+				need_to_move_camera = true;
 				offset.e[1] -= camera_move_offset_val * ((need_to_speed_up) ? acceleration : 1.f);
 			}
 			if (input_state['E'])
 			{
-				scene.need_to_redraw = true;
+				need_to_move_camera = true;
 				offset.e[1] += camera_move_offset_val * ((need_to_speed_up) ? acceleration : 1.f);
 			}
 		}
@@ -168,23 +143,23 @@ namespace engine::windows
 		{
 			if (input_state['1'])
 			{
-				engine::TextureManager::instance().SetGlobalSamplerState("ss_a");
+				engine::Globals::instance().SetGlobalSamplerState("ss_a");
 			}
 			if (input_state['2'])
 			{
-				engine::TextureManager::instance().SetGlobalSamplerState("ss_mmmp");
+				engine::Globals::instance().SetGlobalSamplerState("ss_mmmp");
 			}
 			if (input_state['3'])
 			{
-				engine::TextureManager::instance().SetGlobalSamplerState("ss_mpmlmp");
+				engine::Globals::instance().SetGlobalSamplerState("ss_mpmlmp");
 			}
 			if (input_state['4'])
 			{
-				engine::TextureManager::instance().SetGlobalSamplerState("ss_mmlmp");
+				engine::Globals::instance().SetGlobalSamplerState("ss_mmlmp");
 			}
 			if (input_state['5'])
 			{
-				engine::TextureManager::instance().SetGlobalSamplerState("ss_mmml");
+				engine::Globals::instance().SetGlobalSamplerState("ss_mmml");
 			}
 		}
 
@@ -206,7 +181,7 @@ namespace engine::windows
 
 			if (need_to_move_object)
 			{
-				Angles rotate_angles(0, 0, 0);
+				Angles rotate_angles;
 				if (input_state[VK_LEFT])
 				{
 					rotate_angles.yaw -= object_rotate_angle;
@@ -254,13 +229,14 @@ namespace engine::windows
 		}
 
 		RotateCamera();
-		if (scene.need_to_redraw)
+		if (need_to_move_camera)
 		{
 			moveCamera(delta_time * offset, angle);
 			if (need_to_move_object)
 			{
 				OnRMouseMove(mouse_x, mouse_y);
 			}
+			need_to_move_camera = false;
 		}
 	}
 
@@ -283,7 +259,7 @@ namespace engine::windows
 
 	void Controller::OnLMouseDown(WORD x, WORD y)
 	{
-		need_to_rotate = true;
+		need_to_rotate_camera = true;
 		mouse_x = x;
 		mouse_y = y;
 		start_rotation.e[0] = end_rotation.e[0] = x;
@@ -298,14 +274,13 @@ namespace engine::windows
 		end_rotation.e[0] = x;
 		end_rotation.e[1] = y;
 		dir_rotation = delta_time * (start_rotation - end_rotation) * 2.f * M_PI / wnd.screen.right;
-		scene.need_to_redraw = true;
 	}
 
 	void Controller::OnLMouseUp(WORD x, WORD y)
 	{
 		mouse_x = x;
 		mouse_y = y;
-		need_to_rotate = false;
+		need_to_rotate_camera = false;
 	}
 
 	void Controller::OnRMouseDown(WORD x, WORD y)
@@ -340,7 +315,7 @@ namespace engine::windows
 
 	void Controller::OnRMouseMove(WORD x, WORD y)
 	{
-		if (need_to_rotate)
+		if (need_to_rotate_camera)
 			OnLMouseMove(x, y);
 		if (need_to_move_object)
 		{
@@ -361,7 +336,6 @@ namespace engine::windows
 			Vec3 new_position = ray_clicked_to_object.direction * distance_object_to_camera + scene.camera.position();
 			nearest_clicked_object.mover->move(new_position - nearest_clicked_object.nearest.point);
 			nearest_clicked_object.nearest.point = new_position;
-			scene.need_to_redraw = true;
 		}
 	}
 
@@ -383,10 +357,10 @@ namespace engine::windows
 
 	void Controller::RotateCamera()
 	{
-		if (need_to_rotate)
+		if (need_to_rotate_camera)
 		{
 			scene.camera.addRelativeAngles(Angles(0, dir_rotation.e[1], dir_rotation.e[0]));
-			scene.need_to_redraw = true;
+			need_to_move_camera = true;
 		}
 	}
 }

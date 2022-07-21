@@ -9,6 +9,8 @@ engine::DxResPtr<ID3D11PixelShader> Cube::s_pixelShader;
 engine::DxResPtr<ID3DBlob> Cube::s_vertexShaderBlob;
 engine::DxResPtr<ID3DBlob> Cube::s_pixelShaderBlob;
 
+bool Cube::cubes_textures_initialized = false;
+
 Mesh<36, MeshType::TexturedVertex3D> Cube::s_mesh = Mesh<36, MeshType::TexturedVertex3D>({
 	//FRONT
 	{-0.5f, -0.5f, -0.5f, 0, 1}, {-0.5f, 0.5f, -0.5f, 0, 0 }, {0.5f, -0.5f, -0.5f, 1, 1},
@@ -46,6 +48,25 @@ Cube::Cube(const Vec3& scale)
 	CreateConstantBuffer();
 }
 
+void Cube::InitTextures()
+{
+	if (!cubes_textures_initialized)
+	{
+		engine::TextureManager::instance().InitTexture(L"source/textures/brick.dds", "brick");
+		engine::TextureManager::instance().InitTexture(L"source/textures/chess.dds", "chess");
+		engine::TextureManager::instance().InitTexture(L"source/textures/roof.dds", "roof");
+		engine::TextureManager::instance().InitTexture(L"source/textures/redstone.dds", "redstone");
+		cubes_textures_initialized = true;
+	}
+}
+
+void Cube::InitShaders()
+{
+	engine::ShaderManager::instance().InitShaders(L"source/shaders/cube.hlsl", "cube");
+	engine::ShaderManager::instance().GetShaderBlobs("cube", Cube::s_vertexShaderBlob, Cube::s_pixelShaderBlob);
+	engine::ShaderManager::instance().GetShaders("cube", Cube::s_vertexShader, Cube::s_pixelShader);
+}
+
 void Cube::CreateVertexBuffer()
 {
 	auto vertexBufferDesc = CD3D11_BUFFER_DESC(s_mesh.MeshSize(), D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE::D3D11_USAGE_IMMUTABLE);
@@ -65,6 +86,14 @@ void Cube::CreateInputLayout()
 
 	HRESULT result = engine::s_device->CreateInputLayout(layout, 2, s_vertexShaderBlob->GetBufferPointer(), s_vertexShaderBlob->GetBufferSize(), s_inputLayout.reset());
 	ALWAYS_ASSERT(result >= 0 && "CreateInputLayout");
+}
+
+void Cube::Init()
+{
+	Cube::InitTextures();
+	Cube::InitShaders();
+	Cube::CreateVertexBuffer();
+	Cube::CreateInputLayout();
 }
 
 void Cube::CreateConstantBuffer()

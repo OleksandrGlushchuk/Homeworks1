@@ -12,9 +12,9 @@ namespace engine
 
 	void init()
 	{
-		Globals::init();
 		TextureManager::init();
 		ShaderManager::init();
+		Globals::init();
 	}
 	void deinit()
 	{

@@ -9,8 +9,6 @@ const float FRAME_DURATION = 1.f / 60.f;
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-
-
 engine::windows::Window window;
 engine::windows::Scene scene;
 engine::windows::Controller controller(window, scene);
@@ -19,7 +17,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 {
 	engine::init();
 
-	engine::Globals::instance().initD3D();
 	window = engine::windows::Window(L"homework-5", hinstance, WndProc);
 	controller.InitScene();
 	window.Show();

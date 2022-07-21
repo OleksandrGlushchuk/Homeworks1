@@ -16,10 +16,7 @@ namespace engine
 		static void init();
 		static void deinit();
 		static TextureManager& instance();
-		void InitSamplerState(D3D11_SAMPLER_DESC& samplerDesc, const std::string& samplerStateKey);
 		void InitTexture(const std::wstring& fileName, const std::string& textureKey);
-
-		void SetGlobalSamplerState(const std::string& _globalSamplerStateKey);
 
 		const engine::DxResPtr<ID3D11ShaderResourceView>& GetTexture(const std::string& textureKey);
 	};

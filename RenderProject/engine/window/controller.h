@@ -12,6 +12,7 @@ namespace engine::windows
 		engine::windows::Window& wnd;
 		engine::windows::Scene& scene;
 
+		bool need_to_move_camera = false;
 		WORD mouse_x = 0, mouse_y = 0;
 		InputState input_state;
 
@@ -30,7 +31,7 @@ namespace engine::windows
 		//-----------------//
 
 		//---CAMERA MOVER---//
-		bool need_to_rotate = false;
+		bool need_to_rotate_camera = false;
 		bool need_to_speed_up = false;
 		float camera_move_offset_val = 1.0f;
 		float camera_angle_offset_val = 3.f;
@@ -40,9 +41,6 @@ namespace engine::windows
 
 		void RotateCamera();
 		void moveCamera(const Vec3& offset, const Angles& angles);
-
-		void InitPerFrameBuffer();
-		void UpdatePerFrameBuffer();
 	public:
 		float delta_time;
 		Controller(engine::windows::Window &_wnd, engine::windows::Scene& _scene) : wnd(_wnd), scene(_scene){}
@@ -60,6 +58,8 @@ namespace engine::windows
 		void OnRMouseUp(WORD x, WORD y);
 
 		void OnMouseWheel(short wheel_data);
+
+		void UpdatePerFrameBuffer();
 
 		void DrawScene();
 		void OnChangeWindowSize();
