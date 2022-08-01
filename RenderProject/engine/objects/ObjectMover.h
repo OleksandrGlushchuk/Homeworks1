@@ -1,11 +1,11 @@
 #pragma once
 #include "../math/vec3.h"
 #include "../objects/Cube.h"
+#include "../render/MeshSystem.h"
 class IObjectMover
 {
 public:
 	virtual void move(const Vec3& offset) = 0;
-	virtual void move_relative(const Vec3& offset) = 0;
 	virtual void set_position(const Vec3& pos) = 0;
 	virtual const Vec3& get_position() const = 0;
 };
@@ -16,22 +16,15 @@ public:
 	CubeMover(Cube* _cube) : cube(_cube) {}
 	virtual void move(const Vec3& offset) override
 	{
-		cube->Translate(offset);
-	}
-	virtual void move_relative(const Vec3& offset) override
-	{
-		cube->TranslateRelative(offset);
+		engine::MeshSystem::instance().Translate(cube->ID, offset);
 	}
 	virtual void set_position(const Vec3& pos) override
 	{
-		cube->SetPosition(pos);
+		engine::MeshSystem::instance().SetPosition(cube->ID, pos);
 	}
 	virtual const Vec3& get_position() const override
 	{
-		return cube->position();
+		return engine::MeshSystem::instance().Get_Position(cube->ID);
 	}
-
-
-
 	Cube* cube;
 };

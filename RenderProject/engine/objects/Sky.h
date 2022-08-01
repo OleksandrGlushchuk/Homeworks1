@@ -16,7 +16,7 @@ public:
 
 	Sky(){}
 	void Init();
-	inline void SetTexture(const std::string& _textureKey)
+	inline void SetTexture(const std::wstring& _textureKey)
 	{
 		m_shaderResourceView.release();
 		m_shaderResourceView = engine::TextureManager::instance().GetTexture(_textureKey);

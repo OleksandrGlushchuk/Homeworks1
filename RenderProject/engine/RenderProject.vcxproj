@@ -140,6 +140,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -150,9 +151,14 @@
     <ClCompile Include="math\Triangle.cpp" />
     <ClCompile Include="math\vec3.cpp" />
     <ClCompile Include="objects\Cube.cpp" />
+    <ClCompile Include="objects\Knight.cpp" />
+    <ClCompile Include="objects\Samurai.cpp" />
     <ClCompile Include="objects\Sky.cpp" />
     <ClCompile Include="render\d3d.cpp" />
     <ClCompile Include="render\globals.cpp" />
+    <ClCompile Include="render\MeshSystem.cpp" />
+    <ClCompile Include="render\ModelManager.cpp" />
+    <ClCompile Include="render\OpaqueInstances.cpp" />
     <ClCompile Include="render\ShaderManager.cpp" />
     <ClCompile Include="render\TextureManager.cpp" />
     <ClCompile Include="window\controller.cpp" />
@@ -175,21 +181,35 @@
     <ClInclude Include="math\sphere.h" />
     <ClInclude Include="math\Transform.h" />
     <ClInclude Include="math\Triangle.h" />
+    <ClInclude Include="math\vec2.h" />
     <ClInclude Include="math\vec3.h" />
+    <ClInclude Include="math\vec4.h" />
     <ClInclude Include="objects\Cube.h" />
     <ClInclude Include="objects\IntersectionQuery.h" />
+    <ClInclude Include="objects\Knight.h" />
     <ClInclude Include="objects\Mesh.h" />
     <ClInclude Include="objects\ObjectMover.h" />
     <ClInclude Include="objects\ObjectRotator.h" />
     <ClInclude Include="objects\ObjRef.h" />
+    <ClInclude Include="objects\Samurai.h" />
     <ClInclude Include="objects\Sky.h" />
     <ClInclude Include="objects\Triangle.h" />
     <ClInclude Include="render\d3d.hpp" />
     <ClInclude Include="render\DxRes.hpp" />
     <ClInclude Include="render\globals.hpp" />
+    <ClInclude Include="render\IndexBuffer.h" />
+    <ClInclude Include="render\MeshSystem.h" />
+    <ClInclude Include="render\Model.h" />
+    <ClInclude Include="render\ModelManager.h" />
+    <ClInclude Include="render\OpaqueInstances.h" />
     <ClInclude Include="render\PerFrameBuffer.h" />
+    <ClInclude Include="render\Shader.h" />
     <ClInclude Include="render\ShaderManager.h" />
+    <ClInclude Include="render\Texture.h" />
     <ClInclude Include="render\TextureManager.h" />
+    <ClInclude Include="render\TriangleIndices.h" />
+    <ClInclude Include="render\Vertex.h" />
+    <ClInclude Include="render\VertexBuffer.h" />
     <ClInclude Include="window\controller.h" />
     <ClInclude Include="window\InputState.h" />
     <ClInclude Include="window\Scene.h" />
@@ -197,7 +217,7 @@
     <ClInclude Include="window\window.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="source\shaders\cube.hlsl">
+    <FxCompile Include="source\shaders\opaque.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
@@ -211,9 +231,27 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="source\assets\Knight\Knight.fbx" />
+    <None Include="source\assets\Samurai\Samurai.fbx" />
     <None Include="source\shaders\globals.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="source\assets\Knight\Cape_BaseColor.dds" />
+    <Image Include="source\assets\Knight\Eye_BaseColor.dds" />
+    <Image Include="source\assets\Knight\Fur_BaseColor.dds" />
+    <Image Include="source\assets\Knight\Glove_BaseColor.dds" />
+    <Image Include="source\assets\Knight\Head_BaseColor.dds" />
+    <Image Include="source\assets\Knight\Helmet_BaseColor.dds" />
+    <Image Include="source\assets\Knight\Legs_BaseColor.dds" />
+    <Image Include="source\assets\Knight\Skirt_BaseColor.dds" />
+    <Image Include="source\assets\Knight\Torso_BaseColor.dds" />
+    <Image Include="source\assets\Samurai\Eye_BaseColor.dds" />
+    <Image Include="source\assets\Samurai\Hand_BaseColor.dds" />
+    <Image Include="source\assets\Samurai\Head_BaseColor.dds" />
+    <Image Include="source\assets\Samurai\Helmet_BaseColor.dds" />
+    <Image Include="source\assets\Samurai\Legs_BaseColor.dds" />
+    <Image Include="source\assets\Samurai\Sword_BaseColor.dds" />
+    <Image Include="source\assets\Samurai\Torso_BaseColor.dds" />
     <Image Include="source\textures\brick.dds" />
     <Image Include="source\textures\chess.dds" />
     <Image Include="source\textures\redstone.dds" />

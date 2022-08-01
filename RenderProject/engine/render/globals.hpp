@@ -3,6 +3,8 @@
 #include "DxRes.hpp"
 #include "TextureManager.h"
 #include "ShaderManager.h"
+#include "ModelManager.h"
+#include "MeshSystem.h"
 #include "PerFrameBuffer.h"
 
 namespace engine
@@ -18,7 +20,7 @@ namespace engine
 		DxResPtr<ID3D11Debug> m_devdebug;
 		static Globals *s_instance;
 
-		std::map<std::string, engine::DxResPtr<ID3D11SamplerState> > m_samplerState;
+		std::unordered_map<std::string, engine::DxResPtr<ID3D11SamplerState> > m_samplerState;
 		engine::DxResPtr<ID3D11SamplerState> m_globalSamplerState;
 
 		Globals() {}
@@ -31,7 +33,7 @@ namespace engine
 		static void init();
 		static void deinit();
 		static Globals& instance();
-		void bind();
+		void Bind();
 		void InitSamplerState(D3D11_SAMPLER_DESC& samplerDesc, const std::string& samplerStateKey);
 		void SetGlobalSamplerState(const std::string& _globalSamplerStateKey);
 		~Globals();

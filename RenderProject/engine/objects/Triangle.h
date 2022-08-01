@@ -63,9 +63,9 @@ inline void Triangle<meshType>::CreateVertexBuffer()
 template<>
 inline void Triangle<MeshType::TexturedVertex3D>::InitShaders()
 {
-	engine::ShaderManager::instance().InitShaders(L"source/shaders/triangle.hlsl", "triangle");
-	engine::ShaderManager::instance().GetShaderBlobs("triangle", Triangle<MeshType::TexturedVertex3D>::s_vertexShaderBlob, Triangle<MeshType::TexturedVertex3D>::s_pixelShaderBlob);
-	engine::ShaderManager::instance().GetShaders("triangle", Triangle<MeshType::TexturedVertex3D>::s_vertexShader, Triangle<MeshType::TexturedVertex3D>::s_pixelShader);
+	engine::ShaderManager::instance().InitShaders(L"source/shaders/triangle.hlsl");
+	engine::ShaderManager::instance().GetShaderBlobs(L"source/shaders/triangle.hlsl", Triangle<MeshType::TexturedVertex3D>::s_vertexShaderBlob, Triangle<MeshType::TexturedVertex3D>::s_pixelShaderBlob);
+	engine::ShaderManager::instance().GetShaders(L"source/shaders/triangle.hlsl", Triangle<MeshType::TexturedVertex3D>::s_vertexShader, Triangle<MeshType::TexturedVertex3D>::s_pixelShader);
 }
 
 template<typename meshType>

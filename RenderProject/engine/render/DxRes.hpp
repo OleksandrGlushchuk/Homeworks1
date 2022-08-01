@@ -14,7 +14,7 @@ namespace engine
 		DxResPtr() { m_ptr = nullptr; }
 		~DxResPtr() { release(); }
 
-		DxResPtr(const DxResPtr& other) { *this = other; }
+		DxResPtr(const DxResPtr& other) : DxResPtr() { *this = other; }
 		DxResPtr& operator=(const DxResPtr& other)
 		{
 			if (m_ptr) m_ptr->Release();
@@ -23,7 +23,7 @@ namespace engine
 			return *this;
 		}
 
-		DxResPtr(DxResPtr&& other) noexcept { *this = std::move(other); }
+		DxResPtr(DxResPtr&& other) noexcept : DxResPtr() { *this = std::move(other); }
 		DxResPtr& operator=(DxResPtr&& other) noexcept
 		{
 			if (m_ptr) m_ptr->Release();
@@ -66,6 +66,9 @@ namespace engine
 		{
 			return m_ptr;
 		}
+
+		bool operator==(const DxResPtr<T>& res) const { return m_ptr == res.m_ptr; }
+		bool operator!=(const DxResPtr<T>& res) const { return m_ptr != res.m_ptr; }
 
 	protected:
 		T* m_ptr;

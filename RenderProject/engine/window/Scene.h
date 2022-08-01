@@ -7,6 +7,8 @@
 #include "../objects/Triangle.h"
 #include "../objects/Cube.h"
 #include "../objects/Sky.h"
+#include "../objects/Knight.h"
+#include "../objects/Samurai.h"
 #include <vector>
 
 namespace engine::windows
@@ -14,9 +16,10 @@ namespace engine::windows
 	class Scene
 	{
 		Camera camera;
-		std::vector<Cube> cubes;
+		std::vector<Cube> cube;
+		std::vector<Knight> knight;
+		std::vector<Samurai> samurai;
 		Sky sky;
-		//Triangle<MeshType::TexturedVertex3D> triangle;
 	public:
 		void Draw();
 

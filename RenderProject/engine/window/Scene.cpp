@@ -2,9 +2,6 @@
 
 void engine::windows::Scene::Draw()
 {
-	for (auto& c : cubes)
-		c.Draw();
-	//triangle.Draw();
 	sky.Draw();
 }
 
@@ -12,9 +9,9 @@ void engine::windows::Scene::findIntersectionInternal(const ray& _ray, ObjRef& o
 {
 	outNearest.reset();
 
-	for (int i = 0; i < cubes.size(); i++)
+	for (int i = 0; i < cube.size(); i++)
 	{
-		cubes[i].intersects(_ray, outRef, outNearest);
+		cube[i].intersects(_ray, outRef, outNearest);
 	}
 }
 

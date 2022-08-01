@@ -1,6 +1,7 @@
 #pragma once
 #include "../render/DxRes.hpp"
 #include <initializer_list>
+#include <vector>
 
 namespace MeshType
 {
@@ -161,19 +162,66 @@ public:
 		return vertices[i];
 	}
 
-	inline meshType* GetPointerToVertices()
+	inline const meshType* GetPointerToVertices() const
 	{
 		return vertices;
 	}
 
-	inline int MeshSize() const
+	inline uint32_t MeshSize() const
 	{
 		return sizeof(vertices);
 	}
 
-	inline int VertexSize() const
+	inline uint32_t VertexSize() const
 	{
 		return sizeof(meshType);
+	}
+
+	inline static const DXGI_FORMAT POSITION_FORMAT = meshType::POSITION_FORMAT;
+	inline static const DXGI_FORMAT TEXTURE_FORMAT = meshType::TEXTURE_FORMAT;
+	inline static const DXGI_FORMAT COLOR_FORMAT = meshType::COLOR_FORMAT;
+};
+
+template<typename meshType = MeshType::Vertex2D>
+class BigMesh
+{
+	std::vector<meshType> vertices;
+	std::vector<uint32_t> indices;
+public:
+
+	BigMesh() {}
+
+	BigMesh(const std::vector<meshType> &_vertices, const std::vector<uint32_t> &_indices) : vertices(_vertices), indices(_indices)
+	{}
+
+	inline meshType* GetPointerToVertices()
+	{
+		return &vertices[0];
+	}
+
+	inline uint32_t* GetPointerToIndices()
+	{
+		return &indices[0];
+	}
+
+	inline uint32_t MeshSize() const
+	{
+		return sizeof(meshType) * vertices.size();
+	}
+
+	inline uint32_t VertexSize() const
+	{
+		return sizeof(meshType);
+	}
+
+	inline uint32_t IndicesSize() const
+	{
+		return sizeof(uint32_t) * indices.size();
+	}
+
+	inline uint32_t IndicesCount() const
+	{
+		return indices.size();
 	}
 
 	inline static const DXGI_FORMAT POSITION_FORMAT = meshType::POSITION_FORMAT;

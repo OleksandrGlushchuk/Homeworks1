@@ -39,6 +39,15 @@
     <Filter Include="source\textures">
       <UniqueIdentifier>{bbef320c-fae8-41b1-9be6-281b4f9c150d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\assets">
+      <UniqueIdentifier>{2ff64970-5a76-49eb-ad70-73aff204f9c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\assets\Knight">
+      <UniqueIdentifier>{e1939fa4-a676-4010-a112-dad0535d53ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\assets\Samurai">
+      <UniqueIdentifier>{fcc7afef-fa2b-4e9a-8bbb-fbb3823c3595}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -85,6 +94,21 @@
     </ClCompile>
     <ClCompile Include="objects\Sky.cpp">
       <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="render\ModelManager.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\MeshSystem.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\OpaqueInstances.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\Knight.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\Samurai.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -193,21 +217,69 @@
     <ClInclude Include="objects\Triangle.h">
       <Filter>objects</Filter>
     </ClInclude>
+    <ClInclude Include="render\ModelManager.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\VertexBuffer.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="math\vec2.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="render\IndexBuffer.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Model.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Vertex.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="math\vec4.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="render\TriangleIndices.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\MeshSystem.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\OpaqueInstances.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Shader.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Texture.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="objects\Knight.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="objects\Samurai.h">
+      <Filter>objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="source\shaders\cube.hlsl">
-      <Filter>source\shaders</Filter>
-    </FxCompile>
     <FxCompile Include="source\shaders\sky.hlsl">
       <Filter>source\shaders</Filter>
     </FxCompile>
     <FxCompile Include="source\shaders\triangle.hlsl">
       <Filter>source\shaders</Filter>
     </FxCompile>
+    <FxCompile Include="source\shaders\opaque.hlsl">
+      <Filter>source\shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="source\shaders\globals.hlsli">
       <Filter>source\shaders</Filter>
+    </None>
+    <None Include="source\assets\Knight\Knight.fbx">
+      <Filter>source\assets\Knight</Filter>
+    </None>
+    <None Include="source\assets\Samurai\Samurai.fbx">
+      <Filter>source\assets\Samurai</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -225,6 +297,54 @@
     </Image>
     <Image Include="source\textures\skymap.dds">
       <Filter>source\textures</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Cape_BaseColor.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Eye_BaseColor.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Fur_BaseColor.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Glove_BaseColor.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Head_BaseColor.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Helmet_BaseColor.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Legs_BaseColor.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Skirt_BaseColor.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Torso_BaseColor.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Eye_BaseColor.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Hand_BaseColor.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Head_BaseColor.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Helmet_BaseColor.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Legs_BaseColor.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Sword_BaseColor.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Torso_BaseColor.dds">
+      <Filter>source\assets\Samurai</Filter>
     </Image>
   </ItemGroup>
 </Project>

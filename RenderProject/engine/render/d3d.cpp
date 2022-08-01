@@ -2,6 +2,8 @@
 #include "globals.hpp"
 #include "TextureManager.h"
 #include "ShaderManager.h"
+#include "ModelManager.h"
+#include "MeshSystem.h"
 
 namespace engine
 {
@@ -12,14 +14,21 @@ namespace engine
 
 	void init()
 	{
+		Globals::init();
+
 		TextureManager::init();
 		ShaderManager::init();
-		Globals::init();
+		ModelManager::init();
+		MeshSystem::init();
+		
 	}
 	void deinit()
 	{
-		Globals::deinit();
-		TextureManager::deinit();
+		MeshSystem::deinit();
+		ModelManager::deinit();
 		ShaderManager::deinit();
+		TextureManager::deinit();
+
+		Globals::deinit();
 	}
 }

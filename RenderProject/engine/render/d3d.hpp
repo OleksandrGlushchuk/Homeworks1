@@ -12,7 +12,7 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
-
+#pragma comment(lib, "assimp-vc143-mtd.lib")
 
 #define BREAK __debugbreak();
 #define ALWAYS_ASSERT(expression, ...)\

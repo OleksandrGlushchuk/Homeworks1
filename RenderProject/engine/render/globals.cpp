@@ -90,7 +90,6 @@ namespace engine
 			samplerDesc.MipLODBias = 0;
 
 			InitSamplerState(samplerDesc, "ss_a");
-			SetGlobalSamplerState("ss_a");
 		}
 
 		{
@@ -147,6 +146,7 @@ namespace engine
 			samplerDesc.MipLODBias = 0;
 
 			InitSamplerState(samplerDesc, "ss_mmml");
+			SetGlobalSamplerState("ss_mmml");
 		}
 	}
 
@@ -158,7 +158,7 @@ namespace engine
 
 	void Globals::SetGlobalSamplerState(const std::string& _globalSamplerStateKey)
 	{
-		std::map< std::string, engine::DxResPtr<ID3D11SamplerState> >::iterator result;
+		std::unordered_map< std::string, engine::DxResPtr<ID3D11SamplerState> >::iterator result;
 		ALWAYS_ASSERT((result = m_samplerState.find(_globalSamplerStateKey)) != m_samplerState.end() && "Bad globalSamplerStateKey");
 		engine::Globals::instance().m_globalSamplerState = result->second;
 	}
@@ -177,7 +177,7 @@ namespace engine
 		ALWAYS_ASSERT(result >= 0 && "CreateBuffer");
 	}
 
-	void Globals::bind()
+	void Globals::Bind()
 	{
 		engine::s_deviceContext->VSSetConstantBuffers(0, 1, &m_perFrameBuffer.ptr());
 		engine::s_deviceContext->PSSetSamplers(0, 1, &m_globalSamplerState.ptr());
