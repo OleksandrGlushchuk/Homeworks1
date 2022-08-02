@@ -13,9 +13,15 @@ struct Transform
     const Vec3& top() 		const { return Vec3(transform[1]) / Vec3::length(transform[1]); }
     const Vec3& forward() 	const { return Vec3(transform[2]) / Vec3::length(transform[2]); }
     Transform(){}
+
+    /*
+    * Recieving position, scale and rotation quaternion
+    * from _transform
+    */
     explicit Transform(const Matr<4>& _transform) : transform(_transform)
     {
         position = transform[3];
+        scale = Vec3(_transform[0][0], _transform[1][1], _transform[2][2]);
         rotation.w = 0.5f * sqrtf(1 + transform[0][0] + transform[1][1] + transform[2][2]);
         rotation.vec = Vec3(transform[2][1] - transform[1][2], transform[0][2] - transform[2][0], transform[1][0] - transform[0][1]);
         rotation.vec /= 4.f * rotation.w;

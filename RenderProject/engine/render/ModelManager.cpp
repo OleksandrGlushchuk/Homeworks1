@@ -25,7 +25,7 @@ namespace engine
 		for (uint32_t i = 0; i < rootNode->mNumChildren; i++)
 		{
 			const auto& matr  = rootNode->mChildren[i]->mTransformation.Transpose();
-			model.m_meshes[i].meshToModelMatrix = reinterpret_cast<const Matr<4>&>(matr);
+			model.m_meshes[i].m_constantBuffer.Init(D3D11_USAGE::D3D11_USAGE_IMMUTABLE, 0, &reinterpret_cast<const Matr<4>&>(matr));
 		}
 	}
 

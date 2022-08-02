@@ -122,6 +122,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -194,6 +195,7 @@
     <ClInclude Include="objects\Samurai.h" />
     <ClInclude Include="objects\Sky.h" />
     <ClInclude Include="objects\Triangle.h" />
+    <ClInclude Include="render\ConstantBuffer.h" />
     <ClInclude Include="render\d3d.hpp" />
     <ClInclude Include="render\DxRes.hpp" />
     <ClInclude Include="render\globals.hpp" />

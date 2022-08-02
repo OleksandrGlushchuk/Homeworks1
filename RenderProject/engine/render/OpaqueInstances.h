@@ -25,11 +25,6 @@ public:
 
 	struct Instance
 	{
-		Vec4 mesh_to_model_x;
-		Vec4 mesh_to_model_y;
-		Vec4 mesh_to_model_z;
-		Vec4 mesh_to_model_w;
-
 		Vec4 transform_x;
 		Vec4 transform_y;
 		Vec4 transform_z;
@@ -37,27 +32,19 @@ public:
 	};
 	struct InstancePtr
 	{
-		Matr<4> meshToModelMatrix;
 		Transform m_transform;
 		InstancePtr() {}
-		InstancePtr(Matr<4> &_meshToModelMatrix)
+		InstancePtr(const Matr<4> &_transformMatrix)
 		{
-			meshToModelMatrix = _meshToModelMatrix;
+			m_transform = Transform(_transformMatrix);
 		}
 		const Instance& Data() const
 		{
 			Instance ret;
-
-			ret.mesh_to_model_x = meshToModelMatrix[0];
-			ret.mesh_to_model_y = meshToModelMatrix[1];
-			ret.mesh_to_model_z = meshToModelMatrix[2];
-			ret.mesh_to_model_w = meshToModelMatrix[3];
-
 			ret.transform_x = m_transform.transform[0];
 			ret.transform_y = m_transform.transform[1];
 			ret.transform_z = m_transform.transform[2];
 			ret.transform_w = m_transform.transform[3];
-
 			return ret;
 		}
 	};
@@ -65,10 +52,10 @@ public:
 	struct MaterialInstance
 	{
 		MaterialInstance(){}
-		MaterialInstance(const Material &_material, Matr<4> &meshToModelMatrix)
+		MaterialInstance(const Material &_material, const Matr<4> & _transformMatrix)
 		{
 			material = _material;
-			instances.push_back(InstancePtr(meshToModelMatrix));
+			instances.push_back(InstancePtr(_transformMatrix));
 		}
 		Material material;
 		std::vector<InstancePtr> instances;
@@ -77,9 +64,9 @@ public:
 	struct MeshInstance
 	{
 		MeshInstance(){}
-		MeshInstance(const Material &material, Matr<4> &meshToModelMatrix)
+		MeshInstance(const Material &material, const Matr<4> & _transformMatrix)
 		{
-			materialInstances.emplace_back(material, meshToModelMatrix);
+			materialInstances.emplace_back(material, _transformMatrix);
 		}
 		std::vector<MaterialInstance> materialInstances;
 	};
@@ -87,20 +74,21 @@ public:
 	struct ModelInstance
 	{
 		ModelInstance(){}
-		ModelInstance(std::shared_ptr<Model>& _model, const std::vector<Material>& material)
+		ModelInstance(std::shared_ptr<Model>& _model, const std::vector<Material>& material, const Matr<4>& _transformMatrix = Matr<4>::identity())
 		{
 			model = _model;
 			meshInstances.resize(_model->m_meshes.size());
 
 			for (uint32_t i = 0; i < _model->m_meshes.size(); ++i)
 			{
-				meshInstances[i] = MeshInstance(material[i], _model->m_meshes[i].meshToModelMatrix);
+				meshInstances[i] = MeshInstance(material[i], _transformMatrix);
 			}
 			
 		}
 		bool empty() const { return meshInstances.size() == 0; }
 		std::shared_ptr<Model> model;
 		std::vector<MeshInstance> meshInstances;
+		std::vector<uint32_t> meshIDs;
 	};
 
 	Shader m_shader;

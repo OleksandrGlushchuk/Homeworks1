@@ -11,6 +11,10 @@ namespace engine
 		std::unordered_map<std::wstring, engine::DxResPtr<ID3D11ShaderResourceView> > m_shaderResourceView;
 		static TextureManager *s_instance;
 		TextureManager() {}
+		TextureManager(const TextureManager& other) = delete;
+		TextureManager& operator=(const TextureManager& other) = delete;
+		TextureManager(TextureManager&& other) noexcept = delete;
+		TextureManager& operator=(TextureManager&& other) noexcept = delete;
 	public:
 		static void init();
 		static void deinit();

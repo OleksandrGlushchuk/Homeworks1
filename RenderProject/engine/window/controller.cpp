@@ -14,11 +14,15 @@ namespace engine::windows
 		engine::s_deviceContext->Unmap(engine::Globals::instance().m_perFrameBuffer.ptr(), 0);
 	}
 
-	void Controller::DrawScene()
+	void Controller::Update()
 	{
 		ProcessInput();
 		UpdatePerFrameBuffer();
-		engine::MeshSystem::instance().updateInstances();
+	}
+
+	void Controller::Draw()
+	{
+		Update();
 		engine::Globals::instance().Bind();
 		engine::MeshSystem::instance().render();
 		scene.Draw();
@@ -37,7 +41,7 @@ namespace engine::windows
 		UpdatePerFrameBuffer();
 
 		wnd.BeginFrame();
-		DrawScene();
+		Draw();
 		wnd.EndFrame();
 	}
 
@@ -100,7 +104,7 @@ namespace engine::windows
 			//CUBES
 			{
 				Cube::Init();
-				scene.cube.resize(7);
+				scene.cube.resize(8);
 
 				std::vector<OpaqueInstances::Material> brick(1);
 				brick[0].m_texture.Load(L"source/textures/brick.dds");
@@ -127,13 +131,13 @@ namespace engine::windows
 				engine::MeshSystem::instance().Translate(scene.cube[2].ID, Vec3(0, 0, 1.8f));
 
 				engine::MeshSystem::instance().addInstance(Cube::s_model, roof, scene.cube[3].ID);
-				engine::MeshSystem::instance().Scale(scene.cube[3].ID, Vec3(0.2f, 4, 3));
-				engine::MeshSystem::instance().Translate(scene.cube[3].ID, Vec3(-1.4f, 2, 0.02f));
+				engine::MeshSystem::instance().Scale(scene.cube[3].ID, Vec3(0.3f, 4, 3.8f));
+				engine::MeshSystem::instance().Translate(scene.cube[3].ID, Vec3(-1.4f, 2.2f, 0.21f));
 				engine::MeshSystem::instance().Rotate(scene.cube[3].ID, Quaternion(M_PI_4, Vec3(0,0,1)));
 
 				engine::MeshSystem::instance().addInstance(Cube::s_model, roof, scene.cube[4].ID);
-				engine::MeshSystem::instance().Scale(scene.cube[4].ID, Vec3(0.2f, 4, 3));
-				engine::MeshSystem::instance().Translate(scene.cube[4].ID, Vec3(1.4f, 2, 0.01f));
+				engine::MeshSystem::instance().Scale(scene.cube[4].ID, Vec3(0.3f, 4, 3.8f));
+				engine::MeshSystem::instance().Translate(scene.cube[4].ID, Vec3(1.4f, 2.2f, 0.20f));
 				engine::MeshSystem::instance().Rotate(scene.cube[4].ID, Quaternion(-M_PI_4, Vec3(0, 0, 1)));
 
 				engine::MeshSystem::instance().addInstance(Cube::s_model, redstone, scene.cube[5].ID);
@@ -143,6 +147,12 @@ namespace engine::windows
 				engine::MeshSystem::instance().Scale(scene.cube[6].ID, Vec3(4, 0.5f, 3));
 				engine::MeshSystem::instance().Translate(scene.cube[6].ID, Vec3(0, -1.3f, 0.1f));
 
+				Matr<4> matr;
+				Matr<4>::fill_row(matr[0], { 0.4f,0,0,0 });
+				Matr<4>::fill_row(matr[1], { 0,2,0,0 });
+				Matr<4>::fill_row(matr[2], { 0,0,0.4f,0 });
+				Matr<4>::fill_row(matr[3], { 1,3.4f,0,1 });
+				engine::MeshSystem::instance().addInstance(Cube::s_model, brick, scene.cube[7].ID, matr);
 			}
 		}
 

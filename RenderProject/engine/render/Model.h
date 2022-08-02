@@ -3,6 +3,7 @@
 #include "TriangleIndices.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "ConstantBuffer.h"
 #include <string>
 #include "../math/Transform.h"
 struct Box
@@ -30,7 +31,7 @@ public:
 		std::string name;
 		std::vector<Vertex> vertices;
 		std::vector<TriangleIndices> triangles;
-		Matr<4> meshToModelMatrix;
+		ConstantBuffer<Matr<4> > m_constantBuffer;
 	};
 	std::string name;
 	Box box;

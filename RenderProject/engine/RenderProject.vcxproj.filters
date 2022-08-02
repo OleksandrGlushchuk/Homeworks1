@@ -259,6 +259,9 @@
     <ClInclude Include="objects\Samurai.h">
       <Filter>objects</Filter>
     </ClInclude>
+    <ClInclude Include="render\ConstantBuffer.h">
+      <Filter>render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="source\shaders\sky.hlsl">

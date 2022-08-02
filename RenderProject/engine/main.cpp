@@ -40,9 +40,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 		delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count();
 		if (timer.FrameTimeElapsed(FRAME_DURATION))
 		{
-
 			window.BeginFrame();
-			controller.DrawScene();
+			controller.Draw();
 			window.EndFrame();
 			controller.delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count() - delta_time + FRAME_DURATION;
 		}

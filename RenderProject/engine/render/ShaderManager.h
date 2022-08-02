@@ -14,6 +14,10 @@ namespace engine
 
 		static ShaderManager *s_instance;
 		ShaderManager() {}
+		ShaderManager(const ShaderManager& other) = delete;
+		ShaderManager& operator=(const ShaderManager& other) = delete;
+		ShaderManager(ShaderManager&& other) noexcept = delete;
+		ShaderManager& operator=(ShaderManager&& other) noexcept = delete;
 	public:
 		static void init();
 		static void deinit();

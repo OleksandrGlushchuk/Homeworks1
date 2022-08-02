@@ -17,5 +17,5 @@ public:
 	static void Init();
 	bool intersects(const ray& _ray, ObjRef& outRef, math::Intersection& outNearest);
 	static std::shared_ptr<Model> s_model;
-	engine::ObjectID ID;
+	engine::ModelID ID;
 };

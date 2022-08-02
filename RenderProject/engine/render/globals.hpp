@@ -24,6 +24,11 @@ namespace engine
 		engine::DxResPtr<ID3D11SamplerState> m_globalSamplerState;
 
 		Globals() {}
+		Globals(const Globals& other) = delete;
+		Globals& operator=(const Globals& other) = delete;
+		Globals(Globals&& other) noexcept = delete;
+		Globals& operator=(Globals&& other) noexcept = delete;
+
 		void initD3D();
 		void InitSamplerStates();
 		void InitPerFrameBuffer();
