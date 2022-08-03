@@ -22,7 +22,7 @@ namespace engine
 		ALWAYS_ASSERT(s_instance); return *s_instance;
 	}
 
-	void MeshSystem::addInstance(std::shared_ptr<Model>& model, const std::vector<OpaqueInstances::Material>& material, ModelID& out_ID, const Matr<4>& transformMatrix)
+	void MeshSystem::addInstance(std::shared_ptr<Model>& model, const std::vector<OpaqueInstances::Material>& material, ModelID& out_ID, const OpaqueInstances::Instance& _instance)
 	{
 		OpaqueInstances::ModelInstance* modelPtr = nullptr;
 		for (uint32_t i = 0; i < opaqueInstances.m_modelInstances.size(); ++i)
@@ -36,7 +36,7 @@ namespace engine
 		}
 		if (modelPtr == nullptr)
 		{
-			opaqueInstances.m_modelInstances.push_back(OpaqueInstances::ModelInstance(model, material, transformMatrix));
+			opaqueInstances.m_modelInstances.push_back(OpaqueInstances::ModelInstance(model, material, _instance));
 			
 			out_ID.model_index = opaqueInstances.m_modelInstances.size()-1;
 			auto& newModel = opaqueInstances.m_modelInstances.back();
@@ -59,7 +59,7 @@ namespace engine
 				{
 					if (modelPtr->meshInstances[i].materialInstances[j].material == material[i])
 					{
-						modelPtr->meshInstances[i].materialInstances[j].instances.push_back(OpaqueInstances::InstancePtr(transformMatrix));
+						modelPtr->meshInstances[i].materialInstances[j].instances.push_back(OpaqueInstances::InstancePtr(_instance));
 						modelPtr->meshIDs[out_ID.meshesBlock_index + (i * 2)] = j; //MATERIAL_INDEX
 						modelPtr->meshIDs[out_ID.meshesBlock_index + (i * 2 + 1)] = modelPtr->meshInstances[i].materialInstances[j].instances.size() - 1; //INSTANCE_INDEX
 						need_to_add_material_instance = false;
@@ -69,7 +69,7 @@ namespace engine
 				if (need_to_add_material_instance)
 				{
 					modelPtr->meshInstances[i].materialInstances.push_back(
-							OpaqueInstances::MaterialInstance(material[i], transformMatrix));
+							OpaqueInstances::MaterialInstance(material[i], _instance));
 
 					modelPtr->meshIDs[out_ID.meshesBlock_index + (i * 2)] = modelPtr->meshInstances[i].materialInstances.size() - 1; //MATERIAL_INDEX
 					modelPtr->meshIDs[out_ID.meshesBlock_index + (i * 2 + 1)] = 0; //INSTANCE_INDEX

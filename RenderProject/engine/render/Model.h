@@ -31,7 +31,7 @@ public:
 		std::string name;
 		std::vector<Vertex> vertices;
 		std::vector<TriangleIndices> triangles;
-		ConstantBuffer<Matr<4> > m_constantBuffer;
+		Matr<4> meshToModelMatrix;
 	};
 	std::string name;
 	Box box;

@@ -28,7 +28,7 @@ namespace engine
 		static void init();
 		static void deinit();
 		static MeshSystem& instance();
-		void addInstance(std::shared_ptr<Model>& model, const std::vector<OpaqueInstances::Material>& material, ModelID& out_ID, const Matr<4> &transformMatrix = Matr<4>::identity());
+		void addInstance(std::shared_ptr<Model>& model, const std::vector<OpaqueInstances::Material>& material, ModelID& out_ID, const OpaqueInstances::Instance &_instance);
 		
 		void updateInstances()
 		{

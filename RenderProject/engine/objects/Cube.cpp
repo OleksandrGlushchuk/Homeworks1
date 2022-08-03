@@ -65,8 +65,7 @@ void Cube::Init()
 	meshRange.vertexNum = 16;
 
 	auto& mesh = model.m_meshes[0];
-	Matr<4> meshToModelMatrix = Matr<4>::identity();
-	mesh.m_constantBuffer.Init(D3D11_USAGE_IMMUTABLE, 0, &meshToModelMatrix);
+	mesh.meshToModelMatrix = Matr<4>::identity();
 	mesh.name = "CubeMesh";
 	mesh.vertices.resize(16);
 	mesh.triangles.resize(12);

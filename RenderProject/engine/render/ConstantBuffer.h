@@ -8,7 +8,14 @@ class ConstantBuffer
 public:
 	ConstantBuffer() {}
 
-	inline void Init(D3D11_USAGE usage, UINT cpuAccessFlags, const Data *pData = nullptr)
+	inline void Init(D3D11_USAGE usage, UINT cpuAccessFlags)
+	{
+		auto vertexBufferDesc = CD3D11_BUFFER_DESC(sizeof(Data), D3D11_BIND_CONSTANT_BUFFER, usage, cpuAccessFlags);
+		HRESULT result = engine::s_device->CreateBuffer(&vertexBufferDesc, nullptr, m_constantBuffer.reset());
+		ALWAYS_ASSERT(result >= 0 && "CreateBuffer");
+	}
+
+	inline void Init(D3D11_USAGE usage, UINT cpuAccessFlags, const Data* pData)
 	{
 		auto vertexBufferDesc = CD3D11_BUFFER_DESC(sizeof(Data), D3D11_BIND_CONSTANT_BUFFER, usage, cpuAccessFlags);
 		D3D11_SUBRESOURCE_DATA constantBufferData = { 0 };

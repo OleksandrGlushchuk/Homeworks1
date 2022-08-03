@@ -6,6 +6,7 @@
 #include "../math/vec4.h"
 #include "../math/Matr.h"
 #include <memory>
+#include "ConstantBuffer.h"
 
 class OpaqueInstances
 {
@@ -25,37 +26,31 @@ public:
 
 	struct Instance
 	{
-		Vec4 transform_x;
-		Vec4 transform_y;
-		Vec4 transform_z;
-		Vec4 transform_w;
+		Matr<4> transform_matrix;
+		Instance(){}
+		explicit Instance(const Matr<4> &_transform_matrix) : transform_matrix(_transform_matrix){}
 	};
 	struct InstancePtr
 	{
 		Transform m_transform;
 		InstancePtr() {}
-		InstancePtr(const Matr<4> &_transformMatrix)
+		InstancePtr(const Instance &_instance)
 		{
-			m_transform = Transform(_transformMatrix);
+			m_transform = Transform(_instance.transform_matrix);
 		}
 		const Instance& Data() const
 		{
-			Instance ret;
-			ret.transform_x = m_transform.transform[0];
-			ret.transform_y = m_transform.transform[1];
-			ret.transform_z = m_transform.transform[2];
-			ret.transform_w = m_transform.transform[3];
-			return ret;
+			return Instance(m_transform.transform);
 		}
 	};
 
 	struct MaterialInstance
 	{
 		MaterialInstance(){}
-		MaterialInstance(const Material &_material, const Matr<4> & _transformMatrix)
+		MaterialInstance(const Material &_material, const Instance & _instance)
 		{
 			material = _material;
-			instances.push_back(InstancePtr(_transformMatrix));
+			instances.push_back(InstancePtr(_instance));
 		}
 		Material material;
 		std::vector<InstancePtr> instances;
@@ -64,9 +59,9 @@ public:
 	struct MeshInstance
 	{
 		MeshInstance(){}
-		MeshInstance(const Material &material, const Matr<4> & _transformMatrix)
+		MeshInstance(const Material &material, const Instance& _instance)
 		{
-			materialInstances.emplace_back(material, _transformMatrix);
+			materialInstances.emplace_back(material, _instance);
 		}
 		std::vector<MaterialInstance> materialInstances;
 	};
@@ -74,14 +69,14 @@ public:
 	struct ModelInstance
 	{
 		ModelInstance(){}
-		ModelInstance(std::shared_ptr<Model>& _model, const std::vector<Material>& material, const Matr<4>& _transformMatrix = Matr<4>::identity())
+		ModelInstance(std::shared_ptr<Model>& _model, const std::vector<Material>& material, const Instance& _instance)
 		{
 			model = _model;
 			meshInstances.resize(_model->m_meshes.size());
 
 			for (uint32_t i = 0; i < _model->m_meshes.size(); ++i)
 			{
-				meshInstances[i] = MeshInstance(material[i], _transformMatrix);
+				meshInstances[i] = MeshInstance(material[i], _instance);
 			}
 			
 		}
@@ -94,7 +89,7 @@ public:
 	Shader m_shader;
 	std::vector<ModelInstance> m_modelInstances;
 	VertexBuffer<Instance> m_instanceBuffer;
-
+	ConstantBuffer<Matr<4>> m_constantBuffer;
 public:
 	OpaqueInstances(){}
 

@@ -14,6 +14,7 @@ void OpaqueInstances::Init()
 		{"TRANSFORM_W", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1}
 	};
 	m_shader.Init(L"source/shaders/opaque.hlsl", inputLayout, 6);
+	m_constantBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 }
 
 void OpaqueInstances::updateInstanceBuffers()
@@ -74,7 +75,11 @@ void OpaqueInstances::render()
 		{
 			Model::Mesh& mesh = modelInstances.model->m_meshes[meshIndex];
 			auto& meshRange = modelInstances.model->m_meshRanges[meshIndex];
-			modelInstances.model->m_meshes[meshIndex].m_constantBuffer.Bind(1);
+
+			auto mapping = m_constantBuffer.Map();
+			*(Matr<4>*)mapping.pData = mesh.meshToModelMatrix;
+			m_constantBuffer.Unmap();
+			m_constantBuffer.Bind(1);
 
 			for (auto& materialInstances : modelInstances.meshInstances[meshIndex].materialInstances)
 			{
