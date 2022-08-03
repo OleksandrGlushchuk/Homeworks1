@@ -108,7 +108,7 @@
       <Filter>objects</Filter>
     </ClCompile>
     <ClCompile Include="objects\Samurai.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

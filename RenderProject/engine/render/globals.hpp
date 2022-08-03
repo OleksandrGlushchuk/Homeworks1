@@ -18,6 +18,9 @@ namespace engine
 		DxResPtr<ID3D11DeviceContext> m_devcon;
 		DxResPtr<ID3D11DeviceContext4> m_devcon4;
 		DxResPtr<ID3D11Debug> m_devdebug;
+
+		DxResPtr<ID3D11Texture2D> m_depthStencilBuffer;
+		
 		static Globals *s_instance;
 
 		std::unordered_map<std::string, engine::DxResPtr<ID3D11SamplerState> > m_samplerState;
@@ -32,15 +35,33 @@ namespace engine
 		void initD3D();
 		void InitSamplerStates();
 		void InitPerFrameBuffer();
+
+		void initDepthStencilResource(UINT width, UINT height);
+		void initDepthStencilState();
+		void initDepthStencilView();
+		void initDepthStencilBuffer()
+		{
+			initDepthStencilResource(8u,8u);
+			initDepthStencilState();
+			initDepthStencilView();
+		}
 	public:
 		engine::DxResPtr<ID3D11Buffer> m_perFrameBuffer;
 
+		
+		DxResPtr<ID3D11DepthStencilState> m_depthStencilState;
+		DxResPtr<ID3D11DepthStencilView> m_depthStencilView;
 		static void init();
 		static void deinit();
 		static Globals& instance();
 		void Bind();
 		void InitSamplerState(D3D11_SAMPLER_DESC& samplerDesc, const std::string& samplerStateKey);
 		void SetGlobalSamplerState(const std::string& _globalSamplerStateKey);
+		void UpdateDepthStencilBuffer(UINT width, UINT height)
+		{
+			initDepthStencilResource(width, height);
+			initDepthStencilView();
+		}
 		~Globals();
 	};
 }

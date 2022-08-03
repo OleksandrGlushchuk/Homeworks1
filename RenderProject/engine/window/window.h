@@ -1,6 +1,6 @@
 #pragma once
 #include <windows.h>
-#include "../render/DxRes.hpp"
+#include "../render/globals.hpp"
 
 namespace engine::windows
 {
@@ -11,9 +11,6 @@ namespace engine::windows
 		DxResPtr<ID3D11Texture2D> m_backBuffer;
 		D3D11_TEXTURE2D_DESC m_backbufferDesc;
 		DxResPtr<ID3D11RenderTargetView1> m_renderTargetView1;
-		DxResPtr<ID3D11Texture2D> m_depthStencilBuffer;
-		DxResPtr<ID3D11DepthStencilState> m_depthStencilState;
-		DxResPtr<ID3D11DepthStencilView> m_depthStencilView;
 
 		WNDCLASS wndclass;
 		HDC device_context;
@@ -21,12 +18,6 @@ namespace engine::windows
 		void initSwapchain();
 		void initBackBuffer();
 		void initRenderTargetView();
-
-		void initDepthStencilResource();
-		void initDepthStencilState();
-		void initDepthStencilView();
-
-		void initDepthStencilBuffer();
 	public:
 		Window() {}
 		Window(LPCWSTR name, HINSTANCE hinstance, WNDPROC WndProc, WNDCLASS _wndclass =
@@ -44,7 +35,7 @@ namespace engine::windows
 			initSwapchain();
 			initBackBuffer();
 			initRenderTargetView();
-			initDepthStencilBuffer();
+			engine::Globals::instance().UpdateDepthStencilBuffer(screen.right, screen.bottom);
 		}
 
 		void Show()
