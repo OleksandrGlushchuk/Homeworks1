@@ -19,8 +19,8 @@ public:
 	Quaternion(){}
 	Quaternion(float angle,const Vec3 &_axis)
 	{
-		w = cos(angle/2.f);
-		float sin_a_2 = sin(angle / 2.f);
+		w = cosf(angle/2.f);
+		float sin_a_2 = sinf(angle / 2.f);
 		vec.e[0] = sin_a_2 * _axis.e[0];
 		vec.e[1] = sin_a_2 * _axis.e[1];
 		vec.e[2] = sin_a_2 * _axis.e[2];
@@ -53,7 +53,7 @@ public:
 	}
 	inline float norma() const
 	{
-		return sqrt(w * w + vec.x() * vec.x() + vec.y() * vec.y() + vec.z() * vec.z());
+		return sqrtf(w * w + vec.x() * vec.x() + vec.y() * vec.y() + vec.z() * vec.z());
 	}
 	inline void normalize()
 	{

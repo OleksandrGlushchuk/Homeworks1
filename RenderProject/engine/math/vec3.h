@@ -38,10 +38,10 @@ public:
     inline Vec3 operator*(float t) const { return Vec3(t * e[0], t * e[1], t * e[2]);}
     inline Vec3 operator/(float t) const {return Vec3(e[0] / t, e[1] / t, e[2] / t);}
 
-    inline Vec3 normalized() const { return *this / length(); }
+    inline const Vec3& normalized() const { return *this / length(); }
     inline Vec3& normalize() { return *this /= length(); }
 
-    inline float length() const { return sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]); }
+    inline float length() const { return sqrtf(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]); }
     inline float squared_length() const { return e[0] * e[0] + e[1] * e[1] + e[2] * e[2]; }
 
     inline static float dot(const Vec3 &v1, const Vec3& v2);
@@ -66,7 +66,7 @@ public:
 
 inline float Vec3::length(const Vec3& v)
 {
-    return sqrt(v.e[0] * v.e[0] + v.e[1] * v.e[1] + v.e[2] * v.e[2]);
+    return sqrtf(v.e[0] * v.e[0] + v.e[1] * v.e[1] + v.e[2] * v.e[2]);
 }
 
 inline Vec3 Vec3::lerp(const Vec3& a, const Vec3& b, float t)

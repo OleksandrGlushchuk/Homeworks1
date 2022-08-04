@@ -2,14 +2,14 @@
 
 void Sky::InitTextures()
 {
-	engine::TextureManager::instance().InitTexture(L"source/textures/skymap.dds", "sky");
+	engine::TextureManager::instance().LoadTexture(L"source/textures/skymap.dds");
 }
 
 void Sky::InitShaders()
 {
-	engine::ShaderManager::instance().InitShaders(L"source/shaders/sky.hlsl", "sky");
-	engine::ShaderManager::instance().GetShaderBlobs("sky", Sky::s_vertexShaderBlob, Sky::s_pixelShaderBlob);
-	engine::ShaderManager::instance().GetShaders("sky", Sky::s_vertexShader, Sky::s_pixelShader);
+	engine::ShaderManager::instance().InitShaders(L"source/shaders/sky.hlsl");
+	engine::ShaderManager::instance().GetShaderBlobs(L"source/shaders/sky.hlsl", Sky::s_vertexShaderBlob, Sky::s_pixelShaderBlob);
+	engine::ShaderManager::instance().GetShaders(L"source/shaders/sky.hlsl", Sky::s_vertexShader, Sky::s_pixelShader);
 }
 
 void Sky::Init()

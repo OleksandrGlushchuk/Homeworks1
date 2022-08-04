@@ -11,6 +11,8 @@ class Matr
 	float matr[SIZE][SIZE];
 public:
 	Matr() {}
+	Matr(const std::initializer_list<float>& r0, const std::initializer_list<float>& r1, const std::initializer_list<float>& r2, const std::initializer_list<float>& r3);
+	
 	inline const int size() const { return SIZE; }
 	inline Matr operator*(float k) const
 	{
@@ -242,7 +244,7 @@ inline float Matr<SIZE>::determinant() const
 	float det = 0;
 	for (int i = 0; i < SIZE; i++)
 	{
-		det += pow(-1, i) * matr[0][i] * this->matr_without(0, i).determinant();
+		det += powf(-1, i) * matr[0][i] * this->matr_without(0, i).determinant();
 	}
 	return det;
 }
@@ -255,7 +257,7 @@ inline Matr<SIZE> Matr<SIZE>::invert() const
 	{
 		for (int j = 0; j < SIZE; j++)
 		{
-			m[j][i] = pow(-1, i + j) * matr_without(i, j).determinant();
+			m[j][i] = powf(-1, i + j) * matr_without(i, j).determinant();
 		}
 	}
 	return m / determinant();
@@ -267,4 +269,13 @@ inline void Matr<SIZE>::add_to_row(float* const& row, const Vec3& vec)
 	row[0] += vec.e[0];
 	row[1] += vec.e[1];
 	row[2] += vec.e[2];
+}
+
+template<>
+inline Matr<4>::Matr(const std::initializer_list<float>& r0, const std::initializer_list<float>& r1, const std::initializer_list<float>& r2, const std::initializer_list<float>& r3)
+{
+	std::copy(r0.begin(), r0.end(), matr[0]);
+	std::copy(r1.begin(), r1.end(), matr[1]);
+	std::copy(r2.begin(), r2.end(), matr[2]);
+	std::copy(r3.begin(), r3.end(), matr[3]);
 }

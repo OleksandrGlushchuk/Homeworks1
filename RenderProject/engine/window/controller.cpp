@@ -14,11 +14,17 @@ namespace engine::windows
 		engine::s_deviceContext->Unmap(engine::Globals::instance().m_perFrameBuffer.ptr(), 0);
 	}
 
-	void Controller::DrawScene()
+	void Controller::Update()
 	{
 		ProcessInput();
 		UpdatePerFrameBuffer();
-		engine::Globals::instance().bind();
+	}
+
+	void Controller::Draw()
+	{
+		Update();
+		engine::Globals::instance().Bind();
+		engine::MeshSystem::instance().render();
 		scene.Draw();
 	}
 
@@ -35,62 +41,123 @@ namespace engine::windows
 		UpdatePerFrameBuffer();
 
 		wnd.BeginFrame();
-		DrawScene();
+		Draw();
 		wnd.EndFrame();
 	}
 
 	void Controller::InitScene()
 	{
-		//CUBES
-		{
-			Cube::Init();
-
-			scene.cubes.resize(7);
-
-			scene.cubes[0] = Cube(Vec3(0.3f, 3, 3));
-			scene.cubes[0].Translate(Vec3(-1, 1, 3));
-			scene.cubes[0].Rotate(Quaternion(M_PI_4, scene.cubes[0].forward()));
-			scene.cubes[0].SetTexture("roof");
-
-			scene.cubes[1] = Cube(Vec3(0.3f, 3, 3.01f));
-			scene.cubes[1].Translate(Vec3(1, 1, 3));
-			scene.cubes[1].Rotate(Quaternion(M_PI_4, -scene.cubes[1].forward()));
-			scene.cubes[1].SetTexture("roof");
-
-			scene.cubes[2] = Cube(Vec3(0.5f, 3, 2.9f));
-			scene.cubes[2].Translate(Vec3(-1.3f, -1.3, 3.0f));
-			scene.cubes[2].SetTexture("brick");
-
-			scene.cubes[3] = Cube(Vec3(0.5f, 3, 2.9f));
-			scene.cubes[3].Translate(Vec3(1.3f, -1.3, 3.0f));
-			scene.cubes[3].SetTexture("brick");
-
-			scene.cubes[4] = Cube(Vec3(2.9f, 3, 0.48f));
-			scene.cubes[4].Translate(Vec3(0.f, -1.31, 4.2f));
-			scene.cubes[4].SetTexture("brick");
-
-			scene.cubes[5] = Cube(Vec3(2.9f, 0.29f, 2.85f));
-			scene.cubes[5].Translate(Vec3(0.f, -2.65f, 3.0f));
-			scene.cubes[5].SetTexture("chess");
-
-			scene.cubes[6] = Cube(0.7f);
-			scene.cubes[6].Translate(Vec3(0.6f, -2.0f, 3.5f));
-			scene.cubes[6].SetTexture("redstone");
-		}
-
 		//SKY
 		{
 			scene.sky.Init();
-			scene.sky.SetTexture("sky");
+			scene.sky.SetTexture(L"source/textures/skymap.dds");
+		}
+		//OpaqueInstances
+		{
+			OpaqueInstances::Instance identity_instance(Matr<4>::identity());
+			//KNIGHTS
+			{
+				Knight::Init();
+				scene.knight.resize(2);
+				std::vector<OpaqueInstances::Material> m(9);
+				m[0].m_texture.Load(L"source/assets/Knight/Fur_BaseColor.dds");
+				m[1].m_texture.Load(L"source/assets/Knight/Legs_BaseColor.dds");
+				m[2].m_texture.Load(L"source/assets/Knight/Torso_BaseColor.dds");
+				m[3].m_texture.Load(L"source/assets/Knight/Head_BaseColor.dds");
+				m[4].m_texture.Load(L"source/assets/Knight/Eye_BaseColor.dds");
+				m[5].m_texture.Load(L"source/assets/Knight/Helmet_BaseColor.dds");
+				m[6].m_texture.Load(L"source/assets/Knight/Skirt_BaseColor.dds");
+				m[7].m_texture.Load(L"source/assets/Knight/Cape_BaseColor.dds");
+				m[8].m_texture.Load(L"source/assets/Knight/Glove_BaseColor.dds");
+
+
+				engine::MeshSystem::instance().addInstance(Knight::s_model, m, scene.knight[0].ID, identity_instance);
+				engine::MeshSystem::instance().Translate(scene.knight[0].ID, Vec3(-1.5f, -0.9f, 0));
+				engine::MeshSystem::instance().Rotate(scene.knight[0].ID, Quaternion(M_PI_4, engine::MeshSystem::instance().Get_Forward(scene.knight[0].ID)));
+				engine::MeshSystem::instance().Rotate(scene.knight[0].ID, Quaternion(M_PI_2, engine::MeshSystem::instance().Get_Top(scene.knight[0].ID)));
+
+				m[2].m_texture.Load(L"source/assets/Samurai/Torso_BaseColor.dds"); //NEW MATERIAL FOR TORSO MESH AS EXAMPLE
+				engine::MeshSystem::instance().addInstance(Knight::s_model, m, scene.knight[1].ID, identity_instance);
+				engine::MeshSystem::instance().Scale(scene.knight[1].ID, Vec3(0.5f, 0.5f, 0.5f));
+				engine::MeshSystem::instance().Translate(scene.knight[1].ID, Vec3(1.f, 0, 0.6f));
+			}
+
+			//SAMURAI
+			{
+				Samurai::Init();
+				scene.samurai.resize(1);
+				std::vector<OpaqueInstances::Material> m(8);
+				m[0].m_texture.Load(L"source/assets/Samurai/Sword_BaseColor.dds");
+				m[1].m_texture.Load(L"source/assets/Samurai/Head_BaseColor.dds");
+				m[2].m_texture.Load(L"source/assets/Samurai/Eye_BaseColor.dds");
+				m[3].m_texture.Load(L"source/assets/Samurai/Helmet_BaseColor.dds");
+				m[4].m_texture.Load(L"source/assets/Knight/Skirt_BaseColor.dds");
+				m[5].m_texture.Load(L"source/assets/Samurai/Legs_BaseColor.dds");
+				m[6].m_texture.Load(L"source/assets/Samurai/Hand_BaseColor.dds");
+				m[7].m_texture.Load(L"source/assets/Samurai/Torso_BaseColor.dds");
+				engine::MeshSystem::instance().addInstance(Samurai::s_model, m, scene.samurai[0].ID, identity_instance);
+				engine::MeshSystem::instance().Translate(scene.samurai[0].ID, Vec3(3.5f, -0.5f, -1));
+				engine::MeshSystem::instance().Scale(scene.samurai[0].ID, Vec3(2.5f, 2.5f, 2.5f));
+				engine::MeshSystem::instance().Rotate(scene.samurai[0].ID, Quaternion(-M_PI_2, engine::MeshSystem::instance().Get_Top(scene.samurai[0].ID)));
+			}
+
+			//CUBES
+			{
+				Cube::Init();
+				scene.cube.resize(8);
+
+				std::vector<OpaqueInstances::Material> brick(1);
+				brick[0].m_texture.Load(L"source/textures/brick.dds");
+
+				std::vector<OpaqueInstances::Material> roof(1);
+				roof[0].m_texture.Load(L"source/textures/roof.dds");
+
+				std::vector<OpaqueInstances::Material> redstone(1);
+				redstone[0].m_texture.Load(L"source/textures/redstone.dds");
+
+				std::vector<OpaqueInstances::Material> chess(1);
+				chess[0].m_texture.Load(L"source/textures/chess.dds");
+
+				engine::MeshSystem::instance().addInstance(Cube::s_model, brick, scene.cube[0].ID, identity_instance);
+				engine::MeshSystem::instance().Scale(scene.cube[0].ID, Vec3(0.5f, 3, 3));
+				engine::MeshSystem::instance().Translate(scene.cube[0].ID, Vec3(-2, 0, 0));
+	
+				engine::MeshSystem::instance().addInstance(Cube::s_model, brick, scene.cube[1].ID, identity_instance);
+				engine::MeshSystem::instance().Scale(scene.cube[1].ID, Vec3(0.5f, 3, 3));
+				engine::MeshSystem::instance().Translate(scene.cube[1].ID, Vec3(2, 0, 0));
+
+				engine::MeshSystem::instance().addInstance(Cube::s_model, brick, scene.cube[2].ID, identity_instance);
+				engine::MeshSystem::instance().Scale(scene.cube[2].ID, Vec3(4, 3, 0.5f));
+				engine::MeshSystem::instance().Translate(scene.cube[2].ID, Vec3(0, 0, 1.8f));
+
+				engine::MeshSystem::instance().addInstance(Cube::s_model, roof, scene.cube[3].ID, identity_instance);
+				engine::MeshSystem::instance().Scale(scene.cube[3].ID, Vec3(0.3f, 4, 3.8f));
+				engine::MeshSystem::instance().Translate(scene.cube[3].ID, Vec3(-1.4f, 2.2f, 0.21f));
+				engine::MeshSystem::instance().Rotate(scene.cube[3].ID, Quaternion(M_PI_4,engine::MeshSystem::instance().Get_Forward(scene.cube[3].ID)));
+
+				engine::MeshSystem::instance().addInstance(Cube::s_model, roof, scene.cube[4].ID, identity_instance);
+				engine::MeshSystem::instance().Scale(scene.cube[4].ID, Vec3(0.3f, 4, 3.8f));
+				engine::MeshSystem::instance().Translate(scene.cube[4].ID, Vec3(1.4f, 2.2f, 0.20f));
+				engine::MeshSystem::instance().Rotate(scene.cube[4].ID, Quaternion(-M_PI_4, Vec3(0, 0, 1)));
+
+				engine::MeshSystem::instance().addInstance(Cube::s_model, redstone, scene.cube[5].ID, identity_instance);
+				engine::MeshSystem::instance().Translate(scene.cube[5].ID, Vec3(1.f, -0.5f, 1.f));
+
+				engine::MeshSystem::instance().addInstance(Cube::s_model, chess, scene.cube[6].ID, identity_instance);
+				engine::MeshSystem::instance().Scale(scene.cube[6].ID, Vec3(4, 0.5f, 3));
+				engine::MeshSystem::instance().Translate(scene.cube[6].ID, Vec3(0, -1.3f, 0.1f));
+
+				Matr<4> matr({ 0.4f,0,0,0 },
+							 { 0,2,0,0 },
+							 { 0,0,0.4f,0 },
+							 { 1,3.4f,0,1 });
+				engine::MeshSystem::instance().addInstance(Cube::s_model, brick, scene.cube[7].ID, OpaqueInstances::Instance(matr));
+			}
 		}
 
-		/*Triangle<MeshType::TexturedVertex3D>::Init();
-		scene.triangle = Triangle<MeshType::TexturedVertex3D>({ {-1,-1,1,0,1},{0.f,1,1,0.5f,0},{1,-1,1,1,1} });
-		scene.triangle.CreateInputLayout();
-		scene.triangle.SetTexture("chess");*/
-		
 		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
 		scene.camera = Camera(fovy, aspect, p_near, p_far);
+		scene.camera.setWorldOffset(Vec3(0, 0, -5));
 	}
 
 	void Controller::ProcessInput()

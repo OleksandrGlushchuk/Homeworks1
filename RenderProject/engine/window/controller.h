@@ -41,11 +41,12 @@ namespace engine::windows
 
 		void RotateCamera();
 		void moveCamera(const Vec3& offset, const Angles& angles);
+		void UpdatePerFrameBuffer();
+		void ProcessInput();
 	public:
 		float delta_time;
 		Controller(engine::windows::Window &_wnd, engine::windows::Scene& _scene) : wnd(_wnd), scene(_scene){}
 
-		void ProcessInput();
 		void OnKeyDown(WPARAM key);
 		void OnKeyUp(WPARAM key);
 
@@ -59,9 +60,8 @@ namespace engine::windows
 
 		void OnMouseWheel(short wheel_data);
 
-		void UpdatePerFrameBuffer();
-
-		void DrawScene();
+		void Update();
+		void Draw();
 		void OnChangeWindowSize();
 		void InitScene();
 	};
