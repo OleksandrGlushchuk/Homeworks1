@@ -9,9 +9,9 @@ struct Transform
     Quaternion rotation = Quaternion::identity();
     Vec3 position = Vec3(0,0,0);
     Vec3 scale = Vec3(1,1,1);
-    const Vec3& right() 	const { return Vec3(transform[0]) / Vec3::length(transform[0]); }
-    const Vec3& top() 		const { return Vec3(transform[1]) / Vec3::length(transform[1]); }
-    const Vec3& forward() 	const { return Vec3(transform[2]) / Vec3::length(transform[2]); }
+    const Vec3& right() 	const { return Vec3(transform[0]).normalized();}
+    const Vec3& top() 		const { return Vec3(transform[1]).normalized();}
+    const Vec3& forward() 	const { return Vec3(transform[2]).normalized();}
     Transform(){}
 
     /*

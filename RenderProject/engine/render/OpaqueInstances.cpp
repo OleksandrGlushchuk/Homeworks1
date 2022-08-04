@@ -61,6 +61,7 @@ void OpaqueInstances::render()
 
 	m_shader.Bind();
 	m_instanceBuffer.Bind(1);
+	m_constantBuffer.Bind(1);
 
 	engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	uint32_t renderedInstances = 0;
@@ -79,7 +80,6 @@ void OpaqueInstances::render()
 			auto mapping = m_constantBuffer.Map();
 			*(Matr<4>*)mapping.pData = mesh.meshToModelMatrix;
 			m_constantBuffer.Unmap();
-			m_constantBuffer.Bind(1);
 
 			for (auto& materialInstances : modelInstances.meshInstances[meshIndex].materialInstances)
 			{

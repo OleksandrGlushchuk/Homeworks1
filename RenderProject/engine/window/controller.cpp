@@ -133,7 +133,7 @@ namespace engine::windows
 				engine::MeshSystem::instance().addInstance(Cube::s_model, roof, scene.cube[3].ID, identity_instance);
 				engine::MeshSystem::instance().Scale(scene.cube[3].ID, Vec3(0.3f, 4, 3.8f));
 				engine::MeshSystem::instance().Translate(scene.cube[3].ID, Vec3(-1.4f, 2.2f, 0.21f));
-				engine::MeshSystem::instance().Rotate(scene.cube[3].ID, Quaternion(M_PI_4, Vec3(0,0,1)));
+				engine::MeshSystem::instance().Rotate(scene.cube[3].ID, Quaternion(M_PI_4,engine::MeshSystem::instance().Get_Forward(scene.cube[3].ID)));
 
 				engine::MeshSystem::instance().addInstance(Cube::s_model, roof, scene.cube[4].ID, identity_instance);
 				engine::MeshSystem::instance().Scale(scene.cube[4].ID, Vec3(0.3f, 4, 3.8f));

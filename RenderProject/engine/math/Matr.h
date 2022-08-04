@@ -244,7 +244,7 @@ inline float Matr<SIZE>::determinant() const
 	float det = 0;
 	for (int i = 0; i < SIZE; i++)
 	{
-		det += pow(-1, i) * matr[0][i] * this->matr_without(0, i).determinant();
+		det += powf(-1, i) * matr[0][i] * this->matr_without(0, i).determinant();
 	}
 	return det;
 }
@@ -257,7 +257,7 @@ inline Matr<SIZE> Matr<SIZE>::invert() const
 	{
 		for (int j = 0; j < SIZE; j++)
 		{
-			m[j][i] = pow(-1, i + j) * matr_without(i, j).determinant();
+			m[j][i] = powf(-1, i + j) * matr_without(i, j).determinant();
 		}
 	}
 	return m / determinant();

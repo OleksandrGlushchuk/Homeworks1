@@ -3,10 +3,10 @@ bool solveQuadratic(const float& a, const float& b, const float& c, float& x0, f
 {
     float discr = b * b - 4 * a * c;
     if (discr < 0) return false;
-    else if (discr == 0) x0 = x1 = -0.5 * b / a;
+    else if (discr == 0) x0 = x1 = -0.5f * b / a;
     else {
-        x0 = -0.5 * (b + sqrt(discr)) / a;
-        x1 = -0.5 * (b - sqrt(discr)) / a;
+        x0 = -0.5f * (b + sqrt(discr)) / a;
+        x1 = -0.5f * (b - sqrt(discr)) / a;
     }
     return true;
 }
@@ -15,7 +15,7 @@ bool math::Sphere::intersection(math::Intersection& nearest, const ray& r) const
 {
     Vec3 oc = r.get_origin() - center;
     float a = Vec3::dot(r.get_direction(), r.get_direction());
-    float b = 2.0 * Vec3::dot(oc, r.get_direction());
+    float b = 2.0f * Vec3::dot(oc, r.get_direction());
     float c = Vec3::dot(oc, oc) - radius * radius;
     float t1, t2;
 
