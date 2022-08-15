@@ -1,10 +1,4 @@
 #include "globals.hlsli"
-
-cbuffer MeshToModel : register(b1)
-{
-    float4x4 g_meshToModelMatrix;
-}
-
 struct VS_INPUT
 {
     float3 position : POSITION;

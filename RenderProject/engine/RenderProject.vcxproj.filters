@@ -299,6 +299,12 @@
     <None Include="source\assets\Samurai\Samurai.fbx">
       <Filter>source\assets\Samurai</Filter>
     </None>
+    <None Include="source\shaders\PBRRenderToolkit.hlsli">
+      <Filter>source\shaders</Filter>
+    </None>
+    <None Include="source\shaders\PostProcessToolkit.hlsli">
+      <Filter>source\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="source\textures\skymap.dds">

@@ -6,7 +6,13 @@ namespace engine::windows
 	{
 		m_hdrRenderTarget.InitFloat16RenderTargetView(width, height);
 		m_hdrRenderTarget.InitDepthStencil(width, height);
-		
+
+		ZeroMemory(&m_shaderResourceViewDesc, sizeof(m_shaderResourceViewDesc));
+		m_shaderResourceViewDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		m_shaderResourceViewDesc.Texture2D.MipLevels = -1;
+		m_shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+		m_shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
+		engine::s_device->CreateShaderResourceView(m_hdrRenderTarget.GetRenderTergetResource(), &m_shaderResourceViewDesc, m_shaderResourceView.reset());
 	}
 	void Renderer::Draw()
 	{
@@ -15,13 +21,7 @@ namespace engine::windows
 
 	void Renderer::Render(RenderTarget& windowRenderTarget, const Camera& camera, PostProcess& postProcess)
 	{
-		UINT width = windowRenderTarget.GetWidth();
-		UINT height = windowRenderTarget.GetHeight();
-
-		m_hdrRenderTarget.ResizeRenderTargetView(width, height);
 		m_hdrRenderTarget.ClearRendetTargetView();
-
-		m_hdrRenderTarget.ResizeDepthStencil(width, height);
 		m_hdrRenderTarget.ClearDepthStencil();
 
 		m_hdrRenderTarget.Bind();
@@ -33,17 +33,12 @@ namespace engine::windows
 		m_sky.Draw();
 
 		engine::s_deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
-
-		D3D11_SHADER_RESOURCE_VIEW_DESC desc;
-		ZeroMemory(&desc, sizeof(desc));
-		desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-		desc.Texture2D.MipLevels = -1;
-		desc.Texture2D.MostDetailedMip = 0;
-		desc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
-
-		engine::s_device->CreateShaderResourceView(m_hdrRenderTarget.GetRenderTergetResource(), &desc, m_shaderResourceView.reset());
 		engine::s_deviceContext->PSSetShaderResources(0, 1, &m_shaderResourceView.ptr());
 
 		postProcess.Resolve(windowRenderTarget, m_hdrRenderTarget);
+
+
+		ID3D11ShaderResourceView* SRVnullptr[1] = { nullptr };
+		engine::s_deviceContext->PSSetShaderResources(0, 1, SRVnullptr);
 	}
 }

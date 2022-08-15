@@ -28,6 +28,12 @@ namespace engine::windows
 		renderer.camera.updateBasis();
 		renderer.camera.updateMatrices();
 
+		UINT width = wnd.m_renderTarget.GetWidth();
+		UINT height = wnd.m_renderTarget.GetHeight();
+		renderer.m_hdrRenderTarget.ResizeRenderTargetView(width, height);
+		renderer.m_hdrRenderTarget.ResizeDepthStencil(width, height);
+		engine::s_device->CreateShaderResourceView(renderer.m_hdrRenderTarget.GetRenderTergetResource(), &renderer.m_shaderResourceViewDesc, 
+			renderer.m_shaderResourceView.reset());
 		Draw();
 	}
 
@@ -199,11 +205,6 @@ namespace engine::windows
 			
 			transform.SetScale({ 4, 3, 0.5f });
 			transform.SetPosition({ 0, 0, 1.8f });
-			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
-			
-
-			transform.SetScale({ 0.5f, 3, 3 });
-			transform.SetPosition({ -2, 0, 0 });
 			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
 			
 			transform.SetScale({ 0.3f, 4, 3.8f });

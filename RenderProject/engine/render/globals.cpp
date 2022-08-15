@@ -90,7 +90,7 @@ namespace engine
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 			samplerDesc.MipLODBias = 0;
 
-			InitSamplerState(samplerDesc, "ss_a");
+			CreateSamplerState(samplerDesc, "ss_a");
 		}
 
 		{
@@ -104,7 +104,7 @@ namespace engine
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 			samplerDesc.MipLODBias = 0;
 
-			InitSamplerState(samplerDesc, "ss_mmmp");
+			CreateSamplerState(samplerDesc, "ss_mmmp");
 		}
 
 		{
@@ -118,7 +118,7 @@ namespace engine
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 			samplerDesc.MipLODBias = 0;
 
-			InitSamplerState(samplerDesc, "ss_mpmlmp");
+			CreateSamplerState(samplerDesc, "ss_mpmlmp");
 		}
 
 		{
@@ -132,7 +132,7 @@ namespace engine
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 			samplerDesc.MipLODBias = 0;
 
-			InitSamplerState(samplerDesc, "ss_mmlmp");
+			CreateSamplerState(samplerDesc, "ss_mmlmp");
 		}
 
 		{
@@ -146,12 +146,12 @@ namespace engine
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 			samplerDesc.MipLODBias = 0;
 
-			InitSamplerState(samplerDesc, "ss_mmml");
+			CreateSamplerState(samplerDesc, "ss_mmml");
 			SetGlobalSamplerState("ss_mmml");
 		}
 	}
 
-	void Globals::InitSamplerState(D3D11_SAMPLER_DESC& samplerDesc, const std::string& samplerStateKey)
+	void Globals::CreateSamplerState(D3D11_SAMPLER_DESC& samplerDesc, const std::string& samplerStateKey)
 	{
 		HRESULT result = engine::s_device->CreateSamplerState(&samplerDesc, m_samplerState[samplerStateKey].reset());
 		ALWAYS_ASSERT(result >= 0 && "CreateSamplerState");
@@ -174,6 +174,7 @@ namespace engine
 		m_perFrameBuffer.BindVS(0);
 		m_perFrameBuffer.BindPS(0);
 		engine::s_deviceContext->PSSetSamplers(0, 1, &m_globalSamplerState.ptr());
+		engine::s_deviceContext->PSSetSamplers(1, 1, &m_samplerState["ss_mmmp"].ptr());
 	}
 
 	void Globals::UpdatePerFrameBuffer(const Camera& camera)

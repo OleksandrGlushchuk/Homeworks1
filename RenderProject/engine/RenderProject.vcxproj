@@ -250,7 +250,9 @@
   <ItemGroup>
     <None Include="source\assets\Knight\Knight.fbx" />
     <None Include="source\assets\Samurai\Samurai.fbx" />
+    <None Include="source\shaders\PBRRenderToolkit.hlsli" />
     <None Include="source\shaders\globals.hlsli" />
+    <None Include="source\shaders\PostProcessToolkit.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="source\assets\Knight\Cape_BaseColor.dds" />

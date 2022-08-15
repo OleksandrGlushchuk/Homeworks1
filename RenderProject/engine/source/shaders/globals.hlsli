@@ -1,5 +1,6 @@
+#ifndef _GLOBALS_HLSLI_
+#define _GLOBALS_HLSLI_
 static const float M_PI = 3.14159265358979323846f; 
-static const float HALF_SPHERE_SOLID_ANGLE = 2.f * M_PI;
 static const uint MAX_LIGHTS = 8;
 
 struct PointLightBuffer
@@ -24,4 +25,11 @@ cbuffer PerFrameBuffer : register(b0)
     PointLightBuffer g_pointLightBuffer[MAX_LIGHTS];
 };
 
+cbuffer MeshToModel : register(b1)
+{
+    float4x4 g_meshToModelMatrix;
+}
+
 SamplerState g_samplerState : register(s0);
+SamplerState g_pointSamplerState : register(s1);
+#endif

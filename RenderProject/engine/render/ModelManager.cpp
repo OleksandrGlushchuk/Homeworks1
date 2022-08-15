@@ -487,7 +487,7 @@ namespace engine
 				vertex.textureCoords = reinterpret_cast<Vec2&>(srcMesh->mTextureCoords[0][v]);
 				vertex.normal = reinterpret_cast<Vec3&>(srcMesh->mNormals[v]);
 				vertex.tangent = reinterpret_cast<Vec3&>(srcMesh->mTangents[v]);
-				vertex.bitangent = reinterpret_cast<Vec3&>(srcMesh->mBitangents[v]) * (-1.f); // Flip V
+				vertex.bitangent = reinterpret_cast<Vec3&>(srcMesh->mBitangents[v]);
 			}
 			allVerticesSize += srcMesh->mNumVertices;
 

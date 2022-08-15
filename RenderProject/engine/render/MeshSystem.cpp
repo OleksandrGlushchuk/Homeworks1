@@ -105,9 +105,6 @@ namespace engine
 			auto& newModel = opaqueInstances.m_modelInstances.back();
 			newModel.meshIDs.resize(newModel.model->m_meshes.size() * 2, 0);
 			modelID.meshesBlock_index = 0;
-
-			opaqueInstances.updateInstanceBuffers();
-			return;
 		}
 		else
 		{
@@ -165,9 +162,6 @@ namespace engine
 			auto& newModel = emissiveInstances.m_modelInstances.back();
 			newModel.meshIDs.resize(newModel.model->m_meshes.size(), 0);
 			modelID.meshesBlock_index = 0;
-
-			emissiveInstances.updateInstanceBuffers();
-			return;
 		}
 		else
 		{

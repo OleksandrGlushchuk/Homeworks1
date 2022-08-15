@@ -43,7 +43,7 @@ namespace engine
 		static void deinit();
 		static Globals& instance();
 		void Bind();
-		void InitSamplerState(D3D11_SAMPLER_DESC& samplerDesc, const std::string& samplerStateKey);
+		void CreateSamplerState(D3D11_SAMPLER_DESC& samplerDesc, const std::string& samplerStateKey);
 		void SetGlobalSamplerState(const std::string& _globalSamplerStateKey);
 
 		void UpdatePerFrameBuffer(const Camera& camera);
