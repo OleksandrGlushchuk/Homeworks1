@@ -1,16 +1,18 @@
 #pragma once
-#include "Scene.h"
+#include "window.h"
+#include "Renderer.h"
 #include "../render/globals.hpp"
 #include "InputState.h"
-#include "../objects/IntersectionQuery.h"
 #include "../math/ray.h"
+#include "../render/PostProcess.h"
+
 
 namespace engine::windows
 {
 	class Controller
 	{
 		engine::windows::Window& wnd;
-		engine::windows::Scene& scene;
+		engine::windows::Renderer& renderer;
 
 		bool need_to_move_camera = false;
 		WORD mouse_x = 0, mouse_y = 0;
@@ -18,8 +20,8 @@ namespace engine::windows
 
 		//---OBJECT MOVER---//
 		ray ray_clicked_to_object;
-		IntersectionQuery nearest_clicked_object;
-		IntersectionQuery new_object_intersection;
+		uint32_t clicked_object_transform_id;
+		engine::MeshIntersection nearest_clicked_object;
 		float distance_object_to_camera;
 		bool need_to_move_object = false;
 		//-----------------//
@@ -41,11 +43,11 @@ namespace engine::windows
 
 		void RotateCamera();
 		void moveCamera(const Vec3& offset, const Angles& angles);
-		void UpdatePerFrameBuffer();
 		void ProcessInput();
+		PostProcess m_postProcess;
 	public:
 		float delta_time;
-		Controller(engine::windows::Window &_wnd, engine::windows::Scene& _scene) : wnd(_wnd), scene(_scene){}
+		Controller(engine::windows::Window &_wnd, engine::windows::Renderer& _scene) : wnd(_wnd), renderer(_scene){}
 
 		void OnKeyDown(WPARAM key);
 		void OnKeyUp(WPARAM key);

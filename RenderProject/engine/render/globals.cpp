@@ -1,5 +1,6 @@
 #include "globals.hpp"
 #include <Windows.h>
+#include "../math/camera.h"
 // Say NVidia or AMD driver to prefer a dedicated GPU instead of an integrated.
 // This has effect on laptops.
 extern "C"
@@ -18,7 +19,6 @@ namespace engine
 		s_instance->initD3D();
 		s_instance->InitSamplerStates();
 		s_instance->InitPerFrameBuffer();
-		s_instance->initDepthStencilBuffer();
 	}
 	void Globals::deinit()
 	{
@@ -164,81 +164,24 @@ namespace engine
 		engine::Globals::instance().m_globalSamplerState = result->second;
 	}
 
-	void Globals::initDepthStencilResource(UINT width, UINT height)
-	{
-		D3D11_TEXTURE2D_DESC depthBufferDesc;
-
-		depthBufferDesc.Width = std::max<UINT>(width, 8u);
-		depthBufferDesc.Height = std::max<UINT>(height, 8u);
-		depthBufferDesc.Format = DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
-		depthBufferDesc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_DEPTH_STENCIL;
-		depthBufferDesc.ArraySize = 1;
-		depthBufferDesc.MipLevels = 1;
-		depthBufferDesc.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT;
-		depthBufferDesc.CPUAccessFlags = 0;
-		depthBufferDesc.SampleDesc.Count = 1;
-		depthBufferDesc.SampleDesc.Quality = 0;
-		depthBufferDesc.MiscFlags = 0;
-
-		HRESULT result = engine::s_device->CreateTexture2D(&depthBufferDesc, nullptr, m_depthStencilBuffer.reset());
-		ALWAYS_ASSERT(result >= 0 && "CreateTexture2D");
-	}
-
-	void Globals::initDepthStencilState()
-	{
-		D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
-		depthStencilDesc.DepthEnable = TRUE;
-		depthStencilDesc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_GREATER_EQUAL;
-		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
-
-		depthStencilDesc.StencilEnable = FALSE;
-		depthStencilDesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
-		depthStencilDesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
-
-		depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP::D3D11_STENCIL_OP_KEEP;
-		depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP::D3D11_STENCIL_OP_INCR;
-		depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP::D3D11_STENCIL_OP_KEEP;
-		depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
-
-		depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP::D3D11_STENCIL_OP_KEEP;
-		depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP::D3D11_STENCIL_OP_DECR;
-		depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP::D3D11_STENCIL_OP_KEEP;
-		depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
-
-		HRESULT result = engine::s_device->CreateDepthStencilState(&depthStencilDesc, m_depthStencilState.reset());
-		ALWAYS_ASSERT(result >= 0 && "CreateDepthStencilState");
-	}
-
-	void Globals::initDepthStencilView()
-	{
-		D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-		memset(&depthStencilViewDesc, 0, sizeof(depthStencilViewDesc));
-		depthStencilViewDesc.Format = DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
-		depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION::D3D11_DSV_DIMENSION_TEXTURE2D;
-		depthStencilViewDesc.Texture2D.MipSlice = 0;
-
-		HRESULT result = engine::s_device->CreateDepthStencilView(m_depthStencilBuffer.ptr(), &depthStencilViewDesc, m_depthStencilView.reset());
-		ALWAYS_ASSERT(result >= 0 && "CreateDepthStencilView");
-	}
-
 	void Globals::InitPerFrameBuffer()
 	{
-		D3D11_BUFFER_DESC perFrameBufferDesc;
-		perFrameBufferDesc.ByteWidth = sizeof(PerFrameBuffer);
-		perFrameBufferDesc.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
-		perFrameBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_FLAG::D3D11_CPU_ACCESS_WRITE;
-		perFrameBufferDesc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_CONSTANT_BUFFER;
-		perFrameBufferDesc.MiscFlags = 0;
-		perFrameBufferDesc.StructureByteStride = 0;
-
-		HRESULT result = engine::s_device->CreateBuffer(&perFrameBufferDesc, nullptr, m_perFrameBuffer.reset());
-		ALWAYS_ASSERT(result >= 0 && "CreateBuffer");
+		m_perFrameBuffer.Init(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 	}
 
 	void Globals::Bind()
 	{
-		engine::s_deviceContext->VSSetConstantBuffers(0, 1, &m_perFrameBuffer.ptr());
+		m_perFrameBuffer.BindVS(0);
+		m_perFrameBuffer.BindPS(0);
 		engine::s_deviceContext->PSSetSamplers(0, 1, &m_globalSamplerState.ptr());
+	}
+
+	void Globals::UpdatePerFrameBuffer(const Camera& camera)
+	{
+		auto mapping = m_perFrameBuffer.Map();
+		*(PerFrameBuffer*)mapping.pData = PerFrameBuffer(camera.m_viewProj, camera.BottomLeft, camera.BR_M_BL, camera.TL_M_BL, 
+			camera.position(), engine::LightSystem::instance().pointLight);
+		m_perFrameBuffer.Unmap();
 	}
 
 	Globals::~Globals()

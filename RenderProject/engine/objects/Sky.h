@@ -1,6 +1,5 @@
 #pragma once
 #include "../render/globals.hpp"
-#include "Mesh.h"
 
 class Sky
 {

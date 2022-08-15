@@ -1,6 +1,7 @@
 #pragma once
 #include <windows.h>
 #include "../render/globals.hpp"
+#include "../render/RenderTarget.h"
 
 namespace engine::windows
 {
@@ -10,7 +11,8 @@ namespace engine::windows
 		DxResPtr<IDXGISwapChain1> m_swapChain1;
 		DxResPtr<ID3D11Texture2D> m_backBuffer;
 		D3D11_TEXTURE2D_DESC m_backbufferDesc;
-		DxResPtr<ID3D11RenderTargetView1> m_renderTargetView1;
+		//DxResPtr<ID3D11RenderTargetView1> m_renderTargetView1;
+		RenderTarget m_renderTarget;
 
 		WNDCLASS wndclass;
 		HDC device_context;
@@ -35,7 +37,6 @@ namespace engine::windows
 			initSwapchain();
 			initBackBuffer();
 			initRenderTargetView();
-			engine::Globals::instance().UpdateDepthStencilBuffer(screen.right, screen.bottom);
 		}
 
 		void Show()

@@ -4,6 +4,8 @@
 #include "ShaderManager.h"
 #include "ModelManager.h"
 #include "MeshSystem.h"
+#include "LightSystem.h"
+#include "TransformSystem.h"
 
 namespace engine
 {
@@ -20,10 +22,13 @@ namespace engine
 		ShaderManager::init();
 		ModelManager::init();
 		MeshSystem::init();
-		
+		LightSystem::init();
+		TransformSystem::init();
 	}
 	void deinit()
 	{
+		TransformSystem::deinit();
+		LightSystem::deinit();
 		MeshSystem::deinit();
 		ModelManager::deinit();
 		ShaderManager::deinit();

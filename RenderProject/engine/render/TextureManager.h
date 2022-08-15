@@ -7,7 +7,7 @@ namespace engine
 {
 	class TextureManager
 	{
-		engine::DxResPtr<ID3D11Resource> m_texture;
+		engine::DxResPtr<ID3D11Resource> m_colorMap;
 		std::unordered_map<std::wstring, engine::DxResPtr<ID3D11ShaderResourceView> > m_shaderResourceView;
 		static TextureManager *s_instance;
 		TextureManager() {}

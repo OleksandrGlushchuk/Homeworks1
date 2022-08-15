@@ -36,8 +36,13 @@ public:
 		engine::s_deviceContext->Unmap(m_constantBuffer.ptr(), 0);
 	}
 
-	inline void Bind(uint32_t startSlot = 0)
+	inline void BindVS(uint32_t startSlot = 0)
 	{
 		engine::s_deviceContext->VSSetConstantBuffers(startSlot, 1, &m_constantBuffer.ptr());
+	}
+
+	inline void BindPS(uint32_t startSlot = 0)
+	{
+		engine::s_deviceContext->PSSetConstantBuffers(startSlot, 1, &m_constantBuffer.ptr());
 	}
 };

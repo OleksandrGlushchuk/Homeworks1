@@ -10,9 +10,9 @@ public:
 	{
 		m_textureViewer = engine::TextureManager::instance().LoadTexture(fileName);
 	}
-	void Bind()
+	void Bind(UINT startSlot = 0)
 	{
-		engine::s_deviceContext->PSSetShaderResources(0, 1, &m_textureViewer.ptr());
+		engine::s_deviceContext->PSSetShaderResources(startSlot, 1, &m_textureViewer.ptr());
 	}
 	bool operator==(const Texture& tex) const
 	{

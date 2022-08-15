@@ -1,6 +1,6 @@
 #include "window/window.h"
 #include "window/controller.h"
-#include "window/Scene.h"
+#include "window/Renderer.h"
 #include "window/Timer.h"
 #include <thread>
 #include <chrono>
@@ -10,14 +10,14 @@ const float FRAME_DURATION = 1.f / 60.f;
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 engine::windows::Window window;
-engine::windows::Scene scene;
-engine::windows::Controller controller(window, scene);
+engine::windows::Renderer renderer;
+engine::windows::Controller controller(window, renderer);
 
 int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPWSTR cmdline, _In_ int cmdshow)
 {
 	engine::init();
 
-	window = engine::windows::Window(L"homework-5", hinstance, WndProc);
+	window = engine::windows::Window(L"homework-7", hinstance, WndProc);
 	controller.InitScene();
 	window.Show();
 
@@ -40,9 +40,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 		delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count();
 		if (timer.FrameTimeElapsed(FRAME_DURATION))
 		{
-			window.BeginFrame();
 			controller.Draw();
-			window.EndFrame();
 			controller.delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count() - delta_time + FRAME_DURATION;
 		}
 		

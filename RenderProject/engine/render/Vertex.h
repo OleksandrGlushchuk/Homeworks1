@@ -5,7 +5,7 @@ struct Vertex
 {
 	Vec3 position;
 	Vec2 textureCoords;
-	//Vec3 normal;
-	//Vec3 tangent;
-	//Vec3 bitangent;
+	Vec3 normal;
+	Vec3 tangent;
+	Vec3 bitangent;
 };

@@ -4,28 +4,18 @@ const float p_near = 0.01f, p_far = 10000.f, fovy = M_PI / 3.f;
 namespace engine::windows
 {
 
-	void Controller::UpdatePerFrameBuffer()
-	{
-		D3D11_MAPPED_SUBRESOURCE mappedSubresource;
-		HRESULT result = engine::s_deviceContext->Map(engine::Globals::instance().m_perFrameBuffer.ptr(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-		ALWAYS_ASSERT(result >= 0 && "Map");
-
-		*(PerFrameBuffer*)(mappedSubresource.pData) = PerFrameBuffer(scene.camera.m_viewProj, scene.camera.BottomLeft, scene.camera.BR_M_BL, scene.camera.TL_M_BL, scene.camera.m_viewProjInv);
-		engine::s_deviceContext->Unmap(engine::Globals::instance().m_perFrameBuffer.ptr(), 0);
-	}
-
 	void Controller::Update()
 	{
 		ProcessInput();
-		UpdatePerFrameBuffer();
 	}
 
 	void Controller::Draw()
 	{
-		Update();
-		engine::Globals::instance().Bind();
-		engine::MeshSystem::instance().render();
-		scene.Draw();
+		//Update();
+		ProcessInput();
+		wnd.BeginFrame();
+		renderer.Render(wnd.m_renderTarget, renderer.camera, m_postProcess);
+		wnd.EndFrame();
 	}
 
 	void Controller::OnChangeWindowSize()
@@ -34,130 +24,217 @@ namespace engine::windows
 
 		need_to_rotate_camera = false;
 		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
-		scene.camera.updateAspect(aspect);
-		scene.camera.updateBasis();
-		scene.camera.updateMatrices();
+		renderer.camera.updateAspect(aspect);
+		renderer.camera.updateBasis();
+		renderer.camera.updateMatrices();
 
-		UpdatePerFrameBuffer();
-
-		wnd.BeginFrame();
 		Draw();
-		wnd.EndFrame();
 	}
 
 	void Controller::InitScene()
 	{
+		renderer.Init(8u, 8u);
+		m_postProcess.Init();
+		engine::LightSystem::instance().pointLight.emplace_back(Vec3(1, 1, 1), 3.5f, Vec3(0, 1.f, -1.f), 0.1f, 
+			engine::ModelManager::instance().GetUnitSphereModel());
+		engine::LightSystem::instance().pointLight.emplace_back(Vec3(1, 1, 1), 2.5f, Vec3(2.5f, 3.f, -1.f), 0.1f,
+			engine::ModelManager::instance().GetUnitSphereModel());
+		engine::LightSystem::instance().pointLight.emplace_back(Vec3(0.2f, 1, 0.2f), 1.3f, Vec3(1, -0.7f, -1.f), 0.1f,
+			engine::ModelManager::instance().GetUnitSphereModel());
+		engine::LightSystem::instance().pointLight.emplace_back(Vec3(1.f, 1, 0.2f), 1.3f, Vec3(-1.5f, 0.7f, 0.f), 0.1f,
+			engine::ModelManager::instance().GetUnitSphereModel());
+
 		//SKY
 		{
-			scene.sky.Init();
-			scene.sky.SetTexture(L"source/textures/skymap.dds");
+			renderer.m_sky.Init();
+			renderer.m_sky.SetTexture(L"source/textures/skymap.dds");
 		}
-		//OpaqueInstances
+		//KNIGHTS
 		{
-			OpaqueInstances::Instance identity_instance(Matr<4>::identity());
-			//KNIGHTS
-			{
-				Knight::Init();
-				scene.knight.resize(2);
-				std::vector<OpaqueInstances::Material> m(9);
-				m[0].m_texture.Load(L"source/assets/Knight/Fur_BaseColor.dds");
-				m[1].m_texture.Load(L"source/assets/Knight/Legs_BaseColor.dds");
-				m[2].m_texture.Load(L"source/assets/Knight/Torso_BaseColor.dds");
-				m[3].m_texture.Load(L"source/assets/Knight/Head_BaseColor.dds");
-				m[4].m_texture.Load(L"source/assets/Knight/Eye_BaseColor.dds");
-				m[5].m_texture.Load(L"source/assets/Knight/Helmet_BaseColor.dds");
-				m[6].m_texture.Load(L"source/assets/Knight/Skirt_BaseColor.dds");
-				m[7].m_texture.Load(L"source/assets/Knight/Cape_BaseColor.dds");
-				m[8].m_texture.Load(L"source/assets/Knight/Glove_BaseColor.dds");
+			const auto& KnightModel = engine::ModelManager::instance().LoadModel("source/assets/Knight/Knight.fbx");
 
+			std::vector<OpaqueInstances::Material> m(9);
+			m[0].m_colorMap.Load(L"source/assets/Knight/Fur_BaseColor.dds");
+			m[0].m_normalMap.Load(L"source/assets/Knight/Fur_Normal.dds");
+			m[0].m_roughnessMap.Load(L"source/assets/Knight/Fur_Roughness.dds");
+			m[0].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, 0.02f);
 
-				engine::MeshSystem::instance().addInstance(Knight::s_model, m, scene.knight[0].ID, identity_instance);
-				engine::MeshSystem::instance().Translate(scene.knight[0].ID, Vec3(-1.5f, -0.9f, 0));
-				engine::MeshSystem::instance().Rotate(scene.knight[0].ID, Quaternion(M_PI_4, engine::MeshSystem::instance().Get_Forward(scene.knight[0].ID)));
-				engine::MeshSystem::instance().Rotate(scene.knight[0].ID, Quaternion(M_PI_2, engine::MeshSystem::instance().Get_Top(scene.knight[0].ID)));
+			m[1].m_colorMap.Load(L"source/assets/Knight/Legs_BaseColor.dds");
+			m[1].m_normalMap.Load(L"source/assets/Knight/Legs_Normal.dds");
+			m[1].m_roughnessMap.Load(L"source/assets/Knight/Legs_Roughness.dds");
+			m[1].m_metalnessMap.Load(L"source/assets/Knight/Legs_Metallic.dds");
+			m[1].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(true, true, true);
 
-				m[2].m_texture.Load(L"source/assets/Samurai/Torso_BaseColor.dds"); //NEW MATERIAL FOR TORSO MESH AS EXAMPLE
-				engine::MeshSystem::instance().addInstance(Knight::s_model, m, scene.knight[1].ID, identity_instance);
-				engine::MeshSystem::instance().Scale(scene.knight[1].ID, Vec3(0.5f, 0.5f, 0.5f));
-				engine::MeshSystem::instance().Translate(scene.knight[1].ID, Vec3(1.f, 0, 0.6f));
-			}
+			m[2].m_colorMap.Load(L"source/assets/Knight/Torso_BaseColor.dds");
+			m[2].m_normalMap.Load(L"source/assets/Knight/Torso_Normal.dds");
+			m[2].m_roughnessMap.Load(L"source/assets/Knight/Torso_Roughness.dds");
+			m[2].m_metalnessMap.Load(L"source/assets/Knight/Torso_Metallic.dds");
+			m[2].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(true, true, true);
 
-			//SAMURAI
-			{
-				Samurai::Init();
-				scene.samurai.resize(1);
-				std::vector<OpaqueInstances::Material> m(8);
-				m[0].m_texture.Load(L"source/assets/Samurai/Sword_BaseColor.dds");
-				m[1].m_texture.Load(L"source/assets/Samurai/Head_BaseColor.dds");
-				m[2].m_texture.Load(L"source/assets/Samurai/Eye_BaseColor.dds");
-				m[3].m_texture.Load(L"source/assets/Samurai/Helmet_BaseColor.dds");
-				m[4].m_texture.Load(L"source/assets/Knight/Skirt_BaseColor.dds");
-				m[5].m_texture.Load(L"source/assets/Samurai/Legs_BaseColor.dds");
-				m[6].m_texture.Load(L"source/assets/Samurai/Hand_BaseColor.dds");
-				m[7].m_texture.Load(L"source/assets/Samurai/Torso_BaseColor.dds");
-				engine::MeshSystem::instance().addInstance(Samurai::s_model, m, scene.samurai[0].ID, identity_instance);
-				engine::MeshSystem::instance().Translate(scene.samurai[0].ID, Vec3(3.5f, -0.5f, -1));
-				engine::MeshSystem::instance().Scale(scene.samurai[0].ID, Vec3(2.5f, 2.5f, 2.5f));
-				engine::MeshSystem::instance().Rotate(scene.samurai[0].ID, Quaternion(-M_PI_2, engine::MeshSystem::instance().Get_Top(scene.samurai[0].ID)));
-			}
+			m[3].m_colorMap.Load(L"source/assets/Knight/Head_BaseColor.dds");
+			m[3].m_normalMap.Load(L"source/assets/Knight/Head_Normal.dds");
+			m[3].m_roughnessMap.Load(L"source/assets/Knight/Head_Roughness.dds");
+			m[3].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, 0.01f);
 
-			//CUBES
-			{
-				Cube::Init();
-				scene.cube.resize(8);
+			m[4].m_colorMap.Load(L"source/assets/Knight/Eye_BaseColor.dds");
+			m[4].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, false, false, 0.02f, 0.1f);
 
-				std::vector<OpaqueInstances::Material> brick(1);
-				brick[0].m_texture.Load(L"source/textures/brick.dds");
+			m[5].m_colorMap.Load(L"source/assets/Knight/Helmet_BaseColor.dds");
+			m[5].m_normalMap.Load(L"source/assets/Knight/Helmet_Normal.dds");
+			m[5].m_roughnessMap.Load(L"source/assets/Knight/Helmet_Roughness.dds");
+			m[5].m_metalnessMap.Load(L"source/assets/Knight/Helmet_Metallic.dds");
+			m[5].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(true, true, true);
 
-				std::vector<OpaqueInstances::Material> roof(1);
-				roof[0].m_texture.Load(L"source/textures/roof.dds");
+			m[6].m_colorMap.Load(L"source/assets/Knight/Skirt_BaseColor.dds");
+			m[6].m_normalMap.Load(L"source/assets/Knight/Skirt_Normal.dds");
+			m[6].m_roughnessMap.Load(L"source/assets/Knight/Skirt_Roughness.dds");
+			m[6].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, 0.02f);
 
-				std::vector<OpaqueInstances::Material> redstone(1);
-				redstone[0].m_texture.Load(L"source/textures/redstone.dds");
+			m[7].m_colorMap.Load(L"source/assets/Knight/Cape_BaseColor.dds");
+			m[7].m_normalMap.Load(L"source/assets/Knight/Cape_Normal.dds");
+			m[7].m_roughnessMap.Load(L"source/assets/Knight/Cape_Roughness.dds");
+			m[7].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, 0.02f);
 
-				std::vector<OpaqueInstances::Material> chess(1);
-				chess[0].m_texture.Load(L"source/textures/chess.dds");
+			m[8].m_colorMap.Load(L"source/assets/Knight/Glove_BaseColor.dds");
+			m[8].m_normalMap.Load(L"source/assets/Knight/Glove_Normal.dds");
+			m[8].m_roughnessMap.Load(L"source/assets/Knight/Glove_Roughness.dds");
+			m[8].m_metalnessMap.Load(L"source/assets/Knight/Glove_Metallic.dds");
+			m[8].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(true, true, true);
 
-				engine::MeshSystem::instance().addInstance(Cube::s_model, brick, scene.cube[0].ID, identity_instance);
-				engine::MeshSystem::instance().Scale(scene.cube[0].ID, Vec3(0.5f, 3, 3));
-				engine::MeshSystem::instance().Translate(scene.cube[0].ID, Vec3(-2, 0, 0));
-	
-				engine::MeshSystem::instance().addInstance(Cube::s_model, brick, scene.cube[1].ID, identity_instance);
-				engine::MeshSystem::instance().Scale(scene.cube[1].ID, Vec3(0.5f, 3, 3));
-				engine::MeshSystem::instance().Translate(scene.cube[1].ID, Vec3(2, 0, 0));
+			Transform transform = Transform::Identity();
+			transform.Translate(Vec3(-1.5f, -0.9f, 0));
+			transform.Rotate(Quaternion(M_PI_4, transform.forward()));
+			transform.Rotate(Quaternion(M_PI_2, transform.top()));
 
-				engine::MeshSystem::instance().addInstance(Cube::s_model, brick, scene.cube[2].ID, identity_instance);
-				engine::MeshSystem::instance().Scale(scene.cube[2].ID, Vec3(4, 3, 0.5f));
-				engine::MeshSystem::instance().Translate(scene.cube[2].ID, Vec3(0, 0, 1.8f));
+			engine::MeshSystem::instance().addInstance(KnightModel, m, OpaqueInstances::Instance(transform));
 
-				engine::MeshSystem::instance().addInstance(Cube::s_model, roof, scene.cube[3].ID, identity_instance);
-				engine::MeshSystem::instance().Scale(scene.cube[3].ID, Vec3(0.3f, 4, 3.8f));
-				engine::MeshSystem::instance().Translate(scene.cube[3].ID, Vec3(-1.4f, 2.2f, 0.21f));
-				engine::MeshSystem::instance().Rotate(scene.cube[3].ID, Quaternion(M_PI_4,engine::MeshSystem::instance().Get_Forward(scene.cube[3].ID)));
-
-				engine::MeshSystem::instance().addInstance(Cube::s_model, roof, scene.cube[4].ID, identity_instance);
-				engine::MeshSystem::instance().Scale(scene.cube[4].ID, Vec3(0.3f, 4, 3.8f));
-				engine::MeshSystem::instance().Translate(scene.cube[4].ID, Vec3(1.4f, 2.2f, 0.20f));
-				engine::MeshSystem::instance().Rotate(scene.cube[4].ID, Quaternion(-M_PI_4, Vec3(0, 0, 1)));
-
-				engine::MeshSystem::instance().addInstance(Cube::s_model, redstone, scene.cube[5].ID, identity_instance);
-				engine::MeshSystem::instance().Translate(scene.cube[5].ID, Vec3(1.f, -0.5f, 1.f));
-
-				engine::MeshSystem::instance().addInstance(Cube::s_model, chess, scene.cube[6].ID, identity_instance);
-				engine::MeshSystem::instance().Scale(scene.cube[6].ID, Vec3(4, 0.5f, 3));
-				engine::MeshSystem::instance().Translate(scene.cube[6].ID, Vec3(0, -1.3f, 0.1f));
-
-				Matr<4> matr({ 0.4f,0,0,0 },
-							 { 0,2,0,0 },
-							 { 0,0,0.4f,0 },
-							 { 1,3.4f,0,1 });
-				engine::MeshSystem::instance().addInstance(Cube::s_model, brick, scene.cube[7].ID, OpaqueInstances::Instance(matr));
-			}
+			transform = Transform::Identity();
+			transform.Scale(Vec3(0.5f, 0.5f, 0.5f));
+			transform.Translate(Vec3(1.f, 0, 0.6f));
+			engine::MeshSystem::instance().addInstance(KnightModel, m, OpaqueInstances::Instance(transform));
 		}
+
+		//SAMURAI
+		{
+			const auto& SamuraiModel = engine::ModelManager::instance().LoadModel("source/assets/Samurai/Samurai.fbx");
+			std::vector<OpaqueInstances::Material> m(8);
+			m[0].m_colorMap.Load(L"source/assets/Samurai/Sword_BaseColor.dds");
+			m[0].m_normalMap.Load(L"source/assets/Samurai/Sword_Normal.dds");
+			m[0].m_roughnessMap.Load(L"source/assets/Samurai/Sword_Roughness.dds");
+			m[0].m_metalnessMap.Load(L"source/assets/Samurai/Sword_Metallic.dds");
+			m[0].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(true, true, true);
+
+			m[1].m_colorMap.Load(L"source/assets/Samurai/Head_BaseColor.dds");
+			m[1].m_normalMap.Load(L"source/assets/Samurai/Head_Normal.dds");
+			m[1].m_roughnessMap.Load(L"source/assets/Samurai/Head_Roughness.dds");
+			m[1].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, 0.01f);
+
+			m[2].m_colorMap.Load(L"source/assets/Samurai/Eye_BaseColor.dds");
+			m[2].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, false, false, 0.02f, 0.1f);
+
+			m[3].m_colorMap.Load(L"source/assets/Samurai/Helmet_BaseColor.dds");
+			m[3].m_normalMap.Load(L"source/assets/Samurai/Helmet_Normal.dds");
+			m[3].m_roughnessMap.Load(L"source/assets/Samurai/Helmet_Roughness.dds");
+			m[3].m_metalnessMap.Load(L"source/assets/Samurai/Helmet_Metallic.dds");
+			m[3].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(true, true, true);
+
+			m[4].m_colorMap.Load(L"source/assets/Knight/Skirt_BaseColor.dds");
+			m[4].m_normalMap.Load(L"source/assets/Knight/Skirt_Normal.dds");
+			m[4].m_roughnessMap.Load(L"source/assets/Knight/Skirt_Roughness.dds");
+			m[4].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, 0.02f);
+
+			m[5].m_colorMap.Load(L"source/assets/Samurai/Legs_BaseColor.dds");
+			m[5].m_normalMap.Load(L"source/assets/Samurai/Legs_Normal.dds");
+			m[5].m_roughnessMap.Load(L"source/assets/Samurai/Legs_Roughness.dds");
+			m[5].m_metalnessMap.Load(L"source/assets/Samurai/Legs_Metallic.dds");
+			m[5].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(true, true, true);
+
+			m[6].m_colorMap.Load(L"source/assets/Samurai/Hand_BaseColor.dds");
+			m[6].m_normalMap.Load(L"source/assets/Samurai/Hand_Normal.dds");
+			m[6].m_roughnessMap.Load(L"source/assets/Samurai/Hand_Roughness.dds");
+			m[6].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, 0.02f);
+
+			m[7].m_colorMap.Load(L"source/assets/Samurai/Torso_BaseColor.dds");
+			m[7].m_normalMap.Load(L"source/assets/Samurai/Torso_Normal.dds");
+			m[7].m_roughnessMap.Load(L"source/assets/Samurai/Torso_Roughness.dds");
+			m[7].m_metalnessMap.Load(L"source/assets/Samurai/Torso_Metallic.dds");
+			m[7].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(true, true, true);
+
+			Transform transform = Transform::Identity();
+			transform.Translate(Vec3(3.5f, -1.f, -1.f));
+			transform.Scale(Vec3(2, 2, 2));
+			transform.Rotate(Quaternion(-M_PI_2, transform.top()));
+
+			engine::MeshSystem::instance().addInstance(SamuraiModel, m, OpaqueInstances::Instance(transform));
+
+			transform = Transform::Identity();
+			transform.Scale(Vec3(0.3f, 0.3f, 0.3f));
+			transform.Translate(Vec3(0, -1, -1));
+
+			engine::MeshSystem::instance().addInstance(SamuraiModel, EmissiveInstances::Instance(Vec3(0, 0, 1), transform));
+
+		}
+		//CUBES
+		{
+			std::vector<OpaqueInstances::Material> brick(1);
+			brick[0].m_colorMap.Load(L"source/textures/Brick/Brick_Wall_012_COLOR.dds");
+			brick[0].m_normalMap.Load(L"source/textures/Brick/Brick_Wall_012_NORM.dds");
+			brick[0].m_roughnessMap.Load(L"source/textures/Brick/Brick_Wall_012_ROUGH.dds");
+			brick[0].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, 0.002f);
+
+			std::vector<OpaqueInstances::Material> stone(1);
+			stone[0].m_colorMap.Load(L"source/textures/Stone/Stylized_Stone_Floor_005_basecolor.dds");
+			stone[0].m_normalMap.Load(L"source/textures/Stone/Stylized_Stone_Floor_005_normal.dds");
+			stone[0].m_roughnessMap.Load(L"source/textures/Stone/Stylized_Stone_Floor_005_roughness.dds");
+			stone[0].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, 0.002f);
+
+			Transform transform = Transform::Identity();
+			transform.SetScale({ 0.5f, 3, 3 });
+			transform.SetPosition({ -2, 0, 0 });
+			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
+			
+			transform.SetScale({ 0.5, 3, 3 });
+			transform.SetPosition({ 2, 0, 0 });
+			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
+			
+			transform.SetScale({ 4, 3, 0.5f });
+			transform.SetPosition({ 0, 0, 1.8f });
+			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
+			
+
+			transform.SetScale({ 0.5f, 3, 3 });
+			transform.SetPosition({ -2, 0, 0 });
+			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
+			
+			transform.SetScale({ 0.3f, 4, 3.8f });
+			transform.SetPosition({ -1.4f, 2.2f, 0.21f });
+			transform.Rotate(Quaternion(M_PI_4, { 0,0,1 }));
+			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
+
+			transform = Transform::Identity();
+			transform.SetScale({ 0.3f, 4, 3.8f });
+			transform.SetPosition({ 1.4f, 2.2f, 0.2f });
+			transform.Rotate(Quaternion(-M_PI_4, { 0,0,1 }));
+			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
+			
+			transform = Transform::Identity();
+			transform.SetPosition({ 1.f, -0.5f, 1.f });
+			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
+			
+			transform.SetScale({ 4.f, 0.5f, 3.f });
+			transform.SetPosition({ 0.f, -1.3f, 0.1f });
+			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), stone, OpaqueInstances::Instance(transform));
+			
+
+			transform.SetScale({ 0.4f, 2, 0.4f });
+			transform.SetPosition({ 1.f, 3.4f, 0.f });
+			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
+		}
+		
 
 		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
-		scene.camera = Camera(fovy, aspect, p_near, p_far);
-		scene.camera.setWorldOffset(Vec3(0, 0, -5));
+		renderer.camera = Camera(fovy, aspect, p_near, p_far);
+		renderer.camera.setWorldOffset(Vec3(0, 0, -5));
 	}
 
 	void Controller::ProcessInput()
@@ -230,6 +307,18 @@ namespace engine::windows
 			}
 		}
 
+		//LIGHTING
+		{
+			if (input_state[VK_OEM_PLUS])
+			{
+				m_postProcess.EV100 += 1.f * delta_time;
+			}
+			if (input_state[VK_OEM_MINUS])
+			{
+				m_postProcess.EV100 -= 1.f * delta_time;
+			}
+		}
+
 		//OBJECT_ROTATION
 		{
 			if (input_state['C'])
@@ -284,11 +373,12 @@ namespace engine::windows
 					rotate_angles.pitch *= delta_time; rotate_angles.roll *= delta_time; rotate_angles.yaw *= delta_time;
 					if (need_to_rotate_object_relative_to_camera_axes)
 					{
-						nearest_clicked_object.rotator->rotate(rotate_angles, scene.camera.right(), scene.camera.top(), scene.camera.forward());
+						engine::TransformSystem::instance().m_transforms[clicked_object_transform_id].Rotate(rotate_angles, renderer.camera.right(), renderer.camera.top(), renderer.camera.forward());
 					}
 					else
 					{
-						nearest_clicked_object.rotator->rotate(rotate_angles, nearest_clicked_object.rotator->get_right(), nearest_clicked_object.rotator->get_top(), nearest_clicked_object.rotator->get_forward());
+						auto& transform = engine::TransformSystem::instance().m_transforms[clicked_object_transform_id];
+						transform.Rotate(rotate_angles, transform.right(), transform.top(), transform.forward());
 					}
 					need_to_rotate_object = false;
 				}
@@ -319,9 +409,9 @@ namespace engine::windows
 
 	void Controller::moveCamera(const Vec3& offset, const Angles& angles)
 	{
-		scene.camera.addRelativeAngles(angles);
-		scene.camera.addRelativeOffset(offset);
-		scene.camera.updateMatrices();
+		renderer.camera.addRelativeAngles(angles);
+		renderer.camera.addRelativeOffset(offset);
+		renderer.camera.updateMatrices();
 	}
 
 	void Controller::OnLMouseDown(WORD x, WORD y)
@@ -354,7 +444,7 @@ namespace engine::windows
 	{
 		mouse_x = x;
 		mouse_y = y;
-		nearest_clicked_object.reset();
+		nearest_clicked_object.reset(1);
 		need_to_move_object = false;
 
 		float xx = (x + 0.5f) / ((wnd.screen.right) / 2.f) - 1.f;
@@ -363,20 +453,17 @@ namespace engine::windows
 		ray_clicked_to_object.origin = Vec3(xx, yy, 1);
 
 		float w;
-		ray_clicked_to_object.origin.mult(scene.camera.m_viewProjInv, 1, &w);
+		ray_clicked_to_object.origin.mult(renderer.camera.m_viewProjInv, 1, &w);
 		ray_clicked_to_object.origin /= w;
 
-		ray_clicked_to_object.direction = ray_clicked_to_object.origin - scene.camera.position();
+		ray_clicked_to_object.direction = ray_clicked_to_object.origin - renderer.camera.position();
 		ray_clicked_to_object.direction.normalize();
 		
 
-		if (scene.findIntersection(ray_clicked_to_object, nearest_clicked_object))
+		if (engine::MeshSystem::instance().findIntersection(ray_clicked_to_object, nearest_clicked_object, clicked_object_transform_id))
 		{
-			if (nearest_clicked_object.mover != nullptr)
-			{
-				distance_object_to_camera = (nearest_clicked_object.nearest.point - scene.camera.position()).length();
-				need_to_move_object = true;
-			}
+			distance_object_to_camera = (nearest_clicked_object.pos - renderer.camera.position()).length();
+			need_to_move_object = true;
 		}
 	}
 
@@ -394,15 +481,15 @@ namespace engine::windows
 			ray_clicked_to_object.origin = Vec3(xx, yy, 1);
 
 			float w;
-			ray_clicked_to_object.origin.mult(scene.camera.m_viewProjInv, 1, &w);
+			ray_clicked_to_object.origin.mult(renderer.camera.m_viewProjInv, 1, &w);
 			ray_clicked_to_object.origin /= w;
 
-			ray_clicked_to_object.direction = ray_clicked_to_object.origin - scene.camera.position();
+			ray_clicked_to_object.direction = ray_clicked_to_object.origin - renderer.camera.position();
 			ray_clicked_to_object.direction.normalize();
 
-			Vec3 new_position = ray_clicked_to_object.direction * distance_object_to_camera + scene.camera.position();
-			nearest_clicked_object.mover->move(new_position - nearest_clicked_object.nearest.point);
-			nearest_clicked_object.nearest.point = new_position;
+			Vec3 new_position = ray_clicked_to_object.direction * distance_object_to_camera + renderer.camera.position();
+			engine::TransformSystem::instance().m_transforms[clicked_object_transform_id].Translate(new_position - nearest_clicked_object.pos);
+			nearest_clicked_object.pos = new_position;
 		}
 	}
 
@@ -426,7 +513,7 @@ namespace engine::windows
 	{
 		if (need_to_rotate_camera)
 		{
-			scene.camera.addRelativeAngles(Angles(0, dir_rotation.e[1], dir_rotation.e[0]));
+			renderer.camera.addRelativeAngles(Angles(0, dir_rotation.e[1], dir_rotation.e[0]));
 			need_to_move_camera = true;
 		}
 	}

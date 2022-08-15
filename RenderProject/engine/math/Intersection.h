@@ -1,6 +1,7 @@
 #pragma once
 #include "vec3.h"
 #include <cmath>
+#include <limits>
 namespace math
 {
 	class Intersection

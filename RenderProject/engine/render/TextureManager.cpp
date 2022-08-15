@@ -32,9 +32,10 @@ namespace engine
 			return find_it->second;
 		}
 
-		HRESULT result = DirectX::CreateDDSTextureFromFile(engine::s_device, engine::s_deviceContext, fileName.c_str(), m_texture.reset(), m_shaderResourceView[fileName].reset());
+		HRESULT result = DirectX::CreateDDSTextureFromFile(engine::s_device, engine::s_deviceContext, fileName.c_str(), m_colorMap.reset(), m_shaderResourceView[fileName].reset());
 		ALWAYS_ASSERT(result >= 0 && "CreateDDSTextureFromFile");
 		return m_shaderResourceView[fileName];
+
 	}
 
 	const engine::DxResPtr<ID3D11ShaderResourceView>& TextureManager::GetTexture(const std::wstring& textureKey)

@@ -17,9 +17,11 @@ namespace engine
 		DxResPtr(const DxResPtr& other) : DxResPtr() { *this = other; }
 		DxResPtr& operator=(const DxResPtr& other)
 		{
-			if (m_ptr) m_ptr->Release();
+			if (m_ptr) 
+				m_ptr->Release();
 			m_ptr = other.m_ptr;
-			m_ptr->AddRef();
+			if(other.m_ptr)
+				m_ptr->AddRef();
 			return *this;
 		}
 
