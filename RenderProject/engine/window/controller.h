@@ -4,7 +4,6 @@
 #include "../render/globals.hpp"
 #include "InputState.h"
 #include "../math/ray.h"
-#include "../render/PostProcess.h"
 
 
 namespace engine::windows
@@ -44,7 +43,6 @@ namespace engine::windows
 		void RotateCamera();
 		void moveCamera(const Vec3& offset, const Angles& angles);
 		void ProcessInput();
-		PostProcess m_postProcess;
 	public:
 		float delta_time;
 		Controller(engine::windows::Window &_wnd, engine::windows::Renderer& _scene) : wnd(_wnd), renderer(_scene){}

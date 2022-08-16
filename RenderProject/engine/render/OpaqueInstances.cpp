@@ -82,9 +82,7 @@ namespace engine
 			{
 				Mesh& mesh = modelInstances.model->m_meshes[meshIndex];
 
-				auto mapping = m_constantBuffer.Map();
-				*(Matr<4>*)mapping.pData = mesh.meshToModelMatrix;
-				m_constantBuffer.Unmap();
+				m_constantBuffer.Update(mesh.meshToModelMatrix);
 
 				for (auto& materialInstances : modelInstances.meshInstances[meshIndex].materialInstances)
 				{
@@ -93,9 +91,7 @@ namespace engine
 					auto& material = materialInstances.material;
 					material.Bind();
 
-					auto mapping = m_materialConstantBuffer.Map();
-					*(MaterialConstantBuffer*)mapping.pData = material.m_materialConstantBuffer;
-					m_materialConstantBuffer.Unmap();
+					m_materialConstantBuffer.Update(material.m_materialConstantBuffer);
 
 
 					uint32_t numInstances = uint32_t(materialInstances.instances.size());

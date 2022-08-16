@@ -119,6 +119,9 @@
     <ClCompile Include="render\TransformSystem.cpp">
       <Filter>render</Filter>
     </ClCompile>
+    <ClCompile Include="render\PerFrameBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="math\camera.h">
@@ -299,7 +302,7 @@
     <None Include="source\assets\Samurai\Samurai.fbx">
       <Filter>source\assets\Samurai</Filter>
     </None>
-    <None Include="source\shaders\PBRRenderToolkit.hlsli">
+    <None Include="source\shaders\PBRToolkit.hlsli">
       <Filter>source\shaders</Filter>
     </None>
     <None Include="source\shaders\PostProcessToolkit.hlsli">

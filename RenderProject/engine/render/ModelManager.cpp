@@ -25,6 +25,8 @@ namespace engine
 
 	void ModelManager::InitUnitQuadModel()
 	{
+		if (m_UnitQuadModelIsInited)
+			return;
 		std::shared_ptr<Model> quad_model(new Model);
 		auto& model = *quad_model;
 		model.name = "Quad";
@@ -80,10 +82,13 @@ namespace engine
 		mesh.InitTriangleOctree();
 
 		m_defaultModel[quad_model->name] = quad_model;
+		m_UnitQuadModelIsInited = true;
 	}
 
 	void ModelManager::InitUnitCubeModel()
 	{
+		if (m_UnitCubeModelIsInited)
+			return;
 		std::shared_ptr<Model> cube_model(new Model);
 		auto& model = *cube_model;
 		model.name = "Cube";
@@ -310,10 +315,13 @@ namespace engine
 		mesh.InitTriangleOctree();
 
 		m_defaultModel[cube_model->name] = cube_model;
+		m_UnitCubeModelIsInited = true;
 	}
 
 	void ModelManager::initUnitSphereModel()
 	{
+		if (m_UnitSphereModelIsInited)
+			return;
 		const uint32_t SIDES = 6;
 		const uint32_t GRID_SIZE = 12;
 		const uint32_t TRIS_PER_SIDE = GRID_SIZE * GRID_SIZE * 2;
@@ -424,6 +432,7 @@ namespace engine
 		model.m_vertexBuffer.Init(model.m_meshes[0].vertices);
 		mesh.InitTriangleOctree();
 		m_defaultModel[sphere_model->name] = sphere_model;
+		m_UnitSphereModelIsInited = true;
 	}
 
 	void ModelManager::GetMatrices(aiNode* rootNode, Model& model)

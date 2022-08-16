@@ -1,5 +1,5 @@
 #include "globals.hlsli"
-#include "PBRRenderToolkit.hlsli"
+#include "PBRToolkit.hlsli"
 Texture2D g_colorMap : register(t0);
 Texture2D<float3> g_normalMap : register(t1);
 Texture2D<float> g_roughnessMap : register(t2);

@@ -78,9 +78,7 @@ namespace engine
 
 				Mesh& mesh = modelInstances.model->m_meshes[meshIndex];
 
-				auto mapping = m_constantBuffer.Map();
-				*(Matr<4>*)mapping.pData = mesh.meshToModelMatrix;
-				m_constantBuffer.Unmap();
+				m_constantBuffer.Update(mesh.meshToModelMatrix);
 
 				uint32_t numInstances = uint32_t(instances.size());
 				engine::s_deviceContext->DrawIndexedInstanced(mesh.indexNum, numInstances, mesh.indexOffset, mesh.vertexOffset, renderedInstances);

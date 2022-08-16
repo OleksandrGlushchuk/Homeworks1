@@ -35,6 +35,12 @@ public:
 	{
 		engine::s_deviceContext->Unmap(m_constantBuffer.ptr(), 0);
 	}
+	inline void Update(const Data &data)
+	{
+		auto mapping = this->Map();
+		*(Data*)mapping.pData = data;
+		this->Unmap();
+	}
 
 	inline void BindVS(uint32_t startSlot = 0)
 	{

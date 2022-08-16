@@ -9,7 +9,6 @@
 #include "PerFrameBuffer.h"
 #include "LightSystem.h"
 
-class Camera;
 namespace engine
 {
 	class Globals // a singletone for accessing global rendering resources

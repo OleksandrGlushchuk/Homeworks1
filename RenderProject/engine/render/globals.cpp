@@ -1,6 +1,5 @@
 #include "globals.hpp"
 #include <Windows.h>
-#include "../math/camera.h"
 // Say NVidia or AMD driver to prefer a dedicated GPU instead of an integrated.
 // This has effect on laptops.
 extern "C"
@@ -179,10 +178,7 @@ namespace engine
 
 	void Globals::UpdatePerFrameBuffer(const Camera& camera)
 	{
-		auto mapping = m_perFrameBuffer.Map();
-		*(PerFrameBuffer*)mapping.pData = PerFrameBuffer(camera.m_viewProj, camera.BottomLeft, camera.BR_M_BL, camera.TL_M_BL, 
-			camera.position(), engine::LightSystem::instance().pointLight);
-		m_perFrameBuffer.Unmap();
+		m_perFrameBuffer.Update(PerFrameBuffer(camera, engine::LightSystem::instance().pointLight));
 	}
 
 	Globals::~Globals()

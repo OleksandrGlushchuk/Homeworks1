@@ -13,6 +13,7 @@ namespace engine::windows
 		m_shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 		m_shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
 		engine::s_device->CreateShaderResourceView(m_hdrRenderTarget.GetRenderTergetResource(), &m_shaderResourceViewDesc, m_shaderResourceView.reset());
+		m_postProcess.Init();
 	}
 	void Renderer::Draw()
 	{

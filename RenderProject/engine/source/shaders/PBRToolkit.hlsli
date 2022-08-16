@@ -1,5 +1,5 @@
-#ifndef _PBRRENDERTOOLKIT_HLSLI_
-#define _PBRRENDERTOOLKIT_HLSLI_
+#ifndef _PBRTOOLKIT_HLSLI_
+#define _PBRTOOLKIT_HLSLI_
 #include "globals.hlsli"
 static const float HALF_SPHERE_SOLID_ANGLE = 2.f * M_PI;
 static const float INSULATOR_F0 = 0.01f;

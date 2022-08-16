@@ -19,6 +19,9 @@ namespace engine
 		ModelManager& operator=(const ModelManager& other) = delete;
 		ModelManager(ModelManager&& other) noexcept = delete;
 		ModelManager& operator=(ModelManager&& other) noexcept = delete;
+		bool m_UnitQuadModelIsInited = false;
+		bool m_UnitCubeModelIsInited = false;
+		bool m_UnitSphereModelIsInited = false;
 		void InitUnitQuadModel();
 		void InitUnitCubeModel();
 		void initUnitSphereModel();

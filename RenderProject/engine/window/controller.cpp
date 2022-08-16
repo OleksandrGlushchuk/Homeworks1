@@ -14,7 +14,7 @@ namespace engine::windows
 		//Update();
 		ProcessInput();
 		wnd.BeginFrame();
-		renderer.Render(wnd.m_renderTarget, renderer.camera, m_postProcess);
+		renderer.Render(wnd.m_renderTarget, renderer.camera, renderer.m_postProcess);
 		wnd.EndFrame();
 	}
 
@@ -40,7 +40,6 @@ namespace engine::windows
 	void Controller::InitScene()
 	{
 		renderer.Init(8u, 8u);
-		m_postProcess.Init();
 		engine::LightSystem::instance().pointLight.emplace_back(Vec3(1, 1, 1), 3.5f, Vec3(0, 1.f, -1.f), 0.1f, 
 			engine::ModelManager::instance().GetUnitSphereModel());
 		engine::LightSystem::instance().pointLight.emplace_back(Vec3(1, 1, 1), 2.5f, Vec3(2.5f, 3.f, -1.f), 0.1f,
@@ -312,11 +311,11 @@ namespace engine::windows
 		{
 			if (input_state[VK_OEM_PLUS])
 			{
-				m_postProcess.EV100 += 1.f * delta_time;
+				renderer.m_postProcess.EV100 += 1.f * delta_time;
 			}
 			if (input_state[VK_OEM_MINUS])
 			{
-				m_postProcess.EV100 -= 1.f * delta_time;
+				renderer.m_postProcess.EV100 -= 1.f * delta_time;
 			}
 		}
 

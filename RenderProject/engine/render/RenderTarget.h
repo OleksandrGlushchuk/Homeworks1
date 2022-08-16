@@ -10,7 +10,9 @@ namespace engine
 		DepthStencil m_depthStencil;
 		engine::DxResPtr<ID3D11Texture2D> m_renderTargetResource;
 		engine::DxResPtr<ID3D11RenderTargetView1> m_renderTargetView;
-		std::function<void(UINT, UINT)> m_renderTargetViewInitializer;
+		//std::function<void(UINT, UINT)> m_renderTargetViewInitializer;
+		enum class RTVResource{FLOAT16_RTR, EXTERNAL_RTR};
+		RTVResource m_RTVResource;
 		void InitFloat16RenderTargetResource(UINT width, UINT height)
 		{
 			m_renderTargetResourceDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -33,14 +35,14 @@ namespace engine
 		{
 			m_renderTargetResource = renderTargetResource;
 			m_renderTargetResource->GetDesc(&m_renderTargetResourceDesc);
-			m_renderTargetViewInitializer = nullptr;
+			m_RTVResource = RTVResource::EXTERNAL_RTR;
 			HRESULT result = engine::s_device->CreateRenderTargetView1(m_renderTargetResource.ptr(), nullptr, m_renderTargetView.reset());
 			ALWAYS_ASSERT(result >= 0 && "CreateRenderTargetView1");
 		}
 
 		void InitFloat16RenderTargetView(UINT width, UINT height)
 		{
-			m_renderTargetViewInitializer = [&](UINT width, UINT height)->void {this->InitFloat16RenderTargetView(width, height); };
+			m_RTVResource = RTVResource::FLOAT16_RTR;
 			InitFloat16RenderTargetResource(width, height);
 			HRESULT result = engine::s_device->CreateRenderTargetView1(m_renderTargetResource.ptr(), nullptr, m_renderTargetView.reset());
 			ALWAYS_ASSERT(result >= 0 && "CreateRenderTargetView1");
@@ -52,7 +54,20 @@ namespace engine
 
 		void ResizeRenderTargetView(UINT width, UINT height)
 		{
-			m_renderTargetViewInitializer(width, height);
+			switch (m_RTVResource)
+			{
+			case RTVResource::FLOAT16_RTR :
+				InitFloat16RenderTargetView(width, height);
+				break;
+			case RTVResource::EXTERNAL_RTR :
+				DebugBreak();
+				std::abort();
+				break;
+			default:
+				DebugBreak();
+				std::abort();
+				break;
+			}
 		}
 		void ResizeDepthStencil(UINT width, UINT height)
 		{

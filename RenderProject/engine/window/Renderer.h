@@ -16,6 +16,7 @@ namespace engine::windows
 		RenderTarget m_hdrRenderTarget;
 		DxResPtr<ID3D11ShaderResourceView> m_shaderResourceView;
 		D3D11_SHADER_RESOURCE_VIEW_DESC m_shaderResourceViewDesc;
+		PostProcess m_postProcess;
 	public:
 		void Init(UINT width, UINT height);
 		void Draw();

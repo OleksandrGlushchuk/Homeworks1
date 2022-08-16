@@ -27,8 +27,11 @@ namespace engine
 			radius = _radius;
 			radiance = irradianceAtDistanceToRadiance(_irradiance, distance, radius);
 
-			transformID = engine::TransformSystem::instance().m_transforms.insert(
-				Transform(Matr<4>({ _radius,0,0,0 }, { 0,_radius,0,0 }, { 0,0,_radius,0 }, { _position.e[0], _position.e[1], _position.e[2], 1 })));
+			Transform transform = Transform::Identity();
+			transform.SetScale({ _radius,_radius,_radius });
+			transform.SetPosition({ _position.e[0], _position.e[1], _position.e[2] });
+
+			transformID = engine::TransformSystem::instance().m_transforms.insert(transform);
 			
 			engine::MeshSystem::instance().addInstance(model, EmissiveInstances::Instance(radiance, transformID));
 		}
