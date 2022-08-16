@@ -2,7 +2,7 @@
 
 void Sky::InitTextures()
 {
-	engine::TextureManager::instance().LoadTexture(L"source/textures/skymap.dds");
+	engine::TextureManager::instance().LoadTexture(L"source/textures/lake_beach.dds");
 }
 
 void Sky::InitShaders()

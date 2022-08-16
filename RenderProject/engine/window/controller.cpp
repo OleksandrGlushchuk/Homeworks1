@@ -52,7 +52,7 @@ namespace engine::windows
 		//SKY
 		{
 			renderer.m_sky.Init();
-			renderer.m_sky.SetTexture(L"source/textures/skymap.dds");
+			renderer.m_sky.SetTexture(L"source/textures/lake_beach.dds");
 		}
 		//KNIGHTS
 		{

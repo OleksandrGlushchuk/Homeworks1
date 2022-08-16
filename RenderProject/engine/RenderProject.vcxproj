@@ -311,7 +311,7 @@
     <Image Include="source\textures\Brick\Brick_Wall_012_COLOR.dds" />
     <Image Include="source\textures\Brick\Brick_Wall_012_NORM.dds" />
     <Image Include="source\textures\Brick\Brick_Wall_012_ROUGH.dds" />
-    <Image Include="source\textures\skymap.dds" />
+    <Image Include="source\textures\lake_beach.dds" />
     <Image Include="source\textures\Stone\Stylized_Stone_Floor_005_basecolor.dds" />
     <Image Include="source\textures\Stone\Stylized_Stone_Floor_005_normal.dds" />
     <Image Include="source\textures\Stone\Stylized_Stone_Floor_005_roughness.dds" />

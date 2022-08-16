@@ -120,7 +120,7 @@
       <Filter>render</Filter>
     </ClCompile>
     <ClCompile Include="render\PerFrameBuffer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -310,9 +310,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="source\textures\skymap.dds">
-      <Filter>source\textures</Filter>
-    </Image>
     <Image Include="source\assets\Knight\Cape_BaseColor.dds">
       <Filter>source\assets\Knight</Filter>
     </Image>
@@ -486,6 +483,9 @@
     </Image>
     <Image Include="source\textures\Stone\Stylized_Stone_Floor_005_roughness.dds">
       <Filter>source\textures\Stone</Filter>
+    </Image>
+    <Image Include="source\textures\lake_beach.dds">
+      <Filter>source\textures</Filter>
     </Image>
   </ItemGroup>
 </Project>
