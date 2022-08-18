@@ -52,6 +52,7 @@ PS_INPUT vs_main(VS_INPUT input)
 float4 ps_main(PS_INPUT input) : SV_TARGET
 {
     float3 hdrColor = g_colorMap.Sample(g_samplerState, input.tex_coord).xyz;
+    
     Material material;
     material.albedo = hdrColor;
     

@@ -6,9 +6,9 @@ class Texture
 	engine::DxResPtr<ID3D11ShaderResourceView> m_textureViewer;
 public:
 	Texture() {}
-	void Load(const std::wstring& fileName)
+	void Load(const std::wstring& fileName, bool isSRGB = true)
 	{
-		m_textureViewer = engine::TextureManager::instance().LoadTexture(fileName);
+		m_textureViewer = engine::TextureManager::instance().LoadTexture(fileName, isSRGB);
 	}
 	void Bind(UINT startSlot = 0)
 	{

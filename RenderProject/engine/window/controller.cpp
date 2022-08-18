@@ -182,13 +182,13 @@ namespace engine::windows
 		//CUBES
 		{
 			std::vector<OpaqueInstances::Material> brick(1);
-			brick[0].m_colorMap.Load(L"source/textures/Brick/Brick_Wall_012_COLOR.dds");
+			brick[0].m_colorMap.Load(L"source/textures/Brick/Brick_Wall_012_COLOR.dds", false);
 			brick[0].m_normalMap.Load(L"source/textures/Brick/Brick_Wall_012_NORM.dds");
 			brick[0].m_roughnessMap.Load(L"source/textures/Brick/Brick_Wall_012_ROUGH.dds");
 			brick[0].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, 0.002f);
 
 			std::vector<OpaqueInstances::Material> stone(1);
-			stone[0].m_colorMap.Load(L"source/textures/Stone/Stylized_Stone_Floor_005_basecolor.dds");
+			stone[0].m_colorMap.Load(L"source/textures/Stone/Stylized_Stone_Floor_005_basecolor.dds", false);
 			stone[0].m_normalMap.Load(L"source/textures/Stone/Stylized_Stone_Floor_005_normal.dds");
 			stone[0].m_roughnessMap.Load(L"source/textures/Stone/Stylized_Stone_Floor_005_roughness.dds");
 			stone[0].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, 0.002f);
