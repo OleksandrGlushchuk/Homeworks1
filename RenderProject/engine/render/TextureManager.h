@@ -19,7 +19,7 @@ namespace engine
 		static void init();
 		static void deinit();
 		static TextureManager& instance();
-		const engine::DxResPtr<ID3D11ShaderResourceView>& LoadTexture(const std::wstring& fileName, bool isSRGB = true);
+		const engine::DxResPtr<ID3D11ShaderResourceView>& LoadTexture(const std::wstring& fileName, bool need_to_force_sRGB = false);
 
 		const engine::DxResPtr<ID3D11ShaderResourceView>& GetTexture(const std::wstring& fileName);
 	};
