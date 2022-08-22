@@ -99,7 +99,7 @@ inline float3 CalculatePointLight(PointLight pointLight, const float3 view_pos, 
     float map_fading = dot(map_normal, PointToLight);
     geometry_fading = 1.f - saturate((pointLight.radius - geometry_fading) / (2 * pointLight.radius));
     map_fading = 1.f - saturate((pointLight.radius - map_fading) / (2 * pointLight.radius));
-    NdotL = max(NdotL, max(geometry_fading * lightAngleSin, map_fading * lightAngleSin) );
+    NdotL = max(NdotL, geometry_fading * map_fading * lightAngleSin);
 
     if (NdotL <= 0.f)
         return float3(0.f, 0.f, 0.f);
