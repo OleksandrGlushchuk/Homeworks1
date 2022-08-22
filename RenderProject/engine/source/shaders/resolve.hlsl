@@ -1,7 +1,13 @@
 #include "globals.hlsli"
-#include "PostProcessToolkit.hlsli"
+#include "resolve_toolkit.hlsli"
 
 Texture2D g_texture : register(t0);
+
+cbuffer PostProcessBuffer : register(b1)
+{
+    float g_EV100;
+    float3 padding;
+}
 
 struct VS_INPUT
 {

@@ -9,7 +9,7 @@ namespace engine
 	{
 		for (uint32_t i = 0; i < pointLightNum; ++i)
 		{
-			pointLightBuffer[i] = PointLightBuffer(pointLights[i]);
+			gpuPointLight[i] = GpuPointLight(pointLights[i]);
 		}
 
 	}

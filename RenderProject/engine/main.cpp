@@ -73,9 +73,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		break;
 
 	case WM_MOUSEMOVE:
-		if (wparam == MK_LBUTTON || wparam == (MK_LBUTTON | MK_RBUTTON))
+		if (wparam == MK_LBUTTON || wparam == (MK_LBUTTON | MK_RBUTTON) || wparam == (MK_LBUTTON | MK_SHIFT) || wparam == (MK_LBUTTON | MK_SHIFT | MK_RBUTTON))
 			controller.OnLMouseMove(LOWORD(lparam), HIWORD(lparam));
-		if (wparam == MK_RBUTTON)
+		if (wparam == MK_RBUTTON || wparam == (MK_RBUTTON | MK_LBUTTON) || wparam == (MK_RBUTTON | MK_SHIFT) || wparam == (MK_RBUTTON | MK_SHIFT | MK_LBUTTON))
 			controller.OnRMouseMove(LOWORD(lparam), HIWORD(lparam));
 		break;
 	case WM_LBUTTONUP:

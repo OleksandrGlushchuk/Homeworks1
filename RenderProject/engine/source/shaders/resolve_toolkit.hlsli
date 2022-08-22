@@ -1,11 +1,5 @@
-#ifndef _POSTPROCESSTOOLKIT_HLSLI_
-#define _POSTPROCESSTOOLKIT_HLSLI_
-
-cbuffer PostProcessBuffer : register(b1)
-{
-    float g_EV100;
-    float3 padding;
-}
+#ifndef _RESOLVE_TOOLKIT_HLSLI_
+#define _RESOLVE_TOOLKIT_HLSLI_
 
 inline float3 AdjustExposure(uniform float3 radiance, uniform float _EV100)
 {
@@ -24,18 +18,12 @@ inline float3 ACES(uniform float3 hdr)
 
     float3 ldr = mul(a / b, m2);
     
-    ldr[0] = clamp(ldr[0], 0.0f, 1.0f);
-    ldr[1] = clamp(ldr[1], 0.0f, 1.0f);
-    ldr[2] = clamp(ldr[2], 0.0f, 1.0f);
+    ldr = clamp(ldr, 0.0f, 1.0f);
     return ldr;
 }
 
 inline float3 GammaCorrection(uniform float3 radiance)
 {
-    return float3(
-			pow(radiance[0], 1.f / 2.2f),
-			pow(radiance[1], 1.f / 2.2f),
-			pow(radiance[2], 1.f / 2.2f)
-		);
+    return pow(radiance, 1.0f / 2.2f);
 }
 #endif

@@ -239,7 +239,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="source\shaders\postProcess.hlsl">
+    <FxCompile Include="source\shaders\resolve.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
@@ -251,9 +251,9 @@
   <ItemGroup>
     <None Include="source\assets\Knight\Knight.fbx" />
     <None Include="source\assets\Samurai\Samurai.fbx" />
-    <None Include="source\shaders\PBRToolkit.hlsli" />
+    <None Include="source\shaders\pbr_toolkit.hlsli" />
     <None Include="source\shaders\globals.hlsli" />
-    <None Include="source\shaders\PostProcessToolkit.hlsli" />
+    <None Include="source\shaders\resolve_toolkit.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="source\assets\Knight\Cape_BaseColor.dds" />
@@ -312,9 +312,9 @@
     <Image Include="source\textures\Brick\Brick_Wall_012_NORM.dds" />
     <Image Include="source\textures\Brick\Brick_Wall_012_ROUGH.dds" />
     <Image Include="source\textures\lake_beach.dds" />
-    <Image Include="source\textures\Stone\Stylized_Stone_Floor_005_basecolor.dds" />
-    <Image Include="source\textures\Stone\Stylized_Stone_Floor_005_normal.dds" />
-    <Image Include="source\textures\Stone\Stylized_Stone_Floor_005_roughness.dds" />
+    <Image Include="source\textures\Stone\Stone_COLOR.dds" />
+    <Image Include="source\textures\Stone\Stone_NORM.dds" />
+    <Image Include="source\textures\Stone\Stone_ROUGH.dds" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

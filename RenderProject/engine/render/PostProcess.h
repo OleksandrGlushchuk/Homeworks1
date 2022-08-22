@@ -26,16 +26,14 @@ namespace engine
 		PostProcess() {}
 		void Init()
 		{
-			m_shader.Init(L"source/shaders/postProcess.hlsl", nullptr, 0);
+			m_shader.Init(L"source/shaders/resolve.hlsl", nullptr, 0);
 			m_constantBuffer.Init(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 		}
 		void Resolve(RenderTarget& dst, RenderTarget &src) 
 		{
 			m_shader.Bind();
 			dst.Bind(src.GetDepthStencil());
-			auto mapping = m_constantBuffer.Map();
-			*(PostProcessBuffer*)mapping.pData = PostProcessBuffer(EV100);
-			m_constantBuffer.Unmap();
+			m_constantBuffer.Update(PostProcessBuffer(EV100));
 			
 			m_constantBuffer.BindPS(1);
 			engine::s_deviceContext->Draw(3, 0);

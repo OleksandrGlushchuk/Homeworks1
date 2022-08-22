@@ -1,9 +1,9 @@
 #ifndef _GLOBALS_HLSLI_
 #define _GLOBALS_HLSLI_
 static const float M_PI = 3.14159265358979323846f; 
-static const uint MAX_LIGHTS = 8;
+static const uint MAX_POINT_LIGHTS = 8;
 
-struct PointLightBuffer
+struct PointLight
 {
     float3 radiance;
     float padding0;
@@ -22,13 +22,8 @@ cbuffer PerFrameBuffer : register(b0)
     float pad2;
     float3 g_cameraPos;
     uint g_pointLightNum;
-    PointLightBuffer g_pointLightBuffer[MAX_LIGHTS];
+    PointLight g_pointLight[MAX_POINT_LIGHTS];
 };
-
-cbuffer MeshToModel : register(b1)
-{
-    float4x4 g_meshToModelMatrix;
-}
 
 SamplerState g_samplerState : register(s0);
 SamplerState g_pointSamplerState : register(s1);

@@ -1,9 +1,26 @@
 #include "globals.hlsli"
-#include "PBRToolkit.hlsli"
+#include "pbr_toolkit.hlsli"
 Texture2D g_colorMap : register(t0);
 Texture2D<float3> g_normalMap : register(t1);
 Texture2D<float> g_roughnessMap : register(t2);
 Texture2D<float> g_metalnessMap : register(t3);
+
+cbuffer MeshToModel : register(b1)
+{
+    float4x4 g_meshToModelMatrix;
+}
+
+cbuffer MaterialConstantBuffer : register(b2)
+{
+    float g_metalnessValue;
+    float g_roughnessValue;
+    bool g_hasMetalnessMap;
+    bool g_hasRoughnessMap;
+    
+    bool g_hasNormalMap;
+    bool g_reversedNormalTextureY;
+    float2 padding;
+}
 
 struct VS_INPUT
 {
@@ -68,26 +85,27 @@ float4 ps_main(PS_INPUT input) : SV_TARGET
     
     material.F0 = lerp(INSULATOR_F0, material.albedo, material.metalness);
     
-    float3 normal;
+    float3 map_normal;
     if(g_hasNormalMap)
     {
-        normal = g_normalMap.Sample(g_samplerState, input.tex_coord);
-        normal = normalize(normal * 2.f - 1.f);
+        
+        map_normal = g_normalMap.Sample(g_samplerState, input.tex_coord);
+        map_normal = normalize(map_normal * 2.f - 1.f);
+        if (g_reversedNormalTextureY)
+            map_normal.y = map_normal.y * (-1.f);
+        
         float3x3 TBN = float3x3(input.tangent, input.bitangent, input.normal);
-        normal = mul(normal, TBN);
+        map_normal = mul(map_normal, TBN);
     }
     else
     {
-        normal = input.normal;
+        map_normal = input.normal;
     }
     hdrColor = float3(0, 0, 0);
     PointLight pointLight;
     for (uint i = 0; i < g_pointLightNum; ++i)
     {
-        pointLight.position = g_pointLightBuffer[i].position;
-        pointLight.radiance = g_pointLightBuffer[i].radiance;
-        pointLight.radius = g_pointLightBuffer[i].radius;
-        hdrColor += CalculatePointLight(pointLight, g_cameraPos, input.world_pos.xyz, normal, material);
+        hdrColor += CalculatePointLight(g_pointLight[i], g_cameraPos, input.world_pos.xyz, map_normal, input.normal, material);
     }
     return float4(hdrColor, 1.f);
 }

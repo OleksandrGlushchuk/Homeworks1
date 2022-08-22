@@ -1,4 +1,10 @@
 #include "globals.hlsli"
+
+cbuffer MeshToModel : register(b1)
+{
+    float4x4 g_meshToModelMatrix;
+}
+
 struct VS_INPUT
 {
     float3 position : POSITION;
@@ -21,9 +27,8 @@ PS_INPUT vs_main(VS_INPUT input)
     PS_INPUT output;
     float4x4 TransformMatrix = float4x4(input.transform_x, input.transform_y, input.transform_z, input.transform_w);
     
-    float4x4 WorldMatrix = mul(g_meshToModelMatrix, TransformMatrix);
-    
-    float4 pos = mul(float4(input.position, 1.0f), WorldMatrix);
+    float4 pos = mul(float4(input.position, 1.0f), g_meshToModelMatrix);
+    pos = mul(pos, TransformMatrix);
     pos = mul(pos, g_viewProj);
     
     output.position = pos;

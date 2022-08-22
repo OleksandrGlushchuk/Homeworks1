@@ -285,7 +285,7 @@
     <FxCompile Include="source\shaders\opaque.hlsl">
       <Filter>source\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="source\shaders\postProcess.hlsl">
+    <FxCompile Include="source\shaders\resolve.hlsl">
       <Filter>source\shaders</Filter>
     </FxCompile>
     <FxCompile Include="source\shaders\emissive.hlsl">
@@ -302,10 +302,10 @@
     <None Include="source\assets\Samurai\Samurai.fbx">
       <Filter>source\assets\Samurai</Filter>
     </None>
-    <None Include="source\shaders\PBRToolkit.hlsli">
+    <None Include="source\shaders\pbr_toolkit.hlsli">
       <Filter>source\shaders</Filter>
     </None>
-    <None Include="source\shaders\PostProcessToolkit.hlsli">
+    <None Include="source\shaders\resolve_toolkit.hlsli">
       <Filter>source\shaders</Filter>
     </None>
   </ItemGroup>
@@ -475,17 +475,17 @@
     <Image Include="source\textures\Brick\Brick_Wall_012_ROUGH.dds">
       <Filter>source\textures\Brick</Filter>
     </Image>
-    <Image Include="source\textures\Stone\Stylized_Stone_Floor_005_basecolor.dds">
-      <Filter>source\textures\Stone</Filter>
-    </Image>
-    <Image Include="source\textures\Stone\Stylized_Stone_Floor_005_normal.dds">
-      <Filter>source\textures\Stone</Filter>
-    </Image>
-    <Image Include="source\textures\Stone\Stylized_Stone_Floor_005_roughness.dds">
-      <Filter>source\textures\Stone</Filter>
-    </Image>
     <Image Include="source\textures\lake_beach.dds">
       <Filter>source\textures</Filter>
+    </Image>
+    <Image Include="source\textures\Stone\Stone_COLOR.dds">
+      <Filter>source\textures\Stone</Filter>
+    </Image>
+    <Image Include="source\textures\Stone\Stone_NORM.dds">
+      <Filter>source\textures\Stone</Filter>
+    </Image>
+    <Image Include="source\textures\Stone\Stone_ROUGH.dds">
+      <Filter>source\textures\Stone</Filter>
     </Image>
   </ItemGroup>
 </Project>

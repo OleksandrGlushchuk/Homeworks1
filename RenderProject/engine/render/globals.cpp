@@ -178,7 +178,7 @@ namespace engine
 
 	void Globals::UpdatePerFrameBuffer(const Camera& camera)
 	{
-		m_perFrameBuffer.Update(PerFrameBuffer(camera, engine::LightSystem::instance().pointLight));
+		m_perFrameBuffer.Update(PerFrameBuffer(camera, engine::LightSystem::instance().getPointLights()));
 	}
 
 	Globals::~Globals()

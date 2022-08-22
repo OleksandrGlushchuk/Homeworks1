@@ -22,10 +22,11 @@ namespace engine
 			int hasMetalnessMap;
 			int hasRoughnessMap;
 			int hasNormalMap;
-			Vec3 padding;
+			int reversedNormalTextureY;
+			float padding[2];
 			MaterialConstantBuffer() {}
-			MaterialConstantBuffer(int _hasMetalnessMap, int _hasRoughnessMap, int _hasNormalMap, float _metalnessValue = {}, float _roughnessValue = {}) :
-				hasMetalnessMap(_hasMetalnessMap), hasRoughnessMap(_hasRoughnessMap), hasNormalMap(_hasNormalMap),
+			MaterialConstantBuffer(int _hasMetalnessMap, int _hasRoughnessMap, int _hasNormalMap, int _reversedNormalTextureY, float _metalnessValue = {}, float _roughnessValue = {}) :
+				hasMetalnessMap(_hasMetalnessMap), hasRoughnessMap(_hasRoughnessMap), hasNormalMap(_hasNormalMap), reversedNormalTextureY(_reversedNormalTextureY),
 				metalnessValue(_metalnessValue), roughnessValue(_roughnessValue)
 			{}
 		};

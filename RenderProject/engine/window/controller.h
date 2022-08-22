@@ -41,7 +41,7 @@ namespace engine::windows
 		//-----------------//
 
 		void RotateCamera();
-		void moveCamera(const Vec3& offset, const Angles& angles);
+		void MoveCamera(const Vec3& offset);
 		void ProcessInput();
 	public:
 		float delta_time;
@@ -60,7 +60,6 @@ namespace engine::windows
 
 		void OnMouseWheel(short wheel_data);
 
-		void Update();
 		void Draw();
 		void OnChangeWindowSize();
 		void InitScene();

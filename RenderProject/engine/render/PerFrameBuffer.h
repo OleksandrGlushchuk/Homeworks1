@@ -1,7 +1,6 @@
 #pragma once
-#include "Light.h"
+#include "LightSystem.h"
 #include <vector>
-static const uint32_t MAX_POINT_LIGHTS = 8;
 class Camera;
 namespace engine
 {
@@ -17,7 +16,7 @@ namespace engine
 		Vec3 cameraPos;
 		uint32_t pointLightNum;
 
-		PointLightBuffer pointLightBuffer[MAX_POINT_LIGHTS];
+		GpuPointLight gpuPointLight[LightSystem::MAX_POINT_LIGHTS];
 
 		PerFrameBuffer() {}
 		PerFrameBuffer(const Camera& camera, const std::vector<PointLight>& pointLights);
