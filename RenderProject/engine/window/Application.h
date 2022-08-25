@@ -1,17 +1,21 @@
 #pragma once
+#include "../render/globals.hpp"
 #include "window.h"
 #include "Renderer.h"
-#include "../render/globals.hpp"
 #include "InputState.h"
 #include "../math/ray.h"
+#include "../math/camera.h"
+#include "../render/PostProcess.h"
 
 
 namespace engine::windows
 {
-	class Controller
+	class Application
 	{
-		engine::windows::Window& wnd;
-		engine::windows::Renderer& renderer;
+		Window& wnd;
+		Renderer& renderer;
+		Camera camera;
+		PostProcess m_postProcess;
 
 		bool need_to_move_camera = false;
 		WORD mouse_x = 0, mouse_y = 0;
@@ -45,7 +49,7 @@ namespace engine::windows
 		void ProcessInput();
 	public:
 		float delta_time;
-		Controller(engine::windows::Window &_wnd, engine::windows::Renderer& _scene) : wnd(_wnd), renderer(_scene){}
+		Application(engine::windows::Window &_wnd, engine::windows::Renderer& _scene) : wnd(_wnd), renderer(_scene){}
 
 		void OnKeyDown(WPARAM key);
 		void OnKeyUp(WPARAM key);
@@ -62,6 +66,6 @@ namespace engine::windows
 
 		void Draw();
 		void OnChangeWindowSize();
-		void InitScene();
+		void Init();
 	};
 }

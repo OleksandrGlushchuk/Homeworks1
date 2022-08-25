@@ -170,7 +170,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="window\controller.cpp" />
+    <ClCompile Include="window\Application.cpp" />
     <ClCompile Include="window\Renderer.cpp" />
     <ClCompile Include="window\window.cpp" />
   </ItemGroup>
@@ -224,7 +224,7 @@
     </ClInclude>
     <ClInclude Include="render\Vertex.h" />
     <ClInclude Include="render\VertexBuffer.h" />
-    <ClInclude Include="window\controller.h" />
+    <ClInclude Include="window\Application.h" />
     <ClInclude Include="window\InputState.h" />
     <ClInclude Include="window\Renderer.h" />
     <ClInclude Include="window\Timer.h" />
@@ -251,11 +251,14 @@
   <ItemGroup>
     <None Include="source\assets\Knight\Knight.fbx" />
     <None Include="source\assets\Samurai\Samurai.fbx" />
-    <None Include="source\shaders\pbr_toolkit.hlsli" />
+    <None Include="source\shaders\pbr_helpers.hlsli" />
     <None Include="source\shaders\globals.hlsli" />
-    <None Include="source\shaders\resolve_toolkit.hlsli" />
+    <None Include="source\shaders\resolve_helpers.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="source\assets\Brick\Brick_Wall_012_COLOR.dds" />
+    <Image Include="source\assets\Brick\Brick_Wall_012_NORM.dds" />
+    <Image Include="source\assets\Brick\Brick_Wall_012_ROUGH.dds" />
     <Image Include="source\assets\Knight\Cape_BaseColor.dds" />
     <Image Include="source\assets\Knight\Cape_Normal.dds" />
     <Image Include="source\assets\Knight\Cape_Roughness.dds" />
@@ -308,13 +311,10 @@
     <Image Include="source\assets\Samurai\Torso_Metallic.dds" />
     <Image Include="source\assets\Samurai\Torso_Normal.dds" />
     <Image Include="source\assets\Samurai\Torso_Roughness.dds" />
-    <Image Include="source\textures\Brick\Brick_Wall_012_COLOR.dds" />
-    <Image Include="source\textures\Brick\Brick_Wall_012_NORM.dds" />
-    <Image Include="source\textures\Brick\Brick_Wall_012_ROUGH.dds" />
-    <Image Include="source\textures\lake_beach.dds" />
-    <Image Include="source\textures\Stone\Stone_COLOR.dds" />
-    <Image Include="source\textures\Stone\Stone_NORM.dds" />
-    <Image Include="source\textures\Stone\Stone_ROUGH.dds" />
+    <Image Include="source\assets\Sky\lake_beach.dds" />
+    <Image Include="source\assets\Stone\Stone_COLOR.dds" />
+    <Image Include="source\assets\Stone\Stone_NORM.dds" />
+    <Image Include="source\assets\Stone\Stone_ROUGH.dds" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

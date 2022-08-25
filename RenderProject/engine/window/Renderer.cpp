@@ -13,15 +13,16 @@ namespace engine::windows
 		m_shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 		m_shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
 		engine::s_device->CreateShaderResourceView(m_hdrRenderTarget.GetRenderTergetResource(), &m_shaderResourceViewDesc, m_shaderResourceView.reset());
-		m_postProcess.Init();
-	}
-	void Renderer::Draw()
-	{
-		m_sky.Draw();
 	}
 
 	void Renderer::Render(RenderTarget& windowRenderTarget, const Camera& camera, PostProcess& postProcess)
 	{
+		if (need_to_resize_RTV)
+		{
+			ResizeRTV(windowRenderTarget);
+			need_to_resize_RTV = false;
+		}
+
 		m_hdrRenderTarget.ClearRendetTargetView();
 		m_hdrRenderTarget.ClearDepthStencil();
 
@@ -41,5 +42,15 @@ namespace engine::windows
 
 		ID3D11ShaderResourceView* SRVnullptr[1] = { nullptr };
 		engine::s_deviceContext->PSSetShaderResources(0, 1, SRVnullptr);
+	}
+
+	void Renderer::ResizeRTV(RenderTarget& windowRenderTarget)
+	{
+		UINT width = windowRenderTarget.GetWidth();
+		UINT height = windowRenderTarget.GetHeight();
+		m_hdrRenderTarget.ResizeRenderTargetView(width, height);
+		m_hdrRenderTarget.ResizeDepthStencil(width, height);
+		engine::s_device->CreateShaderResourceView(m_hdrRenderTarget.GetRenderTergetResource(), &m_shaderResourceViewDesc,
+			m_shaderResourceView.reset());
 	}
 }

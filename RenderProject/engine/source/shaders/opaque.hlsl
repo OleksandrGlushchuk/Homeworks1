@@ -1,5 +1,5 @@
 #include "globals.hlsli"
-#include "pbr_toolkit.hlsli"
+#include "pbr_helpers.hlsli"
 Texture2D g_colorMap : register(t0);
 Texture2D<float3> g_normalMap : register(t1);
 Texture2D<float> g_roughnessMap : register(t2);
@@ -71,41 +71,34 @@ float4 ps_main(PS_INPUT input) : SV_TARGET
     float3 hdrColor = g_colorMap.Sample(g_samplerState, input.tex_coord).xyz;
     
     Material material;
+    
     material.albedo = hdrColor;
     
-    if(g_hasMetalnessMap)
-        material.metalness = g_metalnessMap.Sample(g_samplerState, input.tex_coord);
-    else
-        material.metalness = g_metalnessValue;
+    material.metalness = g_hasMetalnessMap ? g_metalnessMap.Sample(g_samplerState, input.tex_coord) : g_metalnessValue;
     
-    if(g_hasRoughnessMap)
-        material.roughness = g_roughnessMap.Sample(g_samplerState, input.tex_coord);
-    else
-        material.roughness = g_roughnessValue;
+    material.roughness = g_hasRoughnessMap ? g_roughnessMap.Sample(g_samplerState, input.tex_coord) : g_roughnessValue;
     
     material.F0 = lerp(INSULATOR_F0, material.albedo, material.metalness);
     
     float3 map_normal;
     if(g_hasNormalMap)
     {
-        
         map_normal = g_normalMap.Sample(g_samplerState, input.tex_coord);
         map_normal = normalize(map_normal * 2.f - 1.f);
         if (g_reversedNormalTextureY)
-            map_normal.y = map_normal.y * (-1.f);
+            map_normal.y = -map_normal.y;
         
         float3x3 TBN = float3x3(input.tangent, input.bitangent, input.normal);
         map_normal = mul(map_normal, TBN);
     }
     else
-    {
         map_normal = input.normal;
-    }
+    
     hdrColor = float3(0, 0, 0);
-    PointLight pointLight;
     for (uint i = 0; i < g_pointLightNum; ++i)
     {
-        hdrColor += CalculatePointLight(g_pointLight[i], g_cameraPos, input.world_pos.xyz, map_normal, input.normal, material);
+        hdrColor += CalculatePointLight(g_pointLight[i], g_pointLight[i].position - input.world_pos.xyz,
+        normalize(g_cameraPos - input.world_pos.xyz), map_normal, input.normal, material);
     }
     return float4(hdrColor, 1.f);
 }

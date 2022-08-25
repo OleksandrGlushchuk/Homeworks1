@@ -1,43 +1,39 @@
-#include "controller.h"
+#include "Application.h"
 const float p_near = 0.01f, p_far = 10000.f, fovy = M_PI / 3.f;
 
 namespace engine::windows
 {
 
-	void Controller::Draw()
+	void Application::Draw()
 	{
 		ProcessInput();
 		wnd.BeginFrame();
-		renderer.Render(wnd.m_renderTarget, renderer.camera, renderer.m_postProcess);
+		renderer.Render(wnd.m_renderTarget, camera, m_postProcess);
 		wnd.EndFrame();
 	}
 
-	void Controller::OnChangeWindowSize()
+	void Application::OnChangeWindowSize()
 	{
 		wnd.OnResize();
 
 		need_to_rotate_camera = false;
 		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
-		renderer.camera.updateAspect(aspect);
-		renderer.camera.updateBasis();
-		renderer.camera.updateMatrices();
-
-		UINT width = wnd.m_renderTarget.GetWidth();
-		UINT height = wnd.m_renderTarget.GetHeight();
-		renderer.m_hdrRenderTarget.ResizeRenderTargetView(width, height);
-		renderer.m_hdrRenderTarget.ResizeDepthStencil(width, height);
-		engine::s_device->CreateShaderResourceView(renderer.m_hdrRenderTarget.GetRenderTergetResource(), &renderer.m_shaderResourceViewDesc, 
-			renderer.m_shaderResourceView.reset());
+		camera.updateAspect(aspect);
+		camera.updateBasis();
+		camera.updateMatrices();
+		renderer.need_to_resize_RTV = true;
 		Draw();
 	}
 
-	void Controller::InitScene()
+	void Application::Init()
 	{
+
 		renderer.Init(8u, 8u);
+		m_postProcess.Init();
 
 		//LIGHTS
 		{
-			engine::LightSystem::instance().addPointLight(Vec3(1, 1, 1), 4.f, Vec3(0, 1.f, -1.f), 0.5f,
+			engine::LightSystem::instance().addPointLight(Vec3(1, 1, 1), 4.f, Vec3(0, 1.f, -1.f), 0.25f,
 				engine::ModelManager::instance().GetUnitSphereModel());
 			engine::LightSystem::instance().addPointLight(Vec3(1, 1, 1), 1.5f, Vec3(2.5f, 3.f, -1.f), 0.1f,
 				engine::ModelManager::instance().GetUnitSphereModel());
@@ -50,7 +46,7 @@ namespace engine::windows
 		//SKY
 		{
 			renderer.m_sky.Init();
-			renderer.m_sky.SetTexture(L"source/textures/lake_beach.dds");
+			renderer.m_sky.SetTexture(L"source/assets/Sky/lake_beach.dds");
 		}
 		//KNIGHTS
 		{
@@ -141,10 +137,11 @@ namespace engine::windows
 			m[3].m_metalnessMap.Load(L"source/assets/Samurai/Helmet_Metallic.dds");
 			m[3].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(true, true, true, false);
 
-			m[4].m_colorMap.Load(L"source/assets/Knight/Skirt_BaseColor.dds");
-			m[4].m_normalMap.Load(L"source/assets/Knight/Skirt_Normal.dds");
-			m[4].m_roughnessMap.Load(L"source/assets/Knight/Skirt_Roughness.dds");
-			m[4].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, false, 0.02f);
+			m[4].m_colorMap.Load(L"source/assets/Samurai/Torso_BaseColor.dds");
+			m[4].m_normalMap.Load(L"source/assets/Samurai/Torso_Normal.dds");
+			m[4].m_roughnessMap.Load(L"source/assets/Samurai/Torso_Roughness.dds");
+			m[4].m_metalnessMap.Load(L"source/assets/Samurai/Torso_Metallic.dds");
+			m[4].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(true, true, true, false);
 
 			m[5].m_colorMap.Load(L"source/assets/Samurai/Legs_BaseColor.dds");
 			m[5].m_normalMap.Load(L"source/assets/Samurai/Legs_Normal.dds");
@@ -169,26 +166,20 @@ namespace engine::windows
 			transform.Rotate(Quaternion(-M_PI_2, transform.top()));
 
 			engine::MeshSystem::instance().addInstance(SamuraiModel, m, OpaqueInstances::Instance(transform));
-
-			transform = Transform::Identity();
-			transform.Scale(Vec3(0.3f, 0.3f, 0.3f));
-			transform.Translate(Vec3(0, -1, -1));
-
-			engine::MeshSystem::instance().addInstance(SamuraiModel, EmissiveInstances::Instance(Vec3(0, 0, 1), transform));
-
 		}
+
 		//CUBES
 		{
 			std::vector<OpaqueInstances::Material> brick(1);
-			brick[0].m_colorMap.Load(L"source/textures/Brick/Brick_Wall_012_COLOR.dds");
-			brick[0].m_normalMap.Load(L"source/textures/Brick/Brick_Wall_012_NORM.dds");
-			brick[0].m_roughnessMap.Load(L"source/textures/Brick/Brick_Wall_012_ROUGH.dds");
+			brick[0].m_colorMap.Load(L"source/assets/Brick/Brick_Wall_012_COLOR.dds");
+			brick[0].m_normalMap.Load(L"source/assets/Brick/Brick_Wall_012_NORM.dds");
+			brick[0].m_roughnessMap.Load(L"source/assets/Brick/Brick_Wall_012_ROUGH.dds");
 			brick[0].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, false, 0.02f);
 
 			std::vector<OpaqueInstances::Material> stone(1);
-			stone[0].m_colorMap.Load(L"source/textures/Stone/Stone_COLOR.dds");
-			stone[0].m_normalMap.Load(L"source/textures/Stone/Stone_NORM.dds");
-			stone[0].m_roughnessMap.Load(L"source/textures/Stone/Stone_ROUGH.dds");
+			stone[0].m_colorMap.Load(L"source/assets/Stone/Stone_COLOR.dds");
+			stone[0].m_normalMap.Load(L"source/assets/Stone/Stone_NORM.dds");
+			stone[0].m_roughnessMap.Load(L"source/assets/Stone/Stone_ROUGH.dds");
 			stone[0].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, true, 0.02f);
 
 			Transform transform = Transform::Identity();
@@ -231,11 +222,11 @@ namespace engine::windows
 		
 
 		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
-		renderer.camera = Camera(fovy, aspect, p_near, p_far);
-		renderer.camera.setWorldOffset(Vec3(0, 0, -5));
+		camera = Camera(fovy, aspect, p_near, p_far);
+		camera.setWorldOffset(Vec3(0, 0, -5));
 	}
 
-	void Controller::ProcessInput()
+	void Application::ProcessInput()
 	{
 		Vec3 offset = Vec3(0, 0, 0);
 		//MOVEMENT
@@ -308,11 +299,11 @@ namespace engine::windows
 		{
 			if (input_state[VK_OEM_PLUS])
 			{
-				renderer.m_postProcess.EV100 += 1.f * delta_time;
+				m_postProcess.EV100 += 1.f * delta_time;
 			}
 			if (input_state[VK_OEM_MINUS])
 			{
-				renderer.m_postProcess.EV100 -= 1.f * delta_time;
+				m_postProcess.EV100 -= 1.f * delta_time;
 			}
 		}
 
@@ -370,7 +361,7 @@ namespace engine::windows
 					rotate_angles.pitch *= delta_time; rotate_angles.roll *= delta_time; rotate_angles.yaw *= delta_time;
 					if (need_to_rotate_object_relative_to_camera_axes)
 					{
-						engine::TransformSystem::instance().m_transforms[clicked_object_transform_id].Rotate(rotate_angles, renderer.camera.right(), renderer.camera.top(), renderer.camera.forward());
+						engine::TransformSystem::instance().m_transforms[clicked_object_transform_id].Rotate(rotate_angles, camera.right(), camera.top(), camera.forward());
 					}
 					else
 					{
@@ -395,23 +386,23 @@ namespace engine::windows
 		}
 	}
 
-	void Controller::OnKeyDown(WPARAM key)
+	void Application::OnKeyDown(WPARAM key)
 	{
 		input_state[key] = true;
 	}
 
-	void Controller::OnKeyUp(WPARAM key)
+	void Application::OnKeyUp(WPARAM key)
 	{
 		input_state[key] = false;
 	}
 
-	void Controller::MoveCamera(const Vec3& offset)
+	void Application::MoveCamera(const Vec3& offset)
 	{
-		renderer.camera.addRelativeOffset(offset);
-		renderer.camera.updateMatrices();
+		camera.addRelativeOffset(offset);
+		camera.updateMatrices();
 	}
 
-	void Controller::OnLMouseDown(WORD x, WORD y)
+	void Application::OnLMouseDown(WORD x, WORD y)
 	{
 		need_to_rotate_camera = true;
 		mouse_x = x;
@@ -421,7 +412,7 @@ namespace engine::windows
 		dir_rotation = Vec3(0, 0, 1);
 	}
 
-	void Controller::OnLMouseMove(WORD x, WORD y)
+	void Application::OnLMouseMove(WORD x, WORD y)
 	{
 		mouse_x = x;
 		mouse_y = y;
@@ -430,14 +421,14 @@ namespace engine::windows
 		dir_rotation = delta_time * (start_rotation - end_rotation) * M_PI / wnd.screen.right;
 	}
 
-	void Controller::OnLMouseUp(WORD x, WORD y)
+	void Application::OnLMouseUp(WORD x, WORD y)
 	{
 		mouse_x = x;
 		mouse_y = y;
 		need_to_rotate_camera = false;
 	}
 
-	void Controller::OnRMouseDown(WORD x, WORD y)
+	void Application::OnRMouseDown(WORD x, WORD y)
 	{
 		mouse_x = x;
 		mouse_y = y;
@@ -450,21 +441,21 @@ namespace engine::windows
 		ray_clicked_to_object.origin = Vec3(xx, yy, 1);
 
 		float w;
-		ray_clicked_to_object.origin.mult(renderer.camera.m_viewProjInv, 1, &w);
+		ray_clicked_to_object.origin.mult(camera.m_viewProjInv, 1, &w);
 		ray_clicked_to_object.origin /= w;
 
-		ray_clicked_to_object.direction = ray_clicked_to_object.origin - renderer.camera.position();
+		ray_clicked_to_object.direction = ray_clicked_to_object.origin - camera.position();
 		ray_clicked_to_object.direction.normalize();
 		
 
 		if (engine::MeshSystem::instance().findIntersection(ray_clicked_to_object, nearest_clicked_object, clicked_object_transform_id))
 		{
-			distance_object_to_camera = (nearest_clicked_object.pos - renderer.camera.position()).length();
+			distance_object_to_camera = (nearest_clicked_object.pos - camera.position()).length();
 			need_to_move_object = true;
 		}
 	}
 
-	void Controller::OnRMouseMove(WORD x, WORD y)
+	void Application::OnRMouseMove(WORD x, WORD y)
 	{
 		if (need_to_move_object)
 		{
@@ -476,26 +467,26 @@ namespace engine::windows
 			ray_clicked_to_object.origin = Vec3(xx, yy, 1);
 
 			float w;
-			ray_clicked_to_object.origin.mult(renderer.camera.m_viewProjInv, 1, &w);
+			ray_clicked_to_object.origin.mult(camera.m_viewProjInv, 1, &w);
 			ray_clicked_to_object.origin /= w;
 
-			ray_clicked_to_object.direction = ray_clicked_to_object.origin - renderer.camera.position();
+			ray_clicked_to_object.direction = ray_clicked_to_object.origin - camera.position();
 			ray_clicked_to_object.direction.normalize();
 
-			Vec3 new_position = ray_clicked_to_object.direction * distance_object_to_camera + renderer.camera.position();
+			Vec3 new_position = ray_clicked_to_object.direction * distance_object_to_camera + camera.position();
 			engine::TransformSystem::instance().m_transforms[clicked_object_transform_id].Translate(new_position - nearest_clicked_object.pos);
 			nearest_clicked_object.pos = new_position;
 		}
 	}
 
-	void Controller::OnRMouseUp(WORD x, WORD y)
+	void Application::OnRMouseUp(WORD x, WORD y)
 	{
 		mouse_x = x;
 		mouse_y = y;
 		need_to_move_object = false;
 	}
 
-	void Controller::OnMouseWheel(short wheel_data)
+	void Application::OnMouseWheel(short wheel_data)
 	{
 		short count = wheel_data / WHEEL_DELTA;
 		if (count < 0)
@@ -504,9 +495,9 @@ namespace engine::windows
 			camera_move_offset_val *= abs(count) * 1.1f;
 	}
 
-	void Controller::RotateCamera()
+	void Application::RotateCamera()
 	{
-			renderer.camera.addRelativeAngles(Angles(0, dir_rotation.e[1], dir_rotation.e[0]));
+			camera.addRelativeAngles(Angles(0, dir_rotation.e[1], dir_rotation.e[0]));
 			need_to_move_camera = true;
 	}
 }

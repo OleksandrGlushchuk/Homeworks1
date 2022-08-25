@@ -37,5 +37,5 @@ public:
 	void addWorldOffset(const Vec3& offset);
 	void setWorldAngles(const Angles& angles);
 
-	friend class Controller;
+	friend class Application;
 };

@@ -405,7 +405,7 @@ namespace engine
 						vertex[0].normal = vertex[1].normal = vertex[2].normal = Vec3::cross(AC,AB).normalized();
 					}
 
-					triangle[0] = TriangleIndices(vertex - mesh.vertices.data(), vertex - mesh.vertices.data() + 1, vertex - mesh.vertices.data() + 2);
+					triangle[0] = TriangleIndices(vertex - mesh.vertices.data() + 2, vertex - mesh.vertices.data() + 1, vertex - mesh.vertices.data());
 					triangle += 1;
 					vertex += 3;
 
@@ -421,7 +421,7 @@ namespace engine
 						vertex[0].normal = vertex[1].normal = vertex[2].normal = Vec3::cross(AC, AB).normalized();
 					}
 
-					triangle[0] = TriangleIndices(vertex - mesh.vertices.data(), vertex - mesh.vertices.data() + 1, vertex - mesh.vertices.data() + 2);
+					triangle[0] = TriangleIndices(vertex - mesh.vertices.data()+2, vertex - mesh.vertices.data() + 1, vertex - mesh.vertices.data());
 					triangle += 1;
 					vertex += 3;
 				}

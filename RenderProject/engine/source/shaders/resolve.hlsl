@@ -1,5 +1,5 @@
 #include "globals.hlsli"
-#include "resolve_toolkit.hlsli"
+#include "resolve_helpers.hlsli"
 
 Texture2D g_texture : register(t0);
 

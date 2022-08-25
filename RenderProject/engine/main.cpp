@@ -1,6 +1,4 @@
-#include "window/window.h"
-#include "window/controller.h"
-#include "window/Renderer.h"
+#include "window/Application.h"
 #include "window/Timer.h"
 #include <thread>
 #include <chrono>
@@ -11,14 +9,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 engine::windows::Window window;
 engine::windows::Renderer renderer;
-engine::windows::Controller controller(window, renderer);
+engine::windows::Application application(window, renderer);
 
 int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPWSTR cmdline, _In_ int cmdshow)
 {
 	engine::init();
 
 	window = engine::windows::Window(L"homework-7", hinstance, WndProc);
-	controller.InitScene();
+	application.Init();
 	window.Show();
 
 	MSG msg;
@@ -40,8 +38,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 		delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count();
 		if (timer.FrameTimeElapsed(FRAME_DURATION))
 		{
-			controller.Draw();
-			controller.delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count() - delta_time + FRAME_DURATION;
+			application.Draw();
+			application.delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count() - delta_time + FRAME_DURATION;
 		}
 		
 		
@@ -56,42 +54,42 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	switch (msg)
 	{
 	case WM_SIZE:
-		controller.OnChangeWindowSize();
+		application.OnChangeWindowSize();
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
 	case WM_KEYDOWN:
 		if ((HIWORD(lparam) & KF_REPEAT) != KF_REPEAT)
-			controller.OnKeyDown(wparam);
+			application.OnKeyDown(wparam);
 		break;
 	case WM_KEYUP:
-		controller.OnKeyUp(wparam);
+		application.OnKeyUp(wparam);
 		break;
 	case WM_LBUTTONDOWN:
-		controller.OnLMouseDown(LOWORD(lparam), HIWORD(lparam));
+		application.OnLMouseDown(LOWORD(lparam), HIWORD(lparam));
 		break;
 
 	case WM_MOUSEMOVE:
 		if (wparam == MK_LBUTTON || wparam == (MK_LBUTTON | MK_RBUTTON) || wparam == (MK_LBUTTON | MK_SHIFT) || wparam == (MK_LBUTTON | MK_SHIFT | MK_RBUTTON))
-			controller.OnLMouseMove(LOWORD(lparam), HIWORD(lparam));
+			application.OnLMouseMove(LOWORD(lparam), HIWORD(lparam));
 		if (wparam == MK_RBUTTON || wparam == (MK_RBUTTON | MK_LBUTTON) || wparam == (MK_RBUTTON | MK_SHIFT) || wparam == (MK_RBUTTON | MK_SHIFT | MK_LBUTTON))
-			controller.OnRMouseMove(LOWORD(lparam), HIWORD(lparam));
+			application.OnRMouseMove(LOWORD(lparam), HIWORD(lparam));
 		break;
 	case WM_LBUTTONUP:
-		controller.OnLMouseUp(LOWORD(lparam), HIWORD(lparam));
+		application.OnLMouseUp(LOWORD(lparam), HIWORD(lparam));
 		break;
 
 	case WM_RBUTTONDOWN:
-		controller.OnRMouseDown(LOWORD(lparam), HIWORD(lparam));
+		application.OnRMouseDown(LOWORD(lparam), HIWORD(lparam));
 		break;
 
 	case WM_RBUTTONUP:
-		controller.OnRMouseUp(LOWORD(lparam), HIWORD(lparam));
+		application.OnRMouseUp(LOWORD(lparam), HIWORD(lparam));
 		break;
 
 	case WM_MOUSEWHEEL:
-		controller.OnMouseWheel(GET_WHEEL_DELTA_WPARAM(wparam));
+		application.OnMouseWheel(GET_WHEEL_DELTA_WPARAM(wparam));
 		break;
 	default: return DefWindowProc(hwnd, msg, wparam, lparam);
 	}

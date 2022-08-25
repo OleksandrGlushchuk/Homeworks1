@@ -1,5 +1,5 @@
-#ifndef _RESOLVE_TOOLKIT_HLSLI_
-#define _RESOLVE_TOOLKIT_HLSLI_
+#ifndef _RESOLVE_HELPERS_HLSLI_
+#define _RESOLVE_HELPERS_HLSLI_
 
 inline float3 AdjustExposure(uniform float3 radiance, uniform float _EV100)
 {

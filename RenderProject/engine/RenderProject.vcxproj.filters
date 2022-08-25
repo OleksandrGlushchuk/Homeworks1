@@ -36,9 +36,6 @@
     <Filter Include="source\shaders">
       <UniqueIdentifier>{29695bc6-398a-46dc-a3ef-3ebd875fcf6c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="source\textures">
-      <UniqueIdentifier>{bbef320c-fae8-41b1-9be6-281b4f9c150d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="source\assets">
       <UniqueIdentifier>{2ff64970-5a76-49eb-ad70-73aff204f9c0}</UniqueIdentifier>
     </Filter>
@@ -48,11 +45,14 @@
     <Filter Include="source\assets\Samurai">
       <UniqueIdentifier>{fcc7afef-fa2b-4e9a-8bbb-fbb3823c3595}</UniqueIdentifier>
     </Filter>
-    <Filter Include="source\textures\Brick">
-      <UniqueIdentifier>{4529cb6d-a0c3-4121-bf52-07734f8f7694}</UniqueIdentifier>
+    <Filter Include="source\assets\Brick">
+      <UniqueIdentifier>{3b93c724-c967-45e1-b5c0-8042f441ebde}</UniqueIdentifier>
     </Filter>
-    <Filter Include="source\textures\Stone">
-      <UniqueIdentifier>{226c8642-a196-40a6-989e-854e9e4b39cb}</UniqueIdentifier>
+    <Filter Include="source\assets\Stone">
+      <UniqueIdentifier>{8566f0ea-77ad-423c-a31a-a0300555d620}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\assets\Sky">
+      <UniqueIdentifier>{0298a816-93c8-4442-b5c7-c50048afd30d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -65,7 +65,7 @@
     <ClCompile Include="math\Triangle.cpp">
       <Filter>math</Filter>
     </ClCompile>
-    <ClCompile Include="window\controller.cpp">
+    <ClCompile Include="window\Application.cpp">
       <Filter>window</Filter>
     </ClCompile>
     <ClCompile Include="window\Renderer.cpp">
@@ -151,7 +151,7 @@
     <ClInclude Include="math\vec3.h">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="window\controller.h">
+    <ClInclude Include="window\Application.h">
       <Filter>window</Filter>
     </ClInclude>
     <ClInclude Include="window\Renderer.h">
@@ -302,10 +302,10 @@
     <None Include="source\assets\Samurai\Samurai.fbx">
       <Filter>source\assets\Samurai</Filter>
     </None>
-    <None Include="source\shaders\pbr_toolkit.hlsli">
+    <None Include="source\shaders\pbr_helpers.hlsli">
       <Filter>source\shaders</Filter>
     </None>
-    <None Include="source\shaders\resolve_toolkit.hlsli">
+    <None Include="source\shaders\resolve_helpers.hlsli">
       <Filter>source\shaders</Filter>
     </None>
   </ItemGroup>
@@ -466,26 +466,26 @@
     <Image Include="source\assets\Samurai\Torso_Roughness.dds">
       <Filter>source\assets\Samurai</Filter>
     </Image>
-    <Image Include="source\textures\Brick\Brick_Wall_012_COLOR.dds">
-      <Filter>source\textures\Brick</Filter>
+    <Image Include="source\assets\Brick\Brick_Wall_012_COLOR.dds">
+      <Filter>source\assets\Brick</Filter>
     </Image>
-    <Image Include="source\textures\Brick\Brick_Wall_012_NORM.dds">
-      <Filter>source\textures\Brick</Filter>
+    <Image Include="source\assets\Brick\Brick_Wall_012_NORM.dds">
+      <Filter>source\assets\Brick</Filter>
     </Image>
-    <Image Include="source\textures\Brick\Brick_Wall_012_ROUGH.dds">
-      <Filter>source\textures\Brick</Filter>
+    <Image Include="source\assets\Brick\Brick_Wall_012_ROUGH.dds">
+      <Filter>source\assets\Brick</Filter>
     </Image>
-    <Image Include="source\textures\lake_beach.dds">
-      <Filter>source\textures</Filter>
+    <Image Include="source\assets\Stone\Stone_COLOR.dds">
+      <Filter>source\assets\Stone</Filter>
     </Image>
-    <Image Include="source\textures\Stone\Stone_COLOR.dds">
-      <Filter>source\textures\Stone</Filter>
+    <Image Include="source\assets\Stone\Stone_NORM.dds">
+      <Filter>source\assets\Stone</Filter>
     </Image>
-    <Image Include="source\textures\Stone\Stone_NORM.dds">
-      <Filter>source\textures\Stone</Filter>
+    <Image Include="source\assets\Stone\Stone_ROUGH.dds">
+      <Filter>source\assets\Stone</Filter>
     </Image>
-    <Image Include="source\textures\Stone\Stone_ROUGH.dds">
-      <Filter>source\textures\Stone</Filter>
+    <Image Include="source\assets\Sky\lake_beach.dds">
+      <Filter>source\assets\Sky</Filter>
     </Image>
   </ItemGroup>
 </Project>
