@@ -311,7 +311,7 @@
     <Image Include="source\assets\Samurai\Torso_Metallic.dds" />
     <Image Include="source\assets\Samurai\Torso_Normal.dds" />
     <Image Include="source\assets\Samurai\Torso_Roughness.dds" />
-    <Image Include="source\assets\Sky\lake_beach.dds" />
+    <Image Include="source\assets\Sky\night_street.dds" />
     <Image Include="source\assets\Stone\Stone_COLOR.dds" />
     <Image Include="source\assets\Stone\Stone_NORM.dds" />
     <Image Include="source\assets\Stone\Stone_ROUGH.dds" />

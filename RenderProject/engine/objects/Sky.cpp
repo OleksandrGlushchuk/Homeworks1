@@ -2,7 +2,7 @@
 
 void Sky::InitTextures()
 {
-	engine::TextureManager::instance().LoadTexture(L"source/assets/Sky/lake_beach.dds");
+	engine::TextureManager::instance().LoadTexture(L"source/assets/Sky/night_street.dds");
 }
 
 void Sky::InitShaders()

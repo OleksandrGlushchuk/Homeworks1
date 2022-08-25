@@ -118,7 +118,7 @@ inline float3 CalculatePointLight(PointLight pointLight, const float3 PointToLig
     float3 F_LdotN = fresnel(NdotL, nearest_mat.F0);
     float G = smith(rough2, NdotV, NdotSpecL);
 
-    return pointLight.radiance * NdotL * map_fading * (LambertBRDF(F_LdotN, nearest_mat, solid_angle) +
+    return pointLight.radiance * NdotL * map_fading * geometry_fading * (LambertBRDF(F_LdotN, nearest_mat, solid_angle) +
     CookTorranceBRDF(F_SpecLdotH, G, D, solid_angle, NdotV, NdotSpecL));
 }
 #endif

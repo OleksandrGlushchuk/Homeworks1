@@ -33,20 +33,20 @@ namespace engine::windows
 
 		//LIGHTS
 		{
-			engine::LightSystem::instance().addPointLight(Vec3(1, 1, 1), 4.f, Vec3(0, 1.f, -1.f), 0.25f,
+			engine::LightSystem::instance().addPointLight(Vec3(1, 1, 1), 2.f, Vec3(0, 1.f, -2.3f), 0.25f,
 				engine::ModelManager::instance().GetUnitSphereModel());
-			engine::LightSystem::instance().addPointLight(Vec3(1, 1, 1), 1.5f, Vec3(2.5f, 3.f, -1.f), 0.1f,
+			engine::LightSystem::instance().addPointLight(Vec3(1, 1, 1), 1.1f, Vec3(2.5f, 3.f, -1.f), 0.1f,
 				engine::ModelManager::instance().GetUnitSphereModel());
-			engine::LightSystem::instance().addPointLight(Vec3(0.2f, 1, 0.2f), 1.f, Vec3(1, -0.7f, -1.f), 0.1f,
+			engine::LightSystem::instance().addPointLight(Vec3(0.2f, 1, 0.2f), 0.7f, Vec3(1.3f, -0.7f, -0.5f), 0.1f,
 				engine::ModelManager::instance().GetUnitSphereModel());
-			engine::LightSystem::instance().addPointLight(Vec3(1.f, 1, 0.2f), 1.f, Vec3(-1.5f, 0.7f, 0.f), 0.1f,
+			engine::LightSystem::instance().addPointLight(Vec3(1.f, 1, 0.2f), 0.7f, Vec3(-1.5f, 0.7f, 0.f), 0.1f,
 				engine::ModelManager::instance().GetUnitSphereModel());
 		}
 
 		//SKY
 		{
 			renderer.m_sky.Init();
-			renderer.m_sky.SetTexture(L"source/assets/Sky/lake_beach.dds");
+			renderer.m_sky.SetTexture(L"source/assets/Sky/night_street.dds");
 		}
 		//KNIGHTS
 		{

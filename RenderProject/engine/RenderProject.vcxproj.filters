@@ -484,7 +484,7 @@
     <Image Include="source\assets\Stone\Stone_ROUGH.dds">
       <Filter>source\assets\Stone</Filter>
     </Image>
-    <Image Include="source\assets\Sky\lake_beach.dds">
+    <Image Include="source\assets\Sky\night_street.dds">
       <Filter>source\assets\Sky</Filter>
     </Image>
   </ItemGroup>

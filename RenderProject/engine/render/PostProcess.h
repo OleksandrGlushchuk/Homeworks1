@@ -22,7 +22,7 @@ namespace engine
 		Shader m_shader;
 		ConstantBuffer<PostProcessBuffer> m_constantBuffer;
 	public:
-		float EV100=2.f;
+		float EV100=0.0f;
 		PostProcess() {}
 		void Init()
 		{
