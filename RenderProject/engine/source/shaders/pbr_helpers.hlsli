@@ -77,7 +77,9 @@ inline float3 LambertBRDF(const float3 F_LdotN, const Material nearest_mat, floa
 
 inline float3 CalculatePointLight(PointLight pointLight, const float3 PointToLight, float3 PointToCameraNormalized, const float3 map_normal, const float3 geometry_normal, const Material nearest_mat)
 {
-    float3 PointToLightNormalized = normalize(PointToLight);
+    float GNdotL = dot(geometry_normal, PointToLight);
+    if (GNdotL <= -pointLight.radius)
+        return 0;
     
     float DistancePointToLight = length(PointToLight);
     DistancePointToLight = max(DistancePointToLight, pointLight.radius);
@@ -85,21 +87,19 @@ inline float3 CalculatePointLight(PointLight pointLight, const float3 PointToLig
     float lightAngleSin, cosHalfAngularDiameter;
     float solid_angle = FindSolidAngle(DistancePointToLight, pointLight.radius, lightAngleSin, cosHalfAngularDiameter);
     
+    float geometry_fading = 1.f - saturate((pointLight.radius - GNdotL) / (2 * pointLight.radius));
+    float map_fading = dot(map_normal, PointToLight);
+    map_fading = 1.f - saturate((pointLight.radius - map_fading) / (2 * pointLight.radius));
+    
+    float3 PointToLightNormalized = normalize(PointToLight);
+    float NdotL = dot(map_normal, PointToLightNormalized);
+    NdotL = max(NdotL, map_fading * lightAngleSin);
+   
+    
     bool intersects = false;
     float3 reflection_dir = reflect(-PointToCameraNormalized, map_normal);
     float3 PointToSpecLight = approximateClosestSphereDir(intersects, reflection_dir, cosHalfAngularDiameter,
 		PointToLight, PointToLightNormalized, DistancePointToLight, pointLight.radius);
-
-    
-    float NdotL = dot(map_normal, PointToLightNormalized);
-    float geometry_fading = dot(geometry_normal, PointToLight);
-    float map_fading = dot(map_normal, PointToLight);
-    geometry_fading = 1.f - saturate((pointLight.radius - geometry_fading) / (2 * pointLight.radius));
-    map_fading = 1.f - saturate((pointLight.radius - map_fading) / (2 * pointLight.radius));
-    NdotL = max(NdotL, map_fading * lightAngleSin);
-
-    if (NdotL <= 0.f)
-        return float3(0.f, 0.f, 0.f);
     
     float NdotV = max(dot(map_normal, PointToCameraNormalized), 0.001f);
 

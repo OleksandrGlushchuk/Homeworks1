@@ -32,7 +32,7 @@ namespace engine
 		m_instanceBuffer.Init(totalInstances, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_FLAG::D3D11_CPU_ACCESS_WRITE);
 
 		auto mapping = m_instanceBuffer.Map();
-		InstanceBuffer* dst = static_cast<InstanceBuffer*>(mapping.pData);
+		GpuInstance* dst = static_cast<GpuInstance*>(mapping.pData);
 
 		uint32_t copiedNum = 0;
 		for (auto& modelInstances : m_modelInstances)
@@ -44,7 +44,7 @@ namespace engine
 				uint32_t numModelInstances = instances.size();
 				for (uint32_t index = 0; index < numModelInstances; ++index)
 				{
-					dst[copiedNum++] = InstanceBuffer(instances[index].emission, 
+					dst[copiedNum++] = GpuInstance(instances[index].emission,
 						engine::TransformSystem::instance().m_transforms[instances[index].transform_id].getTransformMatrix());
 				}
 			}

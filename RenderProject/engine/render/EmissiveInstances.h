@@ -16,12 +16,12 @@ namespace engine
 	class EmissiveInstances
 	{
 	public:
-		struct InstanceBuffer
+		struct GpuInstance
 		{
 			Vec3 emission;
 			Matr<4> transform_matrix;
-			InstanceBuffer() {}
-			InstanceBuffer(const Vec3& _emission, const Matr<4>& _transform_matrix) : emission(_emission), transform_matrix(_transform_matrix) {}
+			GpuInstance() {}
+			GpuInstance(const Vec3& _emission, const Matr<4>& _transform_matrix) : emission(_emission), transform_matrix(_transform_matrix) {}
 		};
 		struct Instance
 		{
@@ -67,7 +67,7 @@ namespace engine
 
 		Shader m_shader;
 		std::vector<ModelInstance> m_modelInstances;
-		VertexBuffer<InstanceBuffer> m_instanceBuffer;
+		VertexBuffer<GpuInstance> m_instanceBuffer;
 		ConstantBuffer<Matr<4>> m_constantBuffer;
 		std::vector<ModelID> m_modelIDs;
 	public:
