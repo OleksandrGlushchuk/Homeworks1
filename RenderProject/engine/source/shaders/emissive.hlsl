@@ -10,6 +10,7 @@ struct VS_INPUT
     float3 position : POSITION;
     
     float3 emission : EMISSION;
+    float padding : PADDING;
     float4 transform_x : TRANSFORM_X;
     float4 transform_y : TRANSFORM_Y;
     float4 transform_z : TRANSFORM_Z;

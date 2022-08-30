@@ -19,6 +19,7 @@ namespace engine
 		struct GpuInstance
 		{
 			Vec3 emission;
+			float padding;
 			Matr<4> transform_matrix;
 			GpuInstance() {}
 			GpuInstance(const Vec3& _emission, const Matr<4>& _transform_matrix) : emission(_emission), transform_matrix(_transform_matrix) {}
