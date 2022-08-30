@@ -24,17 +24,29 @@ namespace engine
 		ALWAYS_ASSERT(s_instance); return *s_instance;
 	}
 
-	const engine::DxResPtr<ID3D11ShaderResourceView>& TextureManager::LoadTexture(const std::wstring& fileName)
+	const engine::DxResPtr<ID3D11ShaderResourceView>& TextureManager::LoadTexture(const std::wstring& fileName, bool need_to_force_sRGB)
 	{
 		std::unordered_map< std::wstring, engine::DxResPtr<ID3D11ShaderResourceView> >::iterator find_it;
 		if ((find_it = m_shaderResourceView.find(fileName)) != m_shaderResourceView.end())
 		{
 			return find_it->second;
 		}
-
-		HRESULT result = DirectX::CreateDDSTextureFromFile(engine::s_device, engine::s_deviceContext, fileName.c_str(), m_texture.reset(), m_shaderResourceView[fileName].reset());
-		ALWAYS_ASSERT(result >= 0 && "CreateDDSTextureFromFile");
+		if (!need_to_force_sRGB)
+		{
+			HRESULT result = DirectX::CreateDDSTextureFromFile(engine::s_device, engine::s_deviceContext, fileName.c_str(), m_colorMap.reset(), m_shaderResourceView[fileName].reset());
+			ALWAYS_ASSERT(result >= 0 && "CreateDDSTextureFromFile");
+		}
+		else
+		{
+			HRESULT result = DirectX::CreateDDSTextureFromFileEx(engine::s_device, engine::s_deviceContext,	fileName.c_str(), 0,
+				D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
+				DirectX::DDS_LOADER_FORCE_SRGB,
+				m_colorMap.reset(), m_shaderResourceView[fileName].reset(), nullptr);
+			
+			ALWAYS_ASSERT(result >= 0 && "CreateDDSTextureFromFile");
+		}
 		return m_shaderResourceView[fileName];
+
 	}
 
 	const engine::DxResPtr<ID3D11ShaderResourceView>& TextureManager::GetTexture(const std::wstring& textureKey)

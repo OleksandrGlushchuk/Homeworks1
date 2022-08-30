@@ -151,22 +151,27 @@
     <ClCompile Include="DDSTextureLoader\DDSTextureLoader11.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math\camera.cpp" />
-    <ClCompile Include="math\sphere.cpp" />
     <ClCompile Include="math\Triangle.cpp" />
     <ClCompile Include="math\vec3.cpp" />
-    <ClCompile Include="objects\Cube.cpp" />
-    <ClCompile Include="objects\Knight.cpp" />
-    <ClCompile Include="objects\Samurai.cpp" />
     <ClCompile Include="objects\Sky.cpp" />
     <ClCompile Include="render\d3d.cpp" />
+    <ClCompile Include="render\DepthStencil.cpp" />
+    <ClCompile Include="render\EmissiveInstances.cpp" />
     <ClCompile Include="render\globals.cpp" />
+    <ClCompile Include="render\LightSystem.cpp" />
     <ClCompile Include="render\MeshSystem.cpp" />
     <ClCompile Include="render\ModelManager.cpp" />
     <ClCompile Include="render\OpaqueInstances.cpp" />
+    <ClCompile Include="render\PerFrameBuffer.cpp" />
     <ClCompile Include="render\ShaderManager.cpp" />
     <ClCompile Include="render\TextureManager.cpp" />
-    <ClCompile Include="window\controller.cpp" />
-    <ClCompile Include="window\Scene.cpp" />
+    <ClCompile Include="render\TransformSystem.cpp" />
+    <ClCompile Include="render\TriangleOctree.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="window\Application.cpp" />
+    <ClCompile Include="window\Renderer.cpp" />
     <ClCompile Include="window\window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -174,55 +179,67 @@
     <ClInclude Include="include\win.hpp" />
     <ClInclude Include="include\win_def.hpp" />
     <ClInclude Include="include\win_undef.hpp" />
+    <ClInclude Include="math\Box.h" />
     <ClInclude Include="math\camera.h" />
     <ClInclude Include="math\Floor.h" />
     <ClInclude Include="math\Intersection.h" />
-    <ClInclude Include="math\Light.h" />
-    <ClInclude Include="math\LightingPostProcess.h" />
     <ClInclude Include="math\Matr.h" />
+    <ClInclude Include="math\MeshIntersection.h" />
     <ClInclude Include="math\Quaternion.h" />
     <ClInclude Include="math\ray.h" />
-    <ClInclude Include="math\sphere.h" />
     <ClInclude Include="math\Transform.h" />
     <ClInclude Include="math\Triangle.h" />
     <ClInclude Include="math\vec2.h" />
     <ClInclude Include="math\vec3.h" />
     <ClInclude Include="math\vec4.h" />
-    <ClInclude Include="objects\Cube.h" />
-    <ClInclude Include="objects\IntersectionQuery.h" />
-    <ClInclude Include="objects\Knight.h" />
-    <ClInclude Include="objects\Mesh.h" />
-    <ClInclude Include="objects\ObjectMover.h" />
-    <ClInclude Include="objects\ObjectRotator.h" />
-    <ClInclude Include="objects\ObjRef.h" />
-    <ClInclude Include="objects\Samurai.h" />
     <ClInclude Include="objects\Sky.h" />
-    <ClInclude Include="objects\Triangle.h" />
     <ClInclude Include="render\ConstantBuffer.h" />
     <ClInclude Include="render\d3d.hpp" />
+    <ClInclude Include="render\DepthStencil.h" />
     <ClInclude Include="render\DxRes.hpp" />
+    <ClInclude Include="render\EmissiveInstances.h" />
     <ClInclude Include="render\globals.hpp" />
     <ClInclude Include="render\IndexBuffer.h" />
+    <ClInclude Include="render\Light.h" />
+    <ClInclude Include="render\LightSystem.h" />
+    <ClInclude Include="render\Mesh.h" />
     <ClInclude Include="render\MeshSystem.h" />
     <ClInclude Include="render\Model.h" />
+    <ClInclude Include="render\ModelID.h" />
     <ClInclude Include="render\ModelManager.h" />
     <ClInclude Include="render\OpaqueInstances.h" />
     <ClInclude Include="render\PerFrameBuffer.h" />
+    <ClInclude Include="render\PostProcess.h" />
+    <ClInclude Include="render\RenderTarget.h" />
     <ClInclude Include="render\Shader.h" />
     <ClInclude Include="render\ShaderManager.h" />
+    <ClInclude Include="render\SolidVector.h" />
     <ClInclude Include="render\Texture.h" />
     <ClInclude Include="render\TextureManager.h" />
+    <ClInclude Include="render\TransformSystem.h" />
     <ClInclude Include="render\TriangleIndices.h" />
+    <ClInclude Include="render\TriangleOctree.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="render\Vertex.h" />
     <ClInclude Include="render\VertexBuffer.h" />
-    <ClInclude Include="window\controller.h" />
+    <ClInclude Include="window\Application.h" />
     <ClInclude Include="window\InputState.h" />
-    <ClInclude Include="window\Scene.h" />
+    <ClInclude Include="window\Renderer.h" />
     <ClInclude Include="window\Timer.h" />
     <ClInclude Include="window\window.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="source\shaders\emissive.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="source\shaders\opaque.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="source\shaders\resolve.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
@@ -230,38 +247,74 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="source\shaders\triangle.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="source\assets\Knight\Knight.fbx" />
     <None Include="source\assets\Samurai\Samurai.fbx" />
+    <None Include="source\shaders\pbr_helpers.hlsli" />
     <None Include="source\shaders\globals.hlsli" />
+    <None Include="source\shaders\resolve_helpers.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="source\assets\Brick\Brick_Wall_012_COLOR.dds" />
+    <Image Include="source\assets\Brick\Brick_Wall_012_NORM.dds" />
+    <Image Include="source\assets\Brick\Brick_Wall_012_ROUGH.dds" />
     <Image Include="source\assets\Knight\Cape_BaseColor.dds" />
+    <Image Include="source\assets\Knight\Cape_Normal.dds" />
+    <Image Include="source\assets\Knight\Cape_Roughness.dds" />
     <Image Include="source\assets\Knight\Eye_BaseColor.dds" />
     <Image Include="source\assets\Knight\Fur_BaseColor.dds" />
+    <Image Include="source\assets\Knight\Fur_Normal.dds" />
+    <Image Include="source\assets\Knight\Fur_Roughness.dds" />
     <Image Include="source\assets\Knight\Glove_BaseColor.dds" />
+    <Image Include="source\assets\Knight\Glove_Metallic.dds" />
+    <Image Include="source\assets\Knight\Glove_Normal.dds" />
+    <Image Include="source\assets\Knight\Glove_Roughness.dds" />
     <Image Include="source\assets\Knight\Head_BaseColor.dds" />
+    <Image Include="source\assets\Knight\Head_Normal.dds" />
+    <Image Include="source\assets\Knight\Head_Roughness.dds" />
     <Image Include="source\assets\Knight\Helmet_BaseColor.dds" />
+    <Image Include="source\assets\Knight\Helmet_Metallic.dds" />
+    <Image Include="source\assets\Knight\Helmet_Normal.dds" />
+    <Image Include="source\assets\Knight\Helmet_Roughness.dds" />
     <Image Include="source\assets\Knight\Legs_BaseColor.dds" />
+    <Image Include="source\assets\Knight\Legs_Metallic.dds" />
+    <Image Include="source\assets\Knight\Legs_Normal.dds" />
+    <Image Include="source\assets\Knight\Legs_Roughness.dds" />
     <Image Include="source\assets\Knight\Skirt_BaseColor.dds" />
+    <Image Include="source\assets\Knight\Skirt_Normal.dds" />
+    <Image Include="source\assets\Knight\Skirt_Roughness.dds" />
     <Image Include="source\assets\Knight\Torso_BaseColor.dds" />
+    <Image Include="source\assets\Knight\Torso_Metallic.dds" />
+    <Image Include="source\assets\Knight\Torso_Normal.dds" />
+    <Image Include="source\assets\Knight\Torso_Roughness.dds" />
     <Image Include="source\assets\Samurai\Eye_BaseColor.dds" />
     <Image Include="source\assets\Samurai\Hand_BaseColor.dds" />
+    <Image Include="source\assets\Samurai\Hand_Normal.dds" />
+    <Image Include="source\assets\Samurai\Hand_Roughness.dds" />
     <Image Include="source\assets\Samurai\Head_BaseColor.dds" />
+    <Image Include="source\assets\Samurai\Head_Normal.dds" />
+    <Image Include="source\assets\Samurai\Head_Roughness.dds" />
     <Image Include="source\assets\Samurai\Helmet_BaseColor.dds" />
+    <Image Include="source\assets\Samurai\Helmet_Metallic.dds" />
+    <Image Include="source\assets\Samurai\Helmet_Normal.dds" />
+    <Image Include="source\assets\Samurai\Helmet_Roughness.dds" />
     <Image Include="source\assets\Samurai\Legs_BaseColor.dds" />
+    <Image Include="source\assets\Samurai\Legs_Metallic.dds" />
+    <Image Include="source\assets\Samurai\Legs_Normal.dds" />
+    <Image Include="source\assets\Samurai\Legs_Roughness.dds" />
     <Image Include="source\assets\Samurai\Sword_BaseColor.dds" />
+    <Image Include="source\assets\Samurai\Sword_Metallic.dds" />
+    <Image Include="source\assets\Samurai\Sword_Normal.dds" />
+    <Image Include="source\assets\Samurai\Sword_Roughness.dds" />
     <Image Include="source\assets\Samurai\Torso_BaseColor.dds" />
-    <Image Include="source\textures\brick.dds" />
-    <Image Include="source\textures\chess.dds" />
-    <Image Include="source\textures\redstone.dds" />
-    <Image Include="source\textures\roof.dds" />
-    <Image Include="source\textures\skymap.dds" />
+    <Image Include="source\assets\Samurai\Torso_Metallic.dds" />
+    <Image Include="source\assets\Samurai\Torso_Normal.dds" />
+    <Image Include="source\assets\Samurai\Torso_Roughness.dds" />
+    <Image Include="source\assets\Sky\night_street.dds" />
+    <Image Include="source\assets\Stone\Stone_COLOR.dds" />
+    <Image Include="source\assets\Stone\Stone_NORM.dds" />
+    <Image Include="source\assets\Stone\Stone_ROUGH.dds" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

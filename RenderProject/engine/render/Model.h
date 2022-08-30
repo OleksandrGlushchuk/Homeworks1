@@ -5,38 +5,20 @@
 #include "IndexBuffer.h"
 #include "ConstantBuffer.h"
 #include <string>
-#include "../math/Transform.h"
-struct Box
-{
-	Vec3 min;
-	Vec3 max;
-};
+#include "../math/Matr.h"
+#include "../math/Box.h"
+#include "Mesh.h"
 
-class Model
+namespace engine
 {
-public:
-	Model(){}
-	struct MeshRange
+	class Model
 	{
-		MeshRange(){}
-		uint32_t vertexOffset; // offset in vertices
-		uint32_t indexOffset; // offset in indices
-		uint32_t vertexNum; // num of vertices
-		uint32_t indexNum; // num of indices
-		Box box;
-	};
-	struct Mesh
-	{
-		Mesh(){}
+	public:
+		Model() {}
 		std::string name;
-		std::vector<Vertex> vertices;
-		std::vector<TriangleIndices> triangles;
-		Matr<4> meshToModelMatrix;
+		Box box;
+		std::vector<Mesh> m_meshes;
+		VertexBuffer<Vertex> m_vertexBuffer; // stores vertices of all meshes of this Model
+		IndexBuffer m_indexBuffer; // stores vertex indices of all meshes of this Model
 	};
-	std::string name;
-	Box box;
-	std::vector<MeshRange> m_meshRanges;
-	std::vector<Mesh> m_meshes;
-	VertexBuffer<Vertex> m_vertexBuffer; // stores vertices of all meshes of this Model
-	IndexBuffer m_indexBuffer; // stores vertex indices of all meshes of this Model
-};
+}

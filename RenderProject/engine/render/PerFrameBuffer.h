@@ -1,17 +1,24 @@
 #pragma once
-#include "../math/vec3.h"
-#include "../math/Matr.h"
-struct PerFrameBuffer
+#include "LightSystem.h"
+#include <vector>
+class Camera;
+namespace engine
 {
-	Matr<4> viewProj;
-	Vec3 BL;
-	float padding0 = 0;
-	Vec3 Right;
-	float padding1 = 0;
-	Vec3 Top;
-	float padding2 = 0;
-	Matr<4> viewProjInv;
-	PerFrameBuffer() {}
-	PerFrameBuffer(const Matr<4>& _viewProj, const Vec3& _BL, const Vec3& _Right, const Vec3& _Top, const Matr<4>& _viewProjInv) : 
-		viewProj(_viewProj), BL(_BL), Right(_Right), Top(_Top), viewProjInv(_viewProjInv) {}
-};
+	struct PerFrameBuffer
+	{
+		Matr<4> viewProj;
+		Vec3 BL;
+		float padding0;
+		Vec3 Right;
+		float padding1;
+		Vec3 Top;
+		float padding2;
+		Vec3 cameraPos;
+		uint32_t pointLightNum;
+
+		GpuPointLight gpuPointLight[LightSystem::MAX_POINT_LIGHTS];
+
+		PerFrameBuffer() {}
+		PerFrameBuffer(const Camera& camera, const std::vector<PointLight>& pointLights);
+	};
+}

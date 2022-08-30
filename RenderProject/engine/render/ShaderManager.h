@@ -27,7 +27,7 @@ namespace engine
 		void GetComputeShader(const std::wstring& path, engine::DxResPtr<ID3D11ComputeShader> &computeShader);
 		void GetComputeShaderBlob(const std::wstring& path, engine::DxResPtr<ID3D10Blob>& computeShaderBlob);
 
-		void InitShaders(const std::wstring& path, UINT Flags1 = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION);
+		void InitShaders(const std::wstring& path, UINT Flags1 = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR);
 
 		void GetShaders(const std::wstring& shaderKey, engine::DxResPtr<ID3D11VertexShader>& vertexShader, engine::DxResPtr<ID3D11PixelShader>& pixelShader);
 

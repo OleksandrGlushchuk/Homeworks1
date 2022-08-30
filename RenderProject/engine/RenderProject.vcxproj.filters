@@ -36,9 +36,6 @@
     <Filter Include="source\shaders">
       <UniqueIdentifier>{29695bc6-398a-46dc-a3ef-3ebd875fcf6c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="source\textures">
-      <UniqueIdentifier>{bbef320c-fae8-41b1-9be6-281b4f9c150d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="source\assets">
       <UniqueIdentifier>{2ff64970-5a76-49eb-ad70-73aff204f9c0}</UniqueIdentifier>
     </Filter>
@@ -48,6 +45,15 @@
     <Filter Include="source\assets\Samurai">
       <UniqueIdentifier>{fcc7afef-fa2b-4e9a-8bbb-fbb3823c3595}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\assets\Brick">
+      <UniqueIdentifier>{3b93c724-c967-45e1-b5c0-8042f441ebde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\assets\Stone">
+      <UniqueIdentifier>{8566f0ea-77ad-423c-a31a-a0300555d620}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\assets\Sky">
+      <UniqueIdentifier>{0298a816-93c8-4442-b5c7-c50048afd30d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -56,16 +62,13 @@
     <ClCompile Include="math\camera.cpp">
       <Filter>math</Filter>
     </ClCompile>
-    <ClCompile Include="math\sphere.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
     <ClCompile Include="math\Triangle.cpp">
       <Filter>math</Filter>
     </ClCompile>
-    <ClCompile Include="window\controller.cpp">
+    <ClCompile Include="window\Application.cpp">
       <Filter>window</Filter>
     </ClCompile>
-    <ClCompile Include="window\Scene.cpp">
+    <ClCompile Include="window\Renderer.cpp">
       <Filter>window</Filter>
     </ClCompile>
     <ClCompile Include="window\window.cpp">
@@ -89,9 +92,6 @@
     <ClCompile Include="render\ShaderManager.cpp">
       <Filter>render</Filter>
     </ClCompile>
-    <ClCompile Include="objects\Cube.cpp">
-      <Filter>objects</Filter>
-    </ClCompile>
     <ClCompile Include="objects\Sky.cpp">
       <Filter>objects</Filter>
     </ClCompile>
@@ -104,11 +104,23 @@
     <ClCompile Include="render\OpaqueInstances.cpp">
       <Filter>render</Filter>
     </ClCompile>
-    <ClCompile Include="objects\Knight.cpp">
-      <Filter>objects</Filter>
+    <ClCompile Include="render\DepthStencil.cpp">
+      <Filter>render</Filter>
     </ClCompile>
-    <ClCompile Include="objects\Samurai.cpp">
-      <Filter>objects</Filter>
+    <ClCompile Include="render\LightSystem.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\EmissiveInstances.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\TriangleOctree.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\TransformSystem.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\PerFrameBuffer.cpp">
+      <Filter>render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -121,9 +133,6 @@
     <ClInclude Include="math\Intersection.h">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="math\Light.h">
-      <Filter>math</Filter>
-    </ClInclude>
     <ClInclude Include="math\Matr.h">
       <Filter>math</Filter>
     </ClInclude>
@@ -131,9 +140,6 @@
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="math\ray.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="math\sphere.h">
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="math\Transform.h">
@@ -145,10 +151,10 @@
     <ClInclude Include="math\vec3.h">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="window\controller.h">
+    <ClInclude Include="window\Application.h">
       <Filter>window</Filter>
     </ClInclude>
-    <ClInclude Include="window\Scene.h">
+    <ClInclude Include="window\Renderer.h">
       <Filter>window</Filter>
     </ClInclude>
     <ClInclude Include="window\Timer.h">
@@ -157,20 +163,8 @@
     <ClInclude Include="window\window.h">
       <Filter>window</Filter>
     </ClInclude>
-    <ClInclude Include="objects\IntersectionQuery.h">
-      <Filter>objects</Filter>
-    </ClInclude>
-    <ClInclude Include="objects\ObjectMover.h">
-      <Filter>objects</Filter>
-    </ClInclude>
-    <ClInclude Include="objects\ObjRef.h">
-      <Filter>objects</Filter>
-    </ClInclude>
     <ClInclude Include="window\InputState.h">
       <Filter>window</Filter>
-    </ClInclude>
-    <ClInclude Include="math\LightingPostProcess.h">
-      <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="render\d3d.hpp">
       <Filter>render</Filter>
@@ -196,25 +190,13 @@
     <ClInclude Include="render\TextureManager.h">
       <Filter>render</Filter>
     </ClInclude>
-    <ClInclude Include="objects\ObjectRotator.h">
-      <Filter>objects</Filter>
-    </ClInclude>
     <ClInclude Include="render\ShaderManager.h">
       <Filter>render</Filter>
     </ClInclude>
     <ClInclude Include="render\PerFrameBuffer.h">
       <Filter>render</Filter>
     </ClInclude>
-    <ClInclude Include="objects\Cube.h">
-      <Filter>objects</Filter>
-    </ClInclude>
-    <ClInclude Include="objects\Mesh.h">
-      <Filter>objects</Filter>
-    </ClInclude>
     <ClInclude Include="objects\Sky.h">
-      <Filter>objects</Filter>
-    </ClInclude>
-    <ClInclude Include="objects\Triangle.h">
       <Filter>objects</Filter>
     </ClInclude>
     <ClInclude Include="render\ModelManager.h">
@@ -253,13 +235,46 @@
     <ClInclude Include="render\Texture.h">
       <Filter>render</Filter>
     </ClInclude>
-    <ClInclude Include="objects\Knight.h">
-      <Filter>objects</Filter>
-    </ClInclude>
-    <ClInclude Include="objects\Samurai.h">
-      <Filter>objects</Filter>
-    </ClInclude>
     <ClInclude Include="render\ConstantBuffer.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\RenderTarget.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\DepthStencil.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\PostProcess.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\LightSystem.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Light.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\EmissiveInstances.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\SolidVector.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\TriangleOctree.hpp">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Box.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="render\TransformSystem.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Mesh.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="math\MeshIntersection.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ModelID.h">
       <Filter>render</Filter>
     </ClInclude>
   </ItemGroup>
@@ -267,10 +282,13 @@
     <FxCompile Include="source\shaders\sky.hlsl">
       <Filter>source\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="source\shaders\triangle.hlsl">
+    <FxCompile Include="source\shaders\opaque.hlsl">
       <Filter>source\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="source\shaders\opaque.hlsl">
+    <FxCompile Include="source\shaders\resolve.hlsl">
+      <Filter>source\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="source\shaders\emissive.hlsl">
       <Filter>source\shaders</Filter>
     </FxCompile>
   </ItemGroup>
@@ -284,24 +302,21 @@
     <None Include="source\assets\Samurai\Samurai.fbx">
       <Filter>source\assets\Samurai</Filter>
     </None>
+    <None Include="source\shaders\pbr_helpers.hlsli">
+      <Filter>source\shaders</Filter>
+    </None>
+    <None Include="source\shaders\resolve_helpers.hlsli">
+      <Filter>source\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="source\textures\brick.dds">
-      <Filter>source\textures</Filter>
-    </Image>
-    <Image Include="source\textures\chess.dds">
-      <Filter>source\textures</Filter>
-    </Image>
-    <Image Include="source\textures\redstone.dds">
-      <Filter>source\textures</Filter>
-    </Image>
-    <Image Include="source\textures\roof.dds">
-      <Filter>source\textures</Filter>
-    </Image>
-    <Image Include="source\textures\skymap.dds">
-      <Filter>source\textures</Filter>
-    </Image>
     <Image Include="source\assets\Knight\Cape_BaseColor.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Cape_Normal.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Cape_Roughness.dds">
       <Filter>source\assets\Knight</Filter>
     </Image>
     <Image Include="source\assets\Knight\Eye_BaseColor.dds">
@@ -310,22 +325,76 @@
     <Image Include="source\assets\Knight\Fur_BaseColor.dds">
       <Filter>source\assets\Knight</Filter>
     </Image>
+    <Image Include="source\assets\Knight\Fur_Normal.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Fur_Roughness.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
     <Image Include="source\assets\Knight\Glove_BaseColor.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Glove_Metallic.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Glove_Normal.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Glove_Roughness.dds">
       <Filter>source\assets\Knight</Filter>
     </Image>
     <Image Include="source\assets\Knight\Head_BaseColor.dds">
       <Filter>source\assets\Knight</Filter>
     </Image>
+    <Image Include="source\assets\Knight\Head_Normal.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Head_Roughness.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
     <Image Include="source\assets\Knight\Helmet_BaseColor.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Helmet_Metallic.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Helmet_Normal.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Helmet_Roughness.dds">
       <Filter>source\assets\Knight</Filter>
     </Image>
     <Image Include="source\assets\Knight\Legs_BaseColor.dds">
       <Filter>source\assets\Knight</Filter>
     </Image>
+    <Image Include="source\assets\Knight\Legs_Metallic.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Legs_Normal.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Legs_Roughness.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
     <Image Include="source\assets\Knight\Skirt_BaseColor.dds">
       <Filter>source\assets\Knight</Filter>
     </Image>
+    <Image Include="source\assets\Knight\Skirt_Normal.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Skirt_Roughness.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
     <Image Include="source\assets\Knight\Torso_BaseColor.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Torso_Metallic.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Torso_Normal.dds">
+      <Filter>source\assets\Knight</Filter>
+    </Image>
+    <Image Include="source\assets\Knight\Torso_Roughness.dds">
       <Filter>source\assets\Knight</Filter>
     </Image>
     <Image Include="source\assets\Samurai\Eye_BaseColor.dds">
@@ -334,20 +403,89 @@
     <Image Include="source\assets\Samurai\Hand_BaseColor.dds">
       <Filter>source\assets\Samurai</Filter>
     </Image>
+    <Image Include="source\assets\Samurai\Hand_Normal.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Hand_Roughness.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
     <Image Include="source\assets\Samurai\Head_BaseColor.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Head_Normal.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Head_Roughness.dds">
       <Filter>source\assets\Samurai</Filter>
     </Image>
     <Image Include="source\assets\Samurai\Helmet_BaseColor.dds">
       <Filter>source\assets\Samurai</Filter>
     </Image>
+    <Image Include="source\assets\Samurai\Helmet_Metallic.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Helmet_Normal.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Helmet_Roughness.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
     <Image Include="source\assets\Samurai\Legs_BaseColor.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Legs_Metallic.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Legs_Normal.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Legs_Roughness.dds">
       <Filter>source\assets\Samurai</Filter>
     </Image>
     <Image Include="source\assets\Samurai\Sword_BaseColor.dds">
       <Filter>source\assets\Samurai</Filter>
     </Image>
+    <Image Include="source\assets\Samurai\Sword_Metallic.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Sword_Normal.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Sword_Roughness.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
     <Image Include="source\assets\Samurai\Torso_BaseColor.dds">
       <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Torso_Metallic.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Torso_Normal.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Samurai\Torso_Roughness.dds">
+      <Filter>source\assets\Samurai</Filter>
+    </Image>
+    <Image Include="source\assets\Brick\Brick_Wall_012_COLOR.dds">
+      <Filter>source\assets\Brick</Filter>
+    </Image>
+    <Image Include="source\assets\Brick\Brick_Wall_012_NORM.dds">
+      <Filter>source\assets\Brick</Filter>
+    </Image>
+    <Image Include="source\assets\Brick\Brick_Wall_012_ROUGH.dds">
+      <Filter>source\assets\Brick</Filter>
+    </Image>
+    <Image Include="source\assets\Stone\Stone_COLOR.dds">
+      <Filter>source\assets\Stone</Filter>
+    </Image>
+    <Image Include="source\assets\Stone\Stone_NORM.dds">
+      <Filter>source\assets\Stone</Filter>
+    </Image>
+    <Image Include="source\assets\Stone\Stone_ROUGH.dds">
+      <Filter>source\assets\Stone</Filter>
+    </Image>
+    <Image Include="source\assets\Sky\night_street.dds">
+      <Filter>source\assets\Sky</Filter>
     </Image>
   </ItemGroup>
 </Project>

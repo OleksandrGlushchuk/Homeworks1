@@ -60,6 +60,21 @@ public:
     {
         e[0] = vec[0]; e[1] = vec[1]; e[2] = vec[2];
     }
+
+    Vec3 operator=(const float* const& vec)
+    {
+        e[0] = vec[0]; e[1] = vec[1]; e[2] = vec[2];
+        return *this;
+    }
+
+    bool operator==(const Vec3& vec) const
+    {
+        return e[0] == vec.e[0] && e[1] == vec.e[1] && e[2] == vec.e[2];
+    }
+    bool operator!=(const Vec3& vec) const
+    {
+        return e[0] != vec.e[0] && e[1] != vec.e[1] && e[2] != vec.e[2];
+    }
     
     float e[3];
 };

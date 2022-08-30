@@ -29,7 +29,7 @@ namespace engine::windows
 	{
 		if (m_backBuffer.valid())
 		{
-			m_renderTargetView1.release();
+			m_renderTarget.ReleaseRenderTarget();
 			m_backBuffer.release();
 
 			HRESULT result = m_swapChain1->ResizeBuffers(0, std::max<UINT>(screen.right,8), std::max<UINT>(screen.bottom, 8), DXGI_FORMAT_UNKNOWN, 0);
@@ -44,22 +44,14 @@ namespace engine::windows
 
 	void Window::initRenderTargetView()
 	{
-		HRESULT result = s_device->CreateRenderTargetView1(m_backBuffer, nullptr, m_renderTargetView1.reset());
-		ALWAYS_ASSERT(result >= 0 && "CreateRenderTargetView1");
+		m_renderTarget.InitRenderTargetView(m_backBuffer);
 	}
 
 	void Window::BeginFrame()
 	{
-		engine::s_deviceContext->OMSetDepthStencilState(engine::Globals::instance().m_depthStencilState.ptr(), 1);
-		engine::s_deviceContext->OMSetRenderTargets(1, (ID3D11RenderTargetView* const*)&m_renderTargetView1.ptr(), engine::Globals::instance().m_depthStencilView.ptr());
-
 		auto viewPort = CD3D11_VIEWPORT(0.f, 0.f, m_backbufferDesc.Width, m_backbufferDesc.Height);
 		engine::s_deviceContext->RSSetViewports(1, &viewPort);
-
-		float background_color[] = { 0.25f, 0.5f, 1.f, 1.f };
-		s_deviceContext->ClearRenderTargetView(m_renderTargetView1.ptr(), background_color);
-		s_deviceContext->ClearDepthStencilView(engine::Globals::instance().m_depthStencilView.ptr(), D3D11_CLEAR_FLAG::D3D11_CLEAR_DEPTH, 0.0f, 0);
-
+		m_renderTarget.ClearRendetTargetView();
 	}
 
 	void Window::EndFrame()
@@ -71,8 +63,7 @@ namespace engine::windows
 	void Window::OnResize()
 	{
 		GetClientRect(m_wndHandle, &screen);
-		engine::Globals::instance().UpdateDepthStencilBuffer(screen.right, screen.bottom);
 		initBackBuffer();
-		initRenderTargetView();
+		m_renderTarget.InitRenderTargetView(m_backBuffer);
 	}
 }
