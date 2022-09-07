@@ -1,4 +1,5 @@
 #include "MeshSystem.h"
+#include "LightSystem.h"
 
 namespace engine
 {
@@ -175,5 +176,11 @@ namespace engine
 			}
 		}
 		emissiveInstances.updateInstanceBuffers();
+	}
+
+	void MeshSystem::renderSceneDepthToCubemaps()
+	{
+
+		opaqueInstances.renderSceneDepthToCubemaps();
 	}
 }

@@ -172,12 +172,15 @@ namespace engine
 	{
 		m_perFrameBuffer.BindVS(0);
 		m_perFrameBuffer.BindPS(0);
+		m_perFrameBuffer.BindGS(0);
 		engine::s_deviceContext->PSSetSamplers(0, 1, &m_globalSamplerState.ptr());
-		engine::s_deviceContext->PSSetSamplers(1, 1, &m_samplerState["ss_mmmp"].ptr());
+		engine::s_deviceContext->PSSetSamplers(1, 1, &m_samplerState["ss_mmlmp"].ptr());
+		engine::s_deviceContext->PSSetSamplers(2, 1, &m_samplerState["ss_mmmp"].ptr());
 	}
 
 	void Globals::UpdatePerFrameBuffer(const Camera& camera)
 	{
+		LightSystem::instance().updatePointLightMatrices();
 		m_perFrameBuffer.Update(PerFrameBuffer(camera, engine::LightSystem::instance().getPointLights()));
 	}
 

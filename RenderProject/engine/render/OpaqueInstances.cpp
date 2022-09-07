@@ -1,4 +1,5 @@
 #include "OpaqueInstances.h"
+#include "LightSystem.h"
 
 namespace engine
 {
@@ -17,9 +18,19 @@ namespace engine
 			{"TRANSFORM_Z", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 			{"TRANSFORM_W", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1}
 		};
-		m_shader.Init(L"source/shaders/opaque.hlsl", inputLayout, 9);
+		m_shader.Init(L"source/shaders/opaque.hlsl", inputLayout, 9, true, false);
 		m_constantBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 		m_materialConstantBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
+		m_pointLightIndex.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
+
+		m_shadowShader.Init(L"source/shaders/shadow.hlsl", inputLayout, 9, false, true);
+
+		m_srvShadowDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+		m_srvShadowDesc.TextureCubeArray.First2DArrayFace = 0;
+		m_srvShadowDesc.TextureCubeArray.MipLevels = 1;
+		m_srvShadowDesc.TextureCubeArray.MostDetailedMip = 0;
+		m_srvShadowDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURECUBEARRAY;
+		need_to_resize_shadowSRV = true;
 	}
 
 	void OpaqueInstances::updateInstanceBuffers()
@@ -64,10 +75,12 @@ namespace engine
 		if (m_instanceBuffer.Size() == 0)
 			return;
 
+		s_deviceContext->PSSetShaderResources(4, 1, &m_srvShadow.ptr());
 		m_shader.Bind();
 		m_instanceBuffer.Bind(1);
 		m_constantBuffer.BindVS(1);
 		m_materialConstantBuffer.BindPS(2);
+
 
 		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		uint32_t renderedInstances = 0;
@@ -100,5 +113,68 @@ namespace engine
 				}
 			}
 		}
+		ID3D11ShaderResourceView* SRVnullptr[1] = { nullptr };
+		engine::s_deviceContext->PSSetShaderResources(4, 1, SRVnullptr);
+	}
+
+	void OpaqueInstances::renderSceneDepthToCubemaps()
+	{
+		if (m_instanceBuffer.Size() == 0)
+			return;
+
+		uint32_t pointLightNum = LightSystem::instance().getPointLights().size();
+
+		auto viewPort = CD3D11_VIEWPORT(0.f, 0.f, 1024,1024);
+		engine::s_deviceContext->RSSetViewports(1, &viewPort);
+		engine::s_deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+
+		if (need_to_resize_shadowSRV)
+		{
+			m_shadowRenderTarget.InitCubeMapArrayRenderTargetView(1024, pointLightNum);
+			m_shadowRenderTarget.InitCubeMapArrayDepthStencil(1024, pointLightNum);
+
+			m_srvShadowDesc.TextureCubeArray.NumCubes = pointLightNum;
+			HRESULT result = s_device->CreateShaderResourceView(m_shadowRenderTarget.GetDepthStencil().GetDepthStencilResource(), &m_srvShadowDesc, m_srvShadow.reset());
+			ALWAYS_ASSERT(result >= 0 && "CreateShaderResourceView");
+
+			need_to_resize_shadowSRV = false;
+		}
+		m_shadowRenderTarget.ClearDepthStencil();
+		m_shadowRenderTarget.Bind();
+		m_shadowShader.Bind();
+
+		m_instanceBuffer.Bind(1);
+		m_constantBuffer.BindVS(1);
+		m_pointLightIndex.BindGS(2);
+		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		uint32_t renderedInstances = 0;
+		for (auto& modelInstances : m_modelInstances)
+		{
+			if (modelInstances.meshInstances.empty()) continue;
+
+			modelInstances.model->m_vertexBuffer.Bind(0);
+			modelInstances.model->m_indexBuffer.Bind();
+
+			for (uint32_t meshIndex = 0; meshIndex < modelInstances.meshInstances.size(); ++meshIndex)
+			{
+				Mesh& mesh = modelInstances.model->m_meshes[meshIndex];
+
+				m_constantBuffer.Update(mesh.meshToModelMatrix);
+
+				for (auto& materialInstances : modelInstances.meshInstances[meshIndex].materialInstances)
+				{
+					if (materialInstances.instances.empty()) continue;
+
+					uint32_t numInstances = uint32_t(materialInstances.instances.size());
+					for (uint32_t i = 0; i < pointLightNum; ++i)
+					{
+						m_pointLightIndex.Update(i);
+						engine::s_deviceContext->DrawIndexedInstanced(mesh.indexNum, numInstances, mesh.indexOffset, mesh.vertexOffset, renderedInstances);
+					}
+					renderedInstances += numInstances;
+				}
+			}
+		}
+		engine::s_deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 	}
 }

@@ -2,15 +2,16 @@
 #include "DxRes.hpp"
 #include <unordered_map>
 #include <string>
+#include <tuple>
+#include <array>
 
 namespace engine
 {
 	class ShaderManager
 	{
-		std::unordered_map<std::wstring, std::pair<engine::DxResPtr<ID3D11VertexShader>, engine::DxResPtr<ID3D11PixelShader>> > m_shader;
-		std::unordered_map<std::wstring, std::pair<engine::DxResPtr<ID3D10Blob>, engine::DxResPtr<ID3D10Blob>> > m_shaderBlob;
-		std::unordered_map<std::wstring, engine::DxResPtr<ID3D11ComputeShader> > m_computeShader;
-		std::unordered_map<std::wstring, engine::DxResPtr<ID3D10Blob> > m_computeShaderBlob;
+		std::unordered_map<std::wstring, std::array<DxResPtr<ID3D10Blob>,3> > m_shaderBlob;
+		std::unordered_map<std::wstring, std::tuple<DxResPtr<ID3D11VertexShader>, 
+			DxResPtr<ID3D11PixelShader>, DxResPtr<ID3D11GeometryShader>> > m_shader;
 
 		static ShaderManager *s_instance;
 		ShaderManager() {}
@@ -22,15 +23,13 @@ namespace engine
 		static void init();
 		static void deinit();
 		static ShaderManager& instance();
-		
-		void InitComputeShader(const std::wstring& path, UINT Flags1 = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION);
-		void GetComputeShader(const std::wstring& path, engine::DxResPtr<ID3D11ComputeShader> &computeShader);
-		void GetComputeShaderBlob(const std::wstring& path, engine::DxResPtr<ID3D10Blob>& computeShaderBlob);
 
-		void InitShaders(const std::wstring& path, UINT Flags1 = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR);
+		void InitShaders(const std::wstring& path, bool hasPixelShader, bool hasGeometryShader, UINT Flags1 = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR);
 
-		void GetShaders(const std::wstring& shaderKey, engine::DxResPtr<ID3D11VertexShader>& vertexShader, engine::DxResPtr<ID3D11PixelShader>& pixelShader);
+		void GetShaders(const std::wstring& shaderKey, DxResPtr<ID3D11VertexShader> &vertexShader, 
+			DxResPtr<ID3D11PixelShader> &pixelShader, DxResPtr<ID3D11GeometryShader> &geomytryShader);
 
-		void GetShaderBlobs(const std::wstring& shaderKey, engine::DxResPtr<ID3D10Blob>& vertexShaderBlob, engine::DxResPtr<ID3D10Blob>& pixelShaderBlob);
+		void GetShaderBlobs(const std::wstring& shaderKey, DxResPtr<ID3D10Blob> &vertexShaderBlob, 
+			DxResPtr<ID3D10Blob> &pixelShaderBlob, DxResPtr<ID3D10Blob> &geometryShaderBlob);
 	};
 }

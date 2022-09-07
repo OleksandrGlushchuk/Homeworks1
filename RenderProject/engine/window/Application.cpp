@@ -33,20 +33,21 @@ namespace engine::windows
 
 		//LIGHTS
 		{
-			engine::LightSystem::instance().addPointLight(Vec3(1, 1, 1), 2.f, Vec3(0, 1.f, -2.3f), 0.25f,
+			engine::LightSystem::instance().addPointLight(Vec3(1, 1, 1), 1.7f, Vec3(0, 1.f, -2.3f), 0.25f,
 				engine::ModelManager::instance().GetUnitSphereModel());
 			engine::LightSystem::instance().addPointLight(Vec3(1, 1, 1), 1.1f, Vec3(2.5f, 3.f, -1.f), 0.1f,
 				engine::ModelManager::instance().GetUnitSphereModel());
-			engine::LightSystem::instance().addPointLight(Vec3(0.2f, 1, 0.2f), 0.7f, Vec3(1.3f, -0.7f, -0.5f), 0.1f,
-				engine::ModelManager::instance().GetUnitSphereModel());
-			engine::LightSystem::instance().addPointLight(Vec3(1.f, 1, 0.2f), 0.7f, Vec3(-1.5f, 0.7f, 0.f), 0.1f,
+			engine::LightSystem::instance().addPointLight(Vec3(0.2f, 1, 0.2f), 1.0f, Vec3(1.3f, -0.7f, -0.5f), 0.1f,
 				engine::ModelManager::instance().GetUnitSphereModel());
 		}
 
 		//SKY
 		{
 			renderer.m_sky.Init();
-			renderer.m_sky.SetTexture(L"source/assets/Sky/night_street.dds");
+			renderer.m_sky.m_texture.Load(L"source/assets/Sky/night_street.dds");
+			renderer.m_sky.SetEnvironment(L"source/assets/Sky/night_street_irradiance.dds", 
+				L"source/assets/Sky/night_street_reflectance.dds", 
+				L"source/assets/Sky/night_street_reflection.dds");
 		}
 		//KNIGHTS
 		{
@@ -76,7 +77,7 @@ namespace engine::windows
 			m[3].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, false, 0.01f);
 
 			m[4].m_colorMap.Load(L"source/assets/Knight/Eye_BaseColor.dds");
-			m[4].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, false, false, false, 0.02f, 0.1f);
+			m[4].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, false, false, false, 0.02f, 0.2f);
 
 			m[5].m_colorMap.Load(L"source/assets/Knight/Helmet_BaseColor.dds");
 			m[5].m_normalMap.Load(L"source/assets/Knight/Helmet_Normal.dds");
@@ -129,7 +130,7 @@ namespace engine::windows
 			m[1].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, false, 0.01f);
 
 			m[2].m_colorMap.Load(L"source/assets/Samurai/Eye_BaseColor.dds");
-			m[2].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, false, false, false, 0.02f, 0.1f);
+			m[2].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, false, false, false, 0.02f, 0.2f);
 
 			m[3].m_colorMap.Load(L"source/assets/Samurai/Helmet_BaseColor.dds");
 			m[3].m_normalMap.Load(L"source/assets/Samurai/Helmet_Normal.dds");
@@ -192,7 +193,7 @@ namespace engine::windows
 			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
 			
 			transform.SetScale({ 4, 3, 0.5f });
-			transform.SetPosition({ 0, 0, 1.8f });
+			transform.SetPosition({ 0, 0, 1.6f });
 			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
 			
 			transform.SetScale({ 0.3f, 4, 3.8f });

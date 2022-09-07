@@ -1,5 +1,4 @@
 #pragma once
-
 #include "DxRes.hpp"
 #include "TextureManager.h"
 #include "ShaderManager.h"
@@ -8,7 +7,6 @@
 #include "ConstantBuffer.h"
 #include "PerFrameBuffer.h"
 #include "LightSystem.h"
-
 namespace engine
 {
 	class Globals // a singletone for accessing global rendering resources
@@ -20,7 +18,6 @@ namespace engine
 		DxResPtr<ID3D11DeviceContext> m_devcon;
 		DxResPtr<ID3D11DeviceContext4> m_devcon4;
 		DxResPtr<ID3D11Debug> m_devdebug;
-
 		ConstantBuffer<PerFrameBuffer> m_perFrameBuffer;
 		
 		static Globals *s_instance;
@@ -44,7 +41,6 @@ namespace engine
 		void Bind();
 		void CreateSamplerState(D3D11_SAMPLER_DESC& samplerDesc, const std::string& samplerStateKey);
 		void SetGlobalSamplerState(const std::string& _globalSamplerStateKey);
-
 		void UpdatePerFrameBuffer(const Camera& camera);
 		~Globals();
 	};

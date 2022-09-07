@@ -4,14 +4,14 @@ namespace engine::windows
 {
 	void Renderer::Init(UINT width, UINT height)
 	{
-		m_hdrRenderTarget.InitFloat16RenderTargetView(width, height);
-		m_hdrRenderTarget.InitDepthStencil(width, height);
+		m_hdrRenderTarget.InitFloat16RenderTargetView(width, height, 4);
+		m_hdrRenderTarget.InitDepthStencil(width, height, 4);
 
 		ZeroMemory(&m_shaderResourceViewDesc, sizeof(m_shaderResourceViewDesc));
 		m_shaderResourceViewDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		m_shaderResourceViewDesc.Texture2D.MipLevels = -1;
 		m_shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-		m_shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
+		m_shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2DMS;
 		engine::s_device->CreateShaderResourceView(m_hdrRenderTarget.GetRenderTergetResource(), &m_shaderResourceViewDesc, m_shaderResourceView.reset());
 	}
 
@@ -22,15 +22,18 @@ namespace engine::windows
 			ResizeRTV(windowRenderTarget);
 			need_to_resize_RTV = false;
 		}
+		MeshSystem::instance().updateInstances();
+		engine::Globals::instance().UpdatePerFrameBuffer(camera);
+		engine::Globals::instance().Bind();
+		engine::MeshSystem::instance().renderSceneDepthToCubemaps();
+
+		auto viewPort = CD3D11_VIEWPORT(0.f, 0.f, windowRenderTarget.GetWidth(), windowRenderTarget.GetHeight());
+		engine::s_deviceContext->RSSetViewports(1, &viewPort);
 
 		m_hdrRenderTarget.ClearRendetTargetView();
 		m_hdrRenderTarget.ClearDepthStencil();
-
 		m_hdrRenderTarget.Bind();
-
-		engine::Globals::instance().UpdatePerFrameBuffer(camera);
-		engine::Globals::instance().Bind();
-
+		m_sky.BindEnvironment();
 		engine::MeshSystem::instance().render();
 		m_sky.Draw();
 
@@ -38,7 +41,6 @@ namespace engine::windows
 		engine::s_deviceContext->PSSetShaderResources(0, 1, &m_shaderResourceView.ptr());
 
 		postProcess.Resolve(windowRenderTarget, m_hdrRenderTarget);
-
 
 		ID3D11ShaderResourceView* SRVnullptr[1] = { nullptr };
 		engine::s_deviceContext->PSSetShaderResources(0, 1, SRVnullptr);

@@ -10,6 +10,11 @@ namespace engine
 		for (uint32_t i = 0; i < pointLightNum; ++i)
 		{
 			gpuPointLight[i] = GpuPointLight(pointLights[i]);
+
+			for (uint32_t j = 0; j < 6; ++j)
+			{
+				viewProjPointLight[i][j] = LightSystem::instance().getViewProjPointLight(i, j);
+			}
 		}
 
 	}

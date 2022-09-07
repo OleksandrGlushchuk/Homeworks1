@@ -153,7 +153,6 @@
     <ClCompile Include="math\camera.cpp" />
     <ClCompile Include="math\Triangle.cpp" />
     <ClCompile Include="math\vec3.cpp" />
-    <ClCompile Include="objects\Sky.cpp" />
     <ClCompile Include="render\d3d.cpp" />
     <ClCompile Include="render\DepthStencil.cpp" />
     <ClCompile Include="render\EmissiveInstances.cpp" />
@@ -243,6 +242,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="source\shaders\shadow.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="source\shaders\sky.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -251,6 +254,8 @@
   <ItemGroup>
     <None Include="source\assets\Knight\Knight.fbx" />
     <None Include="source\assets\Samurai\Samurai.fbx" />
+    <None Include="source\shaders\environment.hlsli" />
+    <None Include="source\shaders\fullscreen.hlsli" />
     <None Include="source\shaders\pbr_helpers.hlsli" />
     <None Include="source\shaders\globals.hlsli" />
     <None Include="source\shaders\resolve_helpers.hlsli" />
@@ -312,6 +317,9 @@
     <Image Include="source\assets\Samurai\Torso_Normal.dds" />
     <Image Include="source\assets\Samurai\Torso_Roughness.dds" />
     <Image Include="source\assets\Sky\night_street.dds" />
+    <Image Include="source\assets\Sky\night_street_irradiance.dds" />
+    <Image Include="source\assets\Sky\night_street_reflectance.dds" />
+    <Image Include="source\assets\Sky\night_street_reflection.dds" />
     <Image Include="source\assets\Stone\Stone_COLOR.dds" />
     <Image Include="source\assets\Stone\Stone_NORM.dds" />
     <Image Include="source\assets\Stone\Stone_ROUGH.dds" />

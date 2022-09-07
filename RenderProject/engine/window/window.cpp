@@ -49,8 +49,6 @@ namespace engine::windows
 
 	void Window::BeginFrame()
 	{
-		auto viewPort = CD3D11_VIEWPORT(0.f, 0.f, m_backbufferDesc.Width, m_backbufferDesc.Height);
-		engine::s_deviceContext->RSSetViewports(1, &viewPort);
 		m_renderTarget.ClearRendetTargetView();
 	}
 

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "../objects/Sky.h"
 #include "../render/DepthStencil.h"
 #include "../render/PostProcess.h"

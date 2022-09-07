@@ -41,9 +41,10 @@ namespace engine
 			opaqueInstances.updateInstanceBuffers();
 		}
 
+		void renderSceneDepthToCubemaps();
+
 		void render()
 		{
-			updateInstances();
 			emissiveInstances.render();
 			opaqueInstances.render();
 		}

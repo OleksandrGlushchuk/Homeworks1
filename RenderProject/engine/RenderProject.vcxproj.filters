@@ -92,9 +92,6 @@
     <ClCompile Include="render\ShaderManager.cpp">
       <Filter>render</Filter>
     </ClCompile>
-    <ClCompile Include="objects\Sky.cpp">
-      <Filter>objects</Filter>
-    </ClCompile>
     <ClCompile Include="render\ModelManager.cpp">
       <Filter>render</Filter>
     </ClCompile>
@@ -291,6 +288,9 @@
     <FxCompile Include="source\shaders\emissive.hlsl">
       <Filter>source\shaders</Filter>
     </FxCompile>
+    <FxCompile Include="source\shaders\shadow.hlsl">
+      <Filter>source\shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="source\shaders\globals.hlsli">
@@ -306,6 +306,12 @@
       <Filter>source\shaders</Filter>
     </None>
     <None Include="source\shaders\resolve_helpers.hlsli">
+      <Filter>source\shaders</Filter>
+    </None>
+    <None Include="source\shaders\fullscreen.hlsli">
+      <Filter>source\shaders</Filter>
+    </None>
+    <None Include="source\shaders\environment.hlsli">
       <Filter>source\shaders</Filter>
     </None>
   </ItemGroup>
@@ -485,6 +491,15 @@
       <Filter>source\assets\Stone</Filter>
     </Image>
     <Image Include="source\assets\Sky\night_street.dds">
+      <Filter>source\assets\Sky</Filter>
+    </Image>
+    <Image Include="source\assets\Sky\night_street_irradiance.dds">
+      <Filter>source\assets\Sky</Filter>
+    </Image>
+    <Image Include="source\assets\Sky\night_street_reflectance.dds">
+      <Filter>source\assets\Sky</Filter>
+    </Image>
+    <Image Include="source\assets\Sky\night_street_reflection.dds">
       <Filter>source\assets\Sky</Filter>
     </Image>
   </ItemGroup>

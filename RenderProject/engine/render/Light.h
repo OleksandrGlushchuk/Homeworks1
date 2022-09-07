@@ -21,6 +21,7 @@ namespace engine
 		Vec3 radiance;
 		float radius;
 		uint32_t transformID;
+		
 		PointLight() {}
 		PointLight(const Vec3& _irradiance, float distance, const Vec3& _position, const float _radius)
 		{

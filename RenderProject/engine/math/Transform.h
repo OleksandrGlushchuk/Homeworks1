@@ -15,6 +15,7 @@ public:
     const Vec3& forward() 	const { return Vec3(transform[2]).normalized();}
     const Matr<4>& getTransformMatrix() const { return transform; }
     const Matr<4>& getTransformInvMatrix() const { return transformInv; }
+    const Vec3& getPosition() const { return position; }
     Transform(){}
 
     static Transform Identity()

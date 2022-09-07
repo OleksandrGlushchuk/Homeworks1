@@ -15,8 +15,8 @@ namespace engine
 		float padding2;
 		Vec3 cameraPos;
 		uint32_t pointLightNum;
-
 		GpuPointLight gpuPointLight[LightSystem::MAX_POINT_LIGHTS];
+		Matr<4> viewProjPointLight[LightSystem::MAX_POINT_LIGHTS][6];
 
 		PerFrameBuffer() {}
 		PerFrameBuffer(const Camera& camera, const std::vector<PointLight>& pointLights);
