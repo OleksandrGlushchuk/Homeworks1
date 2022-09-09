@@ -10,25 +10,9 @@ namespace engine
 		DepthStencil m_depthStencil;
 		engine::DxResPtr<ID3D11Texture2D> m_renderTargetResource;
 		engine::DxResPtr<ID3D11RenderTargetView1> m_renderTargetView;
-		enum class RTVResource{FLOAT16_RTR, CUBEMAP_ARRAY_RTR, EXTERNAL_RTR};
+		enum class RTVResource{FLOAT16_RTR, EXTERNAL_RTR};
 		RTVResource m_RTVResource;
 		UINT m_sampleCount;
-		void InitCubeMapArrayRenderTargetResource(UINT size, UINT numCubemaps)
-		{
-			m_renderTargetResourceDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
-			m_renderTargetResourceDesc.Width = std::max<UINT>(size, 8u);
-			m_renderTargetResourceDesc.Height = m_renderTargetResourceDesc.Width;
-			m_renderTargetResourceDesc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_RENDER_TARGET | D3D11_BIND_FLAG::D3D11_BIND_SHADER_RESOURCE;
-			m_renderTargetResourceDesc.ArraySize = numCubemaps * 6;
-			m_renderTargetResourceDesc.MipLevels = 1;
-			m_renderTargetResourceDesc.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT;
-			m_renderTargetResourceDesc.CPUAccessFlags = 0;
-			m_renderTargetResourceDesc.SampleDesc.Count = 1;
-			m_renderTargetResourceDesc.SampleDesc.Quality = 0;
-			m_renderTargetResourceDesc.MiscFlags = D3D11_RESOURCE_MISC_FLAG::D3D11_RESOURCE_MISC_TEXTURECUBE;
-			HRESULT result = engine::s_device->CreateTexture2D(&m_renderTargetResourceDesc, nullptr, m_renderTargetResource.reset());
-			ALWAYS_ASSERT(result >= 0 && "CreateTexture2D");
-		}
 
 		void InitFloat16RenderTargetResource(UINT width, UINT height, UINT sampleCount)
 		{
@@ -54,15 +38,6 @@ namespace engine
 			m_renderTargetResource = renderTargetResource;
 			m_renderTargetResource->GetDesc(&m_renderTargetResourceDesc);
 			m_RTVResource = RTVResource::EXTERNAL_RTR;
-			HRESULT result = engine::s_device->CreateRenderTargetView1(m_renderTargetResource.ptr(), nullptr, m_renderTargetView.reset());
-			ALWAYS_ASSERT(result >= 0 && "CreateRenderTargetView1");
-		}
-
-		void InitCubeMapArrayRenderTargetView(UINT size, UINT numCubemaps)
-		{
-			m_RTVResource = RTVResource::CUBEMAP_ARRAY_RTR;
-			m_sampleCount = 1;
-			InitCubeMapArrayRenderTargetResource(size, numCubemaps);
 			HRESULT result = engine::s_device->CreateRenderTargetView1(m_renderTargetResource.ptr(), nullptr, m_renderTargetView.reset());
 			ALWAYS_ASSERT(result >= 0 && "CreateRenderTargetView1");
 		}
@@ -94,7 +69,6 @@ namespace engine
 				InitFloat16RenderTargetView(width, height, m_sampleCount);
 				break;
 			case RTVResource::EXTERNAL_RTR :
-			case RTVResource::CUBEMAP_ARRAY_RTR:
 				DebugBreak();
 				std::abort();
 				break;
@@ -125,8 +99,10 @@ namespace engine
 				if (!m_depthStencil.Is_Unused())
 				{
 					m_depthStencil.BindDepthStencilState();
-					engine::s_deviceContext->OMSetRenderTargets(1, m_renderTargetView.ptr() == nullptr ? nullptr : 
-						(ID3D11RenderTargetView* const*)&m_renderTargetView.ptr(), m_depthStencil.GetDepthStencilViewPtr());
+
+					(m_renderTargetView.ptr() == nullptr) ? 
+						engine::s_deviceContext->OMSetRenderTargets(0, nullptr, m_depthStencil.GetDepthStencilViewPtr()) :
+						engine::s_deviceContext->OMSetRenderTargets(1, (ID3D11RenderTargetView* const*)&m_renderTargetView.ptr(), m_depthStencil.GetDepthStencilViewPtr());
 				}
 				else
 					engine::s_deviceContext->OMSetRenderTargets(1, (ID3D11RenderTargetView* const*)&m_renderTargetView.ptr(), nullptr);

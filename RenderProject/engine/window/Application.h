@@ -1,5 +1,4 @@
 #pragma once
-#include "../render/globals.hpp"
 #include "window.h"
 #include "Renderer.h"
 #include "InputState.h"

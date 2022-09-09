@@ -16,7 +16,7 @@ namespace engine
 			{"TRANSFORM_W", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1}
 
 		};
-		m_shader.Init(L"source/shaders/emissive.hlsl", inputLayout, 7, true, false);
+		m_shader.Init(L"source/shaders/emissive.hlsl", inputLayout, 7, ShaderEnabling(true, false));
 		m_constantBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 	}
 

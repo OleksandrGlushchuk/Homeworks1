@@ -16,14 +16,14 @@ class Sky
 	Texture m_irradiance;
 	Texture m_reflectance;
 	Texture m_reflection;
-	Shader m_shader;
+	engine::Shader m_shader;
 
 public:
 	Texture m_texture;
 	Sky(){}
 	void Init()
 	{
-		m_shader.Init(L"source/shaders/sky.hlsl", nullptr, 0, true, false);
+		m_shader.Init(L"source/shaders/sky.hlsl", nullptr, 0, engine::ShaderEnabling(true, false));
 	}
 	void Draw()
 	{

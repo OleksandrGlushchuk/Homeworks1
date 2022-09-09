@@ -107,13 +107,6 @@ namespace engine
 			std::vector<MeshInstance> meshInstances;
 			std::vector<uint32_t> meshIDs;
 		};
-		struct PointLightIndex
-		{
-			PointLightIndex(){}
-			PointLightIndex(uint32_t index) : pointLightIndex(index){}
-			uint32_t pointLightIndex;
-			Vec3 padding;
-		};
 
 		Shader m_shader;
 		std::vector<ModelInstance> m_modelInstances;
@@ -121,11 +114,6 @@ namespace engine
 		ConstantBuffer<Matr<4>> m_constantBuffer;
 		std::vector<ModelID> m_modelIDs;
 		ConstantBuffer<MaterialConstantBuffer> m_materialConstantBuffer;
-		ConstantBuffer<PointLightIndex> m_pointLightIndex;
-		D3D11_SHADER_RESOURCE_VIEW_DESC m_srvShadowDesc;
-		DxResPtr<ID3D11ShaderResourceView> m_srvShadow;
-		RenderTarget m_shadowRenderTarget;
-		Shader m_shadowShader;
 		bool need_to_resize_shadowSRV;
 	public:
 		OpaqueInstances() {}

@@ -6,6 +6,9 @@
 #include "MeshSystem.h"
 #include "LightSystem.h"
 #include "TransformSystem.h"
+#include "SamplerManager.h"
+#include "DepthStencilManager.h"
+#include "ShadowManager.h"
 
 namespace engine
 {
@@ -21,15 +24,21 @@ namespace engine
 		TextureManager::init();
 		ShaderManager::init();
 		ModelManager::init();
+		ShadowManager::init();
 		MeshSystem::init();
 		LightSystem::init();
 		TransformSystem::init();
+		SamplerManager::init();
+		DepthStencilManager::init();
 	}
 	void deinit()
 	{
+		DepthStencilManager::deinit();
+		SamplerManager::deinit();
 		TransformSystem::deinit();
 		LightSystem::deinit();
 		MeshSystem::deinit();
+		ShadowManager::deinit();
 		ModelManager::deinit();
 		ShaderManager::deinit();
 		TextureManager::deinit();

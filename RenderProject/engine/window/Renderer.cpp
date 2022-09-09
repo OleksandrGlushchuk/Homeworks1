@@ -2,16 +2,26 @@
 
 namespace engine::windows
 {
-	void Renderer::Init(UINT width, UINT height)
+	void Renderer::Init(UINT sampleCount)
 	{
-		m_hdrRenderTarget.InitFloat16RenderTargetView(width, height, 4);
-		m_hdrRenderTarget.InitDepthStencil(width, height, 4);
+		m_sampleCount = sampleCount;
+		m_hdrRenderTarget.InitFloat16RenderTargetView(8, 8, sampleCount);
+		m_hdrRenderTarget.InitDepthStencil(8, 8, sampleCount);
 
 		ZeroMemory(&m_shaderResourceViewDesc, sizeof(m_shaderResourceViewDesc));
 		m_shaderResourceViewDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-		m_shaderResourceViewDesc.Texture2D.MipLevels = -1;
-		m_shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-		m_shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2DMS;
+		if (sampleCount == 1)
+		{
+			m_textureRegisterIndex = 0;
+			m_shaderResourceViewDesc.Texture2D.MipLevels = -1;
+			m_shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+			m_shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
+		}
+		else
+		{
+			m_textureRegisterIndex = 1;
+			m_shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2DMS;
+		}
 		engine::s_device->CreateShaderResourceView(m_hdrRenderTarget.GetRenderTergetResource(), &m_shaderResourceViewDesc, m_shaderResourceView.reset());
 	}
 
@@ -37,13 +47,15 @@ namespace engine::windows
 		engine::MeshSystem::instance().render();
 		m_sky.Draw();
 
-		engine::s_deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
-		engine::s_deviceContext->PSSetShaderResources(0, 1, &m_shaderResourceView.ptr());
-
-		postProcess.Resolve(windowRenderTarget, m_hdrRenderTarget);
-
 		ID3D11ShaderResourceView* SRVnullptr[1] = { nullptr };
-		engine::s_deviceContext->PSSetShaderResources(0, 1, SRVnullptr);
+
+		engine::s_deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+
+		engine::s_deviceContext->PSSetShaderResources(1 - m_textureRegisterIndex, 1, SRVnullptr);
+		engine::s_deviceContext->PSSetShaderResources(m_textureRegisterIndex, 1, &m_shaderResourceView.ptr());
+
+		postProcess.Resolve(windowRenderTarget, m_hdrRenderTarget, m_sampleCount);
+		engine::s_deviceContext->PSSetShaderResources(m_textureRegisterIndex, 1, SRVnullptr);
 	}
 
 	void Renderer::ResizeRTV(RenderTarget& windowRenderTarget)

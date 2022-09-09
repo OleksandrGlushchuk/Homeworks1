@@ -1,4 +1,10 @@
 #include "Application.h"
+#include "../render/SamplerManager.h"
+#include "../render/LightSystem.h"
+#include "../render/ModelManager.h"
+#include "../render/MeshSystem.h"
+#include "../render/ShadowManager.h"
+
 const float p_near = 0.01f, p_far = 10000.f, fovy = M_PI / 3.f;
 
 namespace engine::windows
@@ -27,8 +33,7 @@ namespace engine::windows
 
 	void Application::Init()
 	{
-
-		renderer.Init(8u, 8u);
+		renderer.Init(4u);
 		m_postProcess.Init();
 
 		//LIGHTS
@@ -39,6 +44,8 @@ namespace engine::windows
 				engine::ModelManager::instance().GetUnitSphereModel());
 			engine::LightSystem::instance().addPointLight(Vec3(0.2f, 1, 0.2f), 1.0f, Vec3(1.3f, -0.7f, -0.5f), 0.1f,
 				engine::ModelManager::instance().GetUnitSphereModel());
+
+			engine::ShadowManager::instance().UpdateShadowResources(engine::LightSystem::instance().getPointLights().size());
 		}
 
 		//SKY
@@ -276,23 +283,23 @@ namespace engine::windows
 		{
 			if (input_state['1'])
 			{
-				engine::Globals::instance().SetGlobalSamplerState("ss_a");
+				engine::SamplerManager::instance().SetGlobalSamplerState("ss_a");
 			}
 			if (input_state['2'])
 			{
-				engine::Globals::instance().SetGlobalSamplerState("ss_mmmp");
+				engine::SamplerManager::instance().SetGlobalSamplerState("ss_mmmp");
 			}
 			if (input_state['3'])
 			{
-				engine::Globals::instance().SetGlobalSamplerState("ss_mpmlmp");
+				engine::SamplerManager::instance().SetGlobalSamplerState("ss_mpmlmp");
 			}
 			if (input_state['4'])
 			{
-				engine::Globals::instance().SetGlobalSamplerState("ss_mmlmp");
+				engine::SamplerManager::instance().SetGlobalSamplerState("ss_mmlmp");
 			}
 			if (input_state['5'])
 			{
-				engine::Globals::instance().SetGlobalSamplerState("ss_mmml");
+				engine::SamplerManager::instance().SetGlobalSamplerState("ss_mmml");
 			}
 		}
 
@@ -498,7 +505,7 @@ namespace engine::windows
 
 	void Application::RotateCamera()
 	{
-			camera.addRelativeAngles(Angles(0, dir_rotation.e[1], dir_rotation.e[0]));
-			need_to_move_camera = true;
+		camera.addRelativeAngles(Angles(0, dir_rotation.e[1], dir_rotation.e[0]));
+		need_to_move_camera = true;
 	}
 }

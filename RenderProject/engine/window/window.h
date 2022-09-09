@@ -1,6 +1,5 @@
 #pragma once
 #include <windows.h>
-#include "../render/globals.hpp"
 #include "../render/RenderTarget.h"
 
 namespace engine::windows

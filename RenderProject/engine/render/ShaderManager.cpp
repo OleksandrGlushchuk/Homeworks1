@@ -22,7 +22,7 @@ namespace engine
 		ALWAYS_ASSERT(s_instance); return *s_instance;
 	}
 
-	void ShaderManager::InitShaders(const std::wstring& path, bool hasPixelShader, bool hasGeometryShader, UINT Flags1)
+	void ShaderManager::InitShaders(const std::wstring& path, const ShaderEnabling& shaderEnabling, UINT Flags1)
 	{
 		std::unordered_map<std::wstring, std::tuple<DxResPtr<ID3D11VertexShader>, DxResPtr<ID3D11PixelShader>, DxResPtr<ID3D11GeometryShader>> >::iterator res;
 		if ((res = m_shader.find(path)) != m_shader.end())
@@ -39,7 +39,7 @@ namespace engine
 		result = engine::s_device->CreateVertexShader(vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize(), nullptr, vertexShader.reset());
 		ALWAYS_ASSERT(result >= 0 && "CreateVertexShader");
 
-		if (hasPixelShader)
+		if (shaderEnabling.hasPS)
 		{
 			auto& pixelShader = std::get<1>(m_shader[path]);
 			auto& pixelShaderBlob = m_shaderBlob[path][1];
@@ -51,7 +51,7 @@ namespace engine
 			ALWAYS_ASSERT(result >= 0 && "CreatePixelShader");
 		}
 
-		if (hasGeometryShader)
+		if (shaderEnabling.hasGS)
 		{
 			auto& geometryShader = std::get<2>(m_shader[path]);
 			auto& geometryShaderBlob = m_shaderBlob[path][2];

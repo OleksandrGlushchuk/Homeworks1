@@ -51,8 +51,10 @@ struct GS_OUT
 [maxvertexcount(18)]
 void gs_main(triangle VS_OUT input[3], inout TriangleStream<GS_OUT> outputStream)
 {
+    [unroll]
     for (uint face = 0; face < 6; ++face)
     {
+        [unroll]
         for (uint i = 0; i < 3; ++i)
         {
             GS_OUT output;

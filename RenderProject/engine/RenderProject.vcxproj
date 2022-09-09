@@ -154,6 +154,7 @@
     <ClCompile Include="math\Triangle.cpp" />
     <ClCompile Include="math\vec3.cpp" />
     <ClCompile Include="render\d3d.cpp" />
+    <ClCompile Include="render\DepthStencilManager.cpp" />
     <ClCompile Include="render\DepthStencil.cpp" />
     <ClCompile Include="render\EmissiveInstances.cpp" />
     <ClCompile Include="render\globals.cpp" />
@@ -162,7 +163,9 @@
     <ClCompile Include="render\ModelManager.cpp" />
     <ClCompile Include="render\OpaqueInstances.cpp" />
     <ClCompile Include="render\PerFrameBuffer.cpp" />
+    <ClCompile Include="render\SamplerManager.cpp" />
     <ClCompile Include="render\ShaderManager.cpp" />
+    <ClCompile Include="render\ShadowManager.cpp" />
     <ClCompile Include="render\TextureManager.cpp" />
     <ClCompile Include="render\TransformSystem.cpp" />
     <ClCompile Include="render\TriangleOctree.cpp">
@@ -194,6 +197,7 @@
     <ClInclude Include="objects\Sky.h" />
     <ClInclude Include="render\ConstantBuffer.h" />
     <ClInclude Include="render\d3d.hpp" />
+    <ClInclude Include="render\DepthStencilManager.h" />
     <ClInclude Include="render\DepthStencil.h" />
     <ClInclude Include="render\DxRes.hpp" />
     <ClInclude Include="render\EmissiveInstances.h" />
@@ -210,8 +214,10 @@
     <ClInclude Include="render\PerFrameBuffer.h" />
     <ClInclude Include="render\PostProcess.h" />
     <ClInclude Include="render\RenderTarget.h" />
+    <ClInclude Include="render\SamplerManager.h" />
     <ClInclude Include="render\Shader.h" />
     <ClInclude Include="render\ShaderManager.h" />
+    <ClInclude Include="render\ShadowManager.h" />
     <ClInclude Include="render\SolidVector.h" />
     <ClInclude Include="render\Texture.h" />
     <ClInclude Include="render\TextureManager.h" />
@@ -256,9 +262,11 @@
     <None Include="source\assets\Samurai\Samurai.fbx" />
     <None Include="source\shaders\environment.hlsli" />
     <None Include="source\shaders\fullscreen.hlsli" />
+    <None Include="source\shaders\opaque_helpers.hlsli" />
     <None Include="source\shaders\pbr_helpers.hlsli" />
     <None Include="source\shaders\globals.hlsli" />
     <None Include="source\shaders\resolve_helpers.hlsli" />
+    <None Include="source\shaders\shadow_helpers.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="source\assets\Brick\Brick_Wall_012_COLOR.dds" />

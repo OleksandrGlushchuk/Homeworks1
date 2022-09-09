@@ -29,4 +29,5 @@ cbuffer PerFrameBuffer : register(b0)
 SamplerState g_samplerState : register(s0);
 SamplerState g_linearClampSampler : register(s1);
 SamplerState g_pointSamplerState : register(s2);
+SamplerComparisonState g_samplerComparisonState : register(s3);
 #endif

@@ -6,11 +6,10 @@ namespace engine
 	class DepthStencil
 	{
 		DxResPtr<ID3D11Texture2D> m_depthStencilBuffer;
-		DxResPtr<ID3D11DepthStencilState> m_depthStencilState;
 		DxResPtr<ID3D11DepthStencilView> m_depthStencilView;
+		DxResPtr<ID3D11DepthStencilState> m_depthStencilState;
 		void initDepthStencilResource(UINT width, UINT height, UINT sampleCount);
 		void initCubemapArrayDepthStencilResource(UINT size, UINT numCubemaps);
-		void initDepthStencilState();
 		void initDepthStencilView();
 		void initCubemapArrayDepthStencilView(UINT numCubemaps);
 		UINT m_sampleCount;

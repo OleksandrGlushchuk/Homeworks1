@@ -9,12 +9,11 @@ namespace engine
 	struct PostProcessBuffer
 	{
 		float m_EV100;
-		Vec3 padding;
+		uint32_t m_sampleCount;
+		float padding[2];
 		PostProcessBuffer() {}
-		PostProcessBuffer(float _EV100)
-		{
-			m_EV100 = _EV100;
-		}
+		PostProcessBuffer(float _EV100, uint32_t sampleCount) : m_EV100(_EV100), m_sampleCount(sampleCount)
+		{}
 	};
 	class PostProcess
 	{
@@ -26,14 +25,14 @@ namespace engine
 		PostProcess() {}
 		void Init()
 		{
-			m_shader.Init(L"source/shaders/resolve.hlsl", nullptr, 0, true, false);
+			m_shader.Init(L"source/shaders/resolve.hlsl", nullptr, 0, ShaderEnabling(true, false));
 			m_constantBuffer.Init(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 		}
-		void Resolve(RenderTarget& dst, RenderTarget &src) 
+		void Resolve(RenderTarget& dst, RenderTarget &src, uint32_t sampleCount) 
 		{
 			m_shader.Bind();
 			dst.Bind();
-			m_constantBuffer.Update(PostProcessBuffer(EV100));
+			m_constantBuffer.Update(PostProcessBuffer(EV100, sampleCount));
 			
 			m_constantBuffer.BindPS(1);
 			engine::s_deviceContext->Draw(3, 0);

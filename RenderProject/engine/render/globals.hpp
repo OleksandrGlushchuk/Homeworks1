@@ -1,12 +1,7 @@
 #pragma once
 #include "DxRes.hpp"
-#include "TextureManager.h"
-#include "ShaderManager.h"
-#include "ModelManager.h"
-#include "MeshSystem.h"
 #include "ConstantBuffer.h"
 #include "PerFrameBuffer.h"
-#include "LightSystem.h"
 namespace engine
 {
 	class Globals // a singletone for accessing global rendering resources
@@ -22,9 +17,6 @@ namespace engine
 		
 		static Globals *s_instance;
 
-		std::unordered_map<std::string, engine::DxResPtr<ID3D11SamplerState> > m_samplerState;
-		engine::DxResPtr<ID3D11SamplerState> m_globalSamplerState;
-
 		Globals() {}
 		Globals(const Globals& other) = delete;
 		Globals& operator=(const Globals& other) = delete;
@@ -32,15 +24,11 @@ namespace engine
 		Globals& operator=(Globals&& other) noexcept = delete;
 
 		void initD3D();
-		void InitSamplerStates();
-		void InitPerFrameBuffer();
 	public:
 		static void init();
 		static void deinit();
 		static Globals& instance();
 		void Bind();
-		void CreateSamplerState(D3D11_SAMPLER_DESC& samplerDesc, const std::string& samplerStateKey);
-		void SetGlobalSamplerState(const std::string& _globalSamplerStateKey);
 		void UpdatePerFrameBuffer(const Camera& camera);
 		~Globals();
 	};
