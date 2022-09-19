@@ -5,7 +5,7 @@
 #include "../render/MeshSystem.h"
 #include "../render/ShadowManager.h"
 
-const float p_near = 0.01f, p_far = 10000.f, fovy = M_PI / 3.f;
+const float p_near = 0.01f, p_far = 150.f, fovy = M_PI / 3.f;
 
 namespace engine::windows
 {
@@ -14,7 +14,7 @@ namespace engine::windows
 	{
 		ProcessInput();
 		wnd.BeginFrame();
-		renderer.Render(wnd.m_renderTarget, camera, m_postProcess);
+		renderer.Render(wnd.m_renderTargetView, camera, m_postProcess);
 		wnd.EndFrame();
 	}
 
@@ -25,8 +25,6 @@ namespace engine::windows
 		need_to_rotate_camera = false;
 		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
 		camera.updateAspect(aspect);
-		camera.updateBasis();
-		camera.updateMatrices();
 		renderer.need_to_resize_RTV = true;
 		Draw();
 	}
@@ -35,17 +33,27 @@ namespace engine::windows
 	{
 		renderer.Init(4u);
 		m_postProcess.Init();
+		ShadowManager::instance().SetDirectionalLightDSResolution(4096.f);
+		ShadowManager::instance().SetPointLightDSResolution(1024.f);
+
+
+		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
+		camera = Camera(fovy, aspect, p_near, p_far);
+		camera.setWorldOffset(Vec3(0, 0, -2));
+		LightSystem::instance().setDirectionalLightFrustum(camera);
 
 		//LIGHTS
 		{
 			engine::LightSystem::instance().addPointLight(Vec3(1, 1, 1), 1.7f, Vec3(0, 1.f, -2.3f), 0.25f,
 				engine::ModelManager::instance().GetUnitSphereModel());
-			engine::LightSystem::instance().addPointLight(Vec3(1, 1, 1), 1.1f, Vec3(2.5f, 3.f, -1.f), 0.1f,
-				engine::ModelManager::instance().GetUnitSphereModel());
-			engine::LightSystem::instance().addPointLight(Vec3(0.2f, 1, 0.2f), 1.0f, Vec3(1.3f, -0.7f, -0.5f), 0.1f,
+			engine::LightSystem::instance().addPointLight(Vec3(1, 0.1f, 1), 1.1f, Vec3(1.3f, -0.5f, -0.5f), 0.1f,
 				engine::ModelManager::instance().GetUnitSphereModel());
 
-			engine::ShadowManager::instance().UpdateShadowResources(engine::LightSystem::instance().getPointLights().size());
+			engine::LightSystem::instance().addDirectionalLight(Vec3(1.f, 1.f, 1.f), Vec3(-1, 1, -1));
+			engine::LightSystem::instance().addDirectionalLight(Vec3(1.f, 1.f, 1.f), Vec3(-1, 1, 1));
+
+			engine::ShadowManager::instance().UpdatePointLightShadowResources(engine::LightSystem::instance().getPointLights().size());
+			engine::ShadowManager::instance().UpdateDirectionalLightShadowResources(engine::LightSystem::instance().getDirectionalLights().size());
 		}
 
 		//SKY
@@ -226,12 +234,11 @@ namespace engine::windows
 			transform.SetScale({ 0.4f, 2, 0.4f });
 			transform.SetPosition({ 1.f, 3.4f, 0.f });
 			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
-		}
-		
 
-		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
-		camera = Camera(fovy, aspect, p_near, p_far);
-		camera.setWorldOffset(Vec3(0, 0, -5));
+			transform.SetPosition({ 5,0,0 });
+			transform.SetScale({ 1.f,100.f,100.f });
+			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
+		}
 	}
 
 	void Application::ProcessInput()
@@ -381,17 +388,15 @@ namespace engine::windows
 			}
 		}
 
-		if(need_to_rotate_camera)
+		if (need_to_rotate_camera)
 			RotateCamera();
 		if (need_to_move_camera)
 		{
 			MoveCamera(delta_time * offset);
-			if (need_to_move_object)
-			{
-				OnRMouseMove(mouse_x, mouse_y);
-			}
 			need_to_move_camera = false;
 		}
+		if (need_to_move_object)
+			OnRMouseMove(mouse_x, mouse_y);
 	}
 
 	void Application::OnKeyDown(WPARAM key)
@@ -506,6 +511,6 @@ namespace engine::windows
 	void Application::RotateCamera()
 	{
 		camera.addRelativeAngles(Angles(0, dir_rotation.e[1], dir_rotation.e[0]));
-		need_to_move_camera = true;
+		camera.updateMatrices();
 	}
 }

@@ -12,10 +12,14 @@ namespace engine
 		void initCubemapArrayDepthStencilResource(UINT size, UINT numCubemaps);
 		void initDepthStencilView();
 		void initCubemapArrayDepthStencilView(UINT numCubemaps);
+
+		void initTexture2DArrayDepthStencilResource(UINT size, UINT numTextures);
+		void initTexture2DArrayDepthStencilView(UINT numTextures);
 		UINT m_sampleCount;
 	public:
 		void Init(UINT width, UINT height, UINT sampleCount);
 		void InitCubeMapArray(UINT size, UINT numCubemaps);
+		void InitTexture2DArray(UINT size, UINT numTextures);
 		void Resize(UINT width, UINT height);
 		void BindDepthStencilState();
 		void Clear();

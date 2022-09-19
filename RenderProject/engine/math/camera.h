@@ -8,7 +8,6 @@ class Camera
 	bool need_to_update_matrices = true;
 	bool need_to_update_basis = true;
 	bool need_to_roll = false;
-	float fov, aspect, p_near, p_far;
 public:
 	const Vec3& right() 	const { return m_viewInv[0]; }
 	const Vec3& top() 		const { return m_viewInv[1]; }
@@ -21,6 +20,7 @@ public:
 	Quaternion m_rotation;
 	Vec3 TopLeft, BottomLeft, BottomRight;
 	Vec3 BR_M_BL, TL_M_BL;
+	float fov, aspect, p_near, p_far;
 	Camera() {};
 	Camera(float _fov, float _aspect, float _p_near, float _p_far);
 

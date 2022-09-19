@@ -23,9 +23,8 @@ namespace engine
 		m_constantBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 		m_materialConstantBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 
-		ShadowManager::instance().m_shadowShader.Init(L"source/shaders/shadow.hlsl", inputLayout, 9, ShaderEnabling(false, true));
-
-		need_to_resize_shadowSRV = true;
+		ShadowManager::instance().m_pointLightShadowShader.Init(L"source/shaders/point_light_shadow.hlsl", inputLayout, 9, ShaderEnabling(false, true));
+		ShadowManager::instance().m_directionalLightShadowShader.Init(L"source/shaders/directional_light_shadow.hlsl", inputLayout, 9, ShaderEnabling(false, true));
 	}
 
 	void OpaqueInstances::updateInstanceBuffers()
@@ -70,11 +69,14 @@ namespace engine
 		if (m_instanceBuffer.Size() == 0)
 			return;
 
-		s_deviceContext->PSSetShaderResources(4, 1, &ShadowManager::instance().m_srvShadow.ptr());
+		s_deviceContext->PSSetShaderResources(4, 1, &ShadowManager::instance().m_srvPointLightShadow.ptr());
+		s_deviceContext->PSSetShaderResources(5, 1, &ShadowManager::instance().m_srvDirectionalLightShadow.ptr());
+
 		m_shader.Bind();
 		m_instanceBuffer.Bind(1);
 		m_constantBuffer.BindVS(1);
 		m_materialConstantBuffer.BindPS(2);
+		ShadowManager::instance().m_pointLightDSResolutionBuffer.BindPS(3);
 
 
 		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -101,7 +103,6 @@ namespace engine
 
 					m_materialConstantBuffer.Update(material.m_materialConstantBuffer);
 
-
 					uint32_t numInstances = uint32_t(materialInstances.instances.size());
 					engine::s_deviceContext->DrawIndexedInstanced(mesh.indexNum, numInstances, mesh.indexOffset, mesh.vertexOffset, renderedInstances);
 					renderedInstances += numInstances;
@@ -110,25 +111,26 @@ namespace engine
 		}
 		ID3D11ShaderResourceView* SRVnullptr[1] = { nullptr };
 		engine::s_deviceContext->PSSetShaderResources(4, 1, SRVnullptr);
+		engine::s_deviceContext->PSSetShaderResources(5, 1, SRVnullptr);
 	}
 
 	void OpaqueInstances::renderSceneDepthToCubemaps()
 	{
+		uint32_t pointLightNum = LightSystem::instance().getPointLights().size();
+		if (pointLightNum == 0)
+			return;
+
 		if (m_instanceBuffer.Size() == 0)
 			return;
 
 		m_instanceBuffer.Bind(1);
 		m_constantBuffer.BindVS(1);
 
-		engine::s_deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
-
-		ShadowManager::instance().BindRenderTarget();
-		ShadowManager::instance().m_shadowShader.Bind();
-		ShadowManager::instance().m_pointLightIndex.BindGS(2);
+		ShadowManager::instance().m_pointLightShadowShader.Bind();
+		ShadowManager::instance().m_lightIndexBuffer.BindGS(2);
 
 		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		uint32_t renderedInstances = 0;
-		uint32_t pointLightNum = LightSystem::instance().getPointLights().size();
 		for (auto& modelInstances : m_modelInstances)
 		{
 			if (modelInstances.meshInstances.empty()) continue;
@@ -149,13 +151,58 @@ namespace engine
 					uint32_t numInstances = uint32_t(materialInstances.instances.size());
 					for (uint32_t i = 0; i < pointLightNum; ++i)
 					{
-						ShadowManager::instance().m_pointLightIndex.Update(i);
+						ShadowManager::instance().m_lightIndexBuffer.Update(i);
 						engine::s_deviceContext->DrawIndexedInstanced(mesh.indexNum, numInstances, mesh.indexOffset, mesh.vertexOffset, renderedInstances);
 					}
 					renderedInstances += numInstances;
 				}
 			}
 		}
-		engine::s_deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+	}
+	void OpaqueInstances::renderSceneDepthForDirectionalLights()
+	{
+		uint32_t directionalLightNum = LightSystem::instance().getDirectionalLights().size();
+
+		if (directionalLightNum == 0)
+			return;
+
+		if (m_instanceBuffer.Size() == 0)
+			return;
+
+		m_instanceBuffer.Bind(1);
+		m_constantBuffer.BindVS(1);
+
+		ShadowManager::instance().m_directionalLightShadowShader.Bind();
+		ShadowManager::instance().m_lightIndexBuffer.BindGS(2);
+
+		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		uint32_t renderedInstances = 0;
+		for (auto& modelInstances : m_modelInstances)
+		{
+			if (modelInstances.meshInstances.empty()) continue;
+
+			modelInstances.model->m_vertexBuffer.Bind(0);
+			modelInstances.model->m_indexBuffer.Bind();
+
+			for (uint32_t meshIndex = 0; meshIndex < modelInstances.meshInstances.size(); ++meshIndex)
+			{
+				Mesh& mesh = modelInstances.model->m_meshes[meshIndex];
+
+				m_constantBuffer.Update(mesh.meshToModelMatrix);
+
+				for (auto& materialInstances : modelInstances.meshInstances[meshIndex].materialInstances)
+				{
+					if (materialInstances.instances.empty()) continue;
+
+					uint32_t numInstances = uint32_t(materialInstances.instances.size());
+					for (uint32_t i = 0; i < directionalLightNum; ++i)
+					{
+						ShadowManager::instance().m_lightIndexBuffer.Update(i);
+						engine::s_deviceContext->DrawIndexedInstanced(mesh.indexNum, numInstances, mesh.indexOffset, mesh.vertexOffset, renderedInstances);
+					}
+					renderedInstances += numInstances;
+				}
+			}
+		}
 	}
 }

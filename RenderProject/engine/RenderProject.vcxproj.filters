@@ -229,7 +229,7 @@
     <ClInclude Include="render\Texture.h">
       <Filter>render</Filter>
     </ClInclude>
-    <ClInclude Include="render\RenderTarget.h">
+    <ClInclude Include="render\RenderTargetView.h">
       <Filter>render</Filter>
     </ClInclude>
     <ClInclude Include="render\DepthStencil.h">
@@ -295,6 +295,9 @@
     <ClInclude Include="render\ShadowManager.h">
       <Filter>render\singletones</Filter>
     </ClInclude>
+    <ClInclude Include="math\MatrixHelpers.h">
+      <Filter>math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="source\shaders\sky.hlsl">
@@ -309,7 +312,10 @@
     <FxCompile Include="source\shaders\emissive.hlsl">
       <Filter>source\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="source\shaders\shadow.hlsl">
+    <FxCompile Include="source\shaders\point_light_shadow.hlsl">
+      <Filter>source\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="source\shaders\directional_light_shadow.hlsl">
       <Filter>source\shaders</Filter>
     </FxCompile>
   </ItemGroup>

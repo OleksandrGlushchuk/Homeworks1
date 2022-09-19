@@ -9,7 +9,6 @@
 #include "ConstantBuffer.h"
 #include "TransformSystem.h"
 #include "ModelID.h"
-#include "RenderTarget.h"
 
 namespace engine
 {
@@ -114,7 +113,6 @@ namespace engine
 		ConstantBuffer<Matr<4>> m_constantBuffer;
 		std::vector<ModelID> m_modelIDs;
 		ConstantBuffer<MaterialConstantBuffer> m_materialConstantBuffer;
-		bool need_to_resize_shadowSRV;
 	public:
 		OpaqueInstances() {}
 
@@ -125,5 +123,7 @@ namespace engine
 		void render();
 
 		void renderSceneDepthToCubemaps();
+
+		void renderSceneDepthForDirectionalLights();
 	};
 }

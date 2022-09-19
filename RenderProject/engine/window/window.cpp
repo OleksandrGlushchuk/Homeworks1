@@ -29,7 +29,7 @@ namespace engine::windows
 	{
 		if (m_backBuffer.valid())
 		{
-			m_renderTarget.ReleaseRenderTarget();
+			m_renderTargetView.Release();
 			m_backBuffer.release();
 
 			HRESULT result = m_swapChain1->ResizeBuffers(0, std::max<UINT>(screen.right,8), std::max<UINT>(screen.bottom, 8), DXGI_FORMAT_UNKNOWN, 0);
@@ -44,12 +44,12 @@ namespace engine::windows
 
 	void Window::initRenderTargetView()
 	{
-		m_renderTarget.InitRenderTargetView(m_backBuffer);
+		m_renderTargetView.Init(m_backBuffer);
 	}
 
 	void Window::BeginFrame()
 	{
-		m_renderTarget.ClearRendetTargetView();
+		m_renderTargetView.Clear();
 	}
 
 	void Window::EndFrame()
@@ -62,6 +62,6 @@ namespace engine::windows
 	{
 		GetClientRect(m_wndHandle, &screen);
 		initBackBuffer();
-		m_renderTarget.InitRenderTargetView(m_backBuffer);
+		m_renderTargetView.Init(m_backBuffer);
 	}
 }

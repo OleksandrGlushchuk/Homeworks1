@@ -1,7 +1,7 @@
 #include "vec3.h"
 #include "Matr.h"
 
-Vec3& Vec3::mult(const Matr<4>& matr, float w)
+Vec3& Vec3::mult(const Matr<4, float>& matr, float w)
 {
     Vec3 vec;
     vec[0] = e[0] * matr[0][0] + e[1] * matr[1][0] + e[2] * matr[2][0] + w * matr[3][0];
@@ -12,7 +12,7 @@ Vec3& Vec3::mult(const Matr<4>& matr, float w)
     return *this;
 }
 
-Vec3& Vec3::mult(const Matr<4>& matr, float w, float* w_out)
+Vec3& Vec3::mult(const Matr<4, float>& matr, float w, float* w_out)
 {
     float vec[4];
 
@@ -27,7 +27,7 @@ Vec3& Vec3::mult(const Matr<4>& matr, float w, float* w_out)
     return *this;
 }
 
-Vec3& Vec3::mult(const Matr<3>& matr)
+Vec3& Vec3::mult(const Matr<3, float>& matr)
 {
     Vec3 vec;
     vec[0] = e[0] * matr[0][0] + e[1] * matr[1][0] + e[2] * matr[2][0];

@@ -177,10 +177,4 @@ namespace engine
 		}
 		emissiveInstances.updateInstanceBuffers();
 	}
-
-	void MeshSystem::renderSceneDepthToCubemaps()
-	{
-
-		opaqueInstances.renderSceneDepthToCubemaps();
-	}
 }

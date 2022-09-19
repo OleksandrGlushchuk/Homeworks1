@@ -1,4 +1,5 @@
 ﻿#include "camera.h"
+#include "MatrixHelpers.h"
 Camera::Camera(float _fov, float _aspect, float _p_near, float _p_far) : fov(_fov), aspect(_aspect), p_near(_p_near), p_far(_p_far)
 {
 	setPerspective(fov, aspect, p_near, p_far);
@@ -36,6 +37,8 @@ void Camera::updateAspect(float _aspect)
 	setPerspective(fov, aspect, p_near, p_far);
 	need_to_update_basis = true;
 	need_to_update_matrices = true;
+	updateBasis();
+	updateMatrices();
 }
 
 void Camera::updateMatrices()
@@ -134,9 +137,6 @@ void Camera::addRelativeAngles(const Angles& angles)
 
 void Camera::setPerspective(float fov, float aspect, float p_near, float p_far)
 {
-	Matr<4>::fill_row(m_proj[0], { (1.f / tanf(fov / 2.f)) / aspect,	0,							0,									0 });
-	Matr<4>::fill_row(m_proj[1], { 0,									1.f / tanf(fov / 2.f),		0,									0 });
-	Matr<4>::fill_row(m_proj[2], { 0,									0,							p_near / (p_near - p_far),			1 });
-	Matr<4>::fill_row(m_proj[3], { 0,									0,							-p_far * p_near / (p_near - p_far),	0 });
+	math::setPerspective(fov, aspect, p_near, p_far, m_proj);
 	m_projInv = m_proj.invert();
 }

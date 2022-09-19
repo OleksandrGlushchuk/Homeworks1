@@ -90,7 +90,9 @@ namespace engine
 	void Globals::UpdatePerFrameBuffer(const Camera& camera)
 	{
 		LightSystem::instance().updatePointLightMatrices();
-		m_perFrameBuffer.Update(PerFrameBuffer(camera, engine::LightSystem::instance().getPointLights()));
+		LightSystem::instance().updateDirectionalLightMatrices(camera);
+		m_perFrameBuffer.Update(PerFrameBuffer(camera, engine::LightSystem::instance().getPointLights(),
+			engine::LightSystem::instance().getDirectionalLights()));
 	}
 
 	Globals::~Globals()

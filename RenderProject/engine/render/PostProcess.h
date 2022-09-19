@@ -1,5 +1,5 @@
 #pragma once
-#include "RenderTarget.h"
+#include "RenderTargetView.h"
 #include "Shader.h"
 #include "ConstantBuffer.h"
 #include "../math/vec3.h"
@@ -28,12 +28,11 @@ namespace engine
 			m_shader.Init(L"source/shaders/resolve.hlsl", nullptr, 0, ShaderEnabling(true, false));
 			m_constantBuffer.Init(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 		}
-		void Resolve(RenderTarget& dst, RenderTarget &src, uint32_t sampleCount) 
+		void Resolve(RenderTargetView& dst, uint32_t sampleCount) 
 		{
 			m_shader.Bind();
-			dst.Bind();
+			engine::s_deviceContext->OMSetRenderTargets(1, dst.GetRTVPtrToPrt(), nullptr);
 			m_constantBuffer.Update(PostProcessBuffer(EV100, sampleCount));
-			
 			m_constantBuffer.BindPS(1);
 			engine::s_deviceContext->Draw(3, 0);
 		}

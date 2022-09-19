@@ -186,6 +186,7 @@
     <ClInclude Include="math\Floor.h" />
     <ClInclude Include="math\Intersection.h" />
     <ClInclude Include="math\Matr.h" />
+    <ClInclude Include="math\MatrixHelpers.h" />
     <ClInclude Include="math\MeshIntersection.h" />
     <ClInclude Include="math\Quaternion.h" />
     <ClInclude Include="math\ray.h" />
@@ -213,7 +214,7 @@
     <ClInclude Include="render\OpaqueInstances.h" />
     <ClInclude Include="render\PerFrameBuffer.h" />
     <ClInclude Include="render\PostProcess.h" />
-    <ClInclude Include="render\RenderTarget.h" />
+    <ClInclude Include="render\RenderTargetView.h" />
     <ClInclude Include="render\SamplerManager.h" />
     <ClInclude Include="render\Shader.h" />
     <ClInclude Include="render\ShaderManager.h" />
@@ -236,6 +237,10 @@
     <ClInclude Include="window\window.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="source\shaders\directional_light_shadow.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="source\shaders\emissive.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -248,7 +253,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="source\shaders\shadow.hlsl">
+    <FxCompile Include="source\shaders\point_light_shadow.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>

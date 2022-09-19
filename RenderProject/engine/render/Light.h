@@ -43,4 +43,14 @@ namespace engine
 			radius(pointLight.radius)
 		{}
 	};
+
+	struct GpuDirectionalLight
+	{
+		Vec3 radiance;
+		float padding0;
+		Vec3 direction;
+		float padding1;
+		GpuDirectionalLight(){}
+		GpuDirectionalLight(const Vec3 &_radiance, const Vec3 &_direction) : radiance(_radiance), direction(_direction){}
+	};
 }

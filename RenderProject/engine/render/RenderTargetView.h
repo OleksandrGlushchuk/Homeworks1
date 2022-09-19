@@ -1,13 +1,11 @@
 #pragma once
 #include "DxRes.hpp"
-#include "DepthStencil.h"
 #include <functional>
 namespace engine
 {
-	class RenderTarget
+	class RenderTargetView
 	{
 		D3D11_TEXTURE2D_DESC m_renderTargetResourceDesc;
-		DepthStencil m_depthStencil;
 		engine::DxResPtr<ID3D11Texture2D> m_renderTargetResource;
 		engine::DxResPtr<ID3D11RenderTargetView1> m_renderTargetView;
 		enum class RTVResource{FLOAT16_RTR, EXTERNAL_RTR};
@@ -31,9 +29,9 @@ namespace engine
 			ALWAYS_ASSERT(result >= 0 && "CreateTexture2D");
 		}
 	public:
-		RenderTarget() {}
+		RenderTargetView() {}
 
-		void InitRenderTargetView(engine::DxResPtr<ID3D11Texture2D>& renderTargetResource)
+		void Init(engine::DxResPtr<ID3D11Texture2D>& renderTargetResource)
 		{
 			m_renderTargetResource = renderTargetResource;
 			m_renderTargetResource->GetDesc(&m_renderTargetResourceDesc);
@@ -42,12 +40,7 @@ namespace engine
 			ALWAYS_ASSERT(result >= 0 && "CreateRenderTargetView1");
 		}
 
-		void InitCubeMapArrayDepthStencil(UINT size, UINT numCubemaps)
-		{
-			m_depthStencil.InitCubeMapArray(size, numCubemaps);
-		}
-
-		void InitFloat16RenderTargetView(UINT width, UINT height, UINT sampleCount)
+		void InitFloat16RTV(UINT width, UINT height, UINT sampleCount)
 		{
 			m_RTVResource = RTVResource::FLOAT16_RTR;
 			m_sampleCount = sampleCount;
@@ -56,17 +49,12 @@ namespace engine
 			ALWAYS_ASSERT(result >= 0 && "CreateRenderTargetView1");
 		}
 
-		void InitDepthStencil(UINT width, UINT height, UINT sampleCount)
-		{
-			m_depthStencil.Init(width, height, sampleCount);
-		}
-
-		void ResizeRenderTargetView(UINT width, UINT height)
+		void Resize(UINT width, UINT height)
 		{
 			switch (m_RTVResource)
 			{
 			case RTVResource::FLOAT16_RTR :
-				InitFloat16RenderTargetView(width, height, m_sampleCount);
+				InitFloat16RTV(width, height, m_sampleCount);
 				break;
 			case RTVResource::EXTERNAL_RTR :
 				DebugBreak();
@@ -78,54 +66,23 @@ namespace engine
 				break;
 			}
 		}
-		void ResizeDepthStencil(UINT width, UINT height)
-		{
-			m_depthStencil.Resize(width, height);
-		}
 		
-		void ClearRendetTargetView()
+		void Clear()
 		{
 			FLOAT color[4] = { 0.25f, 0.5f, 1.f, 1.f };
 			engine::s_deviceContext->ClearRenderTargetView(m_renderTargetView.ptr(), color);
 		}
-		void ClearDepthStencil()
-		{
-			m_depthStencil.Clear();
-		}
-		void Bind(DepthStencil otherDepthStencil = {})
-		{
-			if (otherDepthStencil.Is_Unused())
-			{
-				if (!m_depthStencil.Is_Unused())
-				{
-					m_depthStencil.BindDepthStencilState();
 
-					(m_renderTargetView.ptr() == nullptr) ? 
-						engine::s_deviceContext->OMSetRenderTargets(0, nullptr, m_depthStencil.GetDepthStencilViewPtr()) :
-						engine::s_deviceContext->OMSetRenderTargets(1, (ID3D11RenderTargetView* const*)&m_renderTargetView.ptr(), m_depthStencil.GetDepthStencilViewPtr());
-				}
-				else
-					engine::s_deviceContext->OMSetRenderTargets(1, (ID3D11RenderTargetView* const*)&m_renderTargetView.ptr(), nullptr);
-			}
-			else
-			{
-				otherDepthStencil.Clear();
-				otherDepthStencil.BindDepthStencilState();
-				engine::s_deviceContext->OMSetRenderTargets(1, (ID3D11RenderTargetView* const*)&m_renderTargetView.ptr(), otherDepthStencil.GetDepthStencilViewPtr());
-			}
-		}
-		void ReleaseRenderTarget()
+		void Release()
 		{
 			m_renderTargetView.release();
 			m_renderTargetResource.release();
 			m_renderTargetResourceDesc = {};
 		}
-		ID3D11Texture2D* GetRenderTergetResource() { return m_renderTargetResource.ptr(); }
+		ID3D11Texture2D* GetResourcePtr() { return m_renderTargetResource.ptr(); }
+		ID3D11RenderTargetView1* GetRTVPtr() { return m_renderTargetView.ptr(); }
+		ID3D11RenderTargetView* const * GetRTVPtrToPrt() { return (ID3D11RenderTargetView * const*)&m_renderTargetView.ptr(); }
 		UINT GetWidth() const {	return m_renderTargetResourceDesc.Width;}
 		UINT GetHeight() const { return m_renderTargetResourceDesc.Height;}
-		DepthStencil& GetDepthStencil()
-		{
-			return m_depthStencil;
-		}
 	};
 }

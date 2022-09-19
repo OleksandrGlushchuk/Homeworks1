@@ -2,6 +2,7 @@
 #define _GLOBALS_HLSLI_
 static const float M_PI = 3.14159265358979323846f; 
 static const uint MAX_POINT_LIGHTS = 5;
+static const uint MAX_DIRECTIONAL_LIGHTS = 2;
 
 struct PointLight
 {
@@ -9,6 +10,14 @@ struct PointLight
     float padding0;
     float3 position;
     float radius;
+};
+
+struct DirectionalLight
+{
+    float3 radiance;
+    float padding0;
+    float3 direction;
+    float padding1;
 };
 
 cbuffer PerFrameBuffer : register(b0)
@@ -24,6 +33,10 @@ cbuffer PerFrameBuffer : register(b0)
     uint g_pointLightNum;
     PointLight g_pointLight[MAX_POINT_LIGHTS];
     float4x4 g_viewProjPointLight[MAX_POINT_LIGHTS][6];
+    uint g_directionalLightNum;
+    float3 padPFM3;
+    DirectionalLight g_directionalLight[MAX_DIRECTIONAL_LIGHTS];
+    float4x4 g_viewProjDirectionalLight[MAX_DIRECTIONAL_LIGHTS];
 };
 
 SamplerState g_samplerState : register(s0);

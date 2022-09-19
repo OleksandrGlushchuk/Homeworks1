@@ -3,6 +3,7 @@
 #include "globals.hlsli"
 static const float HEMISPHERE_SOLID_ANGLE = 2.f * M_PI;
 static const float INSULATOR_F0 = 0.01f;
+static const float DIRECTIONAL_LIGHT_SOLID_ANGLE = M_PI;
 
 struct Surface
 {
@@ -74,7 +75,7 @@ inline float smith(float rough2, float NoV, float NoL)
     return 2.f / (sqrt(1 + rough2 * (1 - NoV) / NoV) + sqrt(1 + rough2 * (1 - NoL) / NoL));
 }
 
-inline float3 CookTorranceBRDF(const float3 F_LdotH, float G, float D, float solid_angle, float NdotV, float NdotSpecL)
+inline float3 CookTorranceBRDF(const float3 F_LdotH, float G, float D, float solid_angle, float NdotV)
 {
     return F_LdotH * G * min(1.f, solid_angle * D / (4.f * NdotV));
 }
@@ -125,6 +126,27 @@ inline float3 CalculatePointLight(PointLight pointLight, const float3 PointToLig
     float G = smith(rough2, view.NdotV, NdotSpecL);
 
     return pointLight.radiance * map_fading * geometry_fading * (NdotL * LambertBRDF(F_LdotN, surface, solid_angle) +
-    CookTorranceBRDF(F_SpecLdotH, G, D, solid_angle, view.NdotV, NdotSpecL));
+    CookTorranceBRDF(F_SpecLdotH, G, D, solid_angle, view.NdotV));
+}
+
+inline float3 CalculateDirectionalLight(DirectionalLight light, const View view, const Surface surface)
+{
+    float NdotL = dot(surface.map_normal, light.direction);
+    if (NdotL <= 0.f)
+        return 0;
+
+    float3 HalfCameraLight = view.PointToCameraNormalized + light.direction;
+    HalfCameraLight = normalize(HalfCameraLight);
+
+    float NdotH = dot(surface.map_normal, HalfCameraLight);
+    float rough2 = surface.roughness * surface.roughness;
+    float D = ggx(rough2, NdotH);
+
+    float3 F_LdotH = fresnel(dot(light.direction, HalfCameraLight), surface.F0);
+    float3 F_LdotN = fresnel(NdotL, surface.F0);
+    float G = smith(rough2, view.NdotV, NdotL);
+
+    return light.radiance * (NdotL * LambertBRDF(F_LdotN, surface, DIRECTIONAL_LIGHT_SOLID_ANGLE) +
+    CookTorranceBRDF(F_LdotH, G, D, DIRECTIONAL_LIGHT_SOLID_ANGLE, view.NdotV));
 }
 #endif

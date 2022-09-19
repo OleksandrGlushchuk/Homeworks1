@@ -62,13 +62,19 @@ cbuffer MaterialConstantBuffer : register(b2)
     bool g_reversedNormalTextureY;
     float2 paddingMCB;
 }
+
+cbuffer PointLightDSResolutionBuffer : register(b3)
+{
+    float g_pointLightDSResolution;
+    float3 paddingPLDSRB;
+}
+
 Texture2D g_colorMap : register(t0);
 Texture2D<float3> g_normalMap : register(t1);
 Texture2D<float> g_roughnessMap : register(t2);
 Texture2D<float> g_metalnessMap : register(t3);
 #include "opaque_helpers.hlsli"
 
-TextureCubeArray<float> g_shadows : register(t4);
 #include "shadow_helpers.hlsli"
 
 float4 ps_main(PS_INPUT input) : SV_TARGET
@@ -82,8 +88,14 @@ float4 ps_main(PS_INPUT input) : SV_TARGET
     float3 hdrColor = float3(0, 0, 0);
     for (uint i = 0; i < g_pointLightNum; ++i)
     {
-        shadowFactor = calcShadowFactor(input.world_pos.xyz, view.PointToCameraNormalized, i);
+        shadowFactor = calcPointLightShadowFactor(input.world_pos.xyz, view.PointToCameraNormalized, i);
         hdrColor += (1.f - shadowFactor) * CalculatePointLight(g_pointLight[i], g_pointLight[i].position - input.world_pos.xyz, view, surface);
+    }
+    
+    for (uint j = 0; j < g_directionalLightNum; ++j)
+    {
+        shadowFactor = calcDirectionalLightShadowFactor(input.world_pos.xyz, view.PointToCameraNormalized, j);
+        hdrColor += (1.f - shadowFactor) * CalculateDirectionalLight(g_directionalLight[j], view, surface);
     }
     hdrColor += addEnvironmentReflection(view, surface);
     return float4(hdrColor, 1.f);

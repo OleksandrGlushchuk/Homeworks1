@@ -1,6 +1,6 @@
 #pragma once
 #include <windows.h>
-#include "../render/RenderTarget.h"
+#include "../render/RenderTargetView.h"
 
 namespace engine::windows
 {
@@ -10,7 +10,7 @@ namespace engine::windows
 		DxResPtr<IDXGISwapChain1> m_swapChain1;
 		DxResPtr<ID3D11Texture2D> m_backBuffer;
 		D3D11_TEXTURE2D_DESC m_backbufferDesc;
-		RenderTarget m_renderTarget;
+		RenderTargetView m_renderTargetView;
 
 		WNDCLASS wndclass;
 		HDC device_context;

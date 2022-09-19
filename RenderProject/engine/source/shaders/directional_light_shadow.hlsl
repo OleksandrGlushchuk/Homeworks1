@@ -5,9 +5,9 @@ cbuffer MeshToModel : register(b1)
     float4x4 g_meshToModelMatrix;
 }
 
-cbuffer PointLightIndex : register(b2)
+cbuffer LightIndex : register(b2)
 {
-    uint g_pointLightIndex;
+    uint g_lightIndex;
     float3 paddingPLI;
 }
 
@@ -26,7 +26,8 @@ struct VS_INPUT
 };
 struct VS_OUT
 {
-    float4 world_pos : WORLD_POS;
+    //float4 position : SV_Position;
+    float4 world_pos : POSITION;
 };
 
 VS_OUT vs_main(VS_INPUT input)
@@ -35,8 +36,10 @@ VS_OUT vs_main(VS_INPUT input)
     float4x4 TransformMatrix = float4x4(input.transform_x, input.transform_y, input.transform_z, input.transform_w);
 
     float4 pos = mul(float4(input.position, 1.0f), g_meshToModelMatrix);
+    
     pos = mul(pos, TransformMatrix);
     
+    //output.position = mul(pos, g_viewProjDirectionalLight[g_lightIndex]);
     output.world_pos = pos;
     
     return output;
@@ -45,23 +48,19 @@ VS_OUT vs_main(VS_INPUT input)
 struct GS_OUT
 {
     float4 position : SV_Position;
-    nointerpolation uint slice : SV_RenderTargetArrayIndex;
+    nointerpolation uint renderTarget : SV_RenderTargetArrayIndex;
 };
 
-[maxvertexcount(18)]
+[maxvertexcount(3)]
 void gs_main(triangle VS_OUT input[3], inout TriangleStream<GS_OUT> outputStream)
 {
     [unroll]
-    for (uint face = 0; face < 6; ++face)
+    for (uint i = 0; i < 3; ++i)
     {
-        [unroll]
-        for (uint i = 0; i < 3; ++i)
-        {
-            GS_OUT output;
-            output.slice = g_pointLightIndex * 6 + face;
-            output.position = mul(input[i].world_pos, g_viewProjPointLight[g_pointLightIndex][face]);
-            outputStream.Append(output);
-        }
-        outputStream.RestartStrip();
+        GS_OUT output;
+        output.renderTarget = g_lightIndex;
+        output.position = mul(input[i].world_pos, g_viewProjDirectionalLight[g_lightIndex]);
+        outputStream.Append(output);
     }
+    outputStream.RestartStrip();
 }
