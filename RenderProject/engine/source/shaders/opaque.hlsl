@@ -88,7 +88,7 @@ float4 ps_main(PS_INPUT input) : SV_TARGET
     float3 hdrColor = float3(0, 0, 0);
     for (uint i = 0; i < g_pointLightNum; ++i)
     {
-        shadowFactor = calcPointLightShadowFactor(input.world_pos.xyz, view.PointToCameraNormalized, i);
+        shadowFactor = calcPointLightShadowFactor(input.world_pos.xyz, surface.map_normal, i);
         hdrColor += (1.f - shadowFactor) * CalculatePointLight(g_pointLight[i], g_pointLight[i].position - input.world_pos.xyz, view, surface);
     }
     

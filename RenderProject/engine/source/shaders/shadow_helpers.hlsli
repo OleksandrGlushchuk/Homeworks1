@@ -18,28 +18,29 @@ uint selectCubeFace(float3 unitDir)
     return index + (asuint(unitDir[index / 2]) >> 31);
 }
 
-float getDepthInLightSpace(float3 objectWorldPos, uint pointLightIndex, uint cubeFaceIndex)
-{
-    float4 posInLightSpace = mul(float4(objectWorldPos, 1.f), g_viewProjPointLight[pointLightIndex][cubeFaceIndex]);
-    return (posInLightSpace.xyz / posInLightSpace.w).z;
-}
-
-float calcPointLightShadowFactor(float3 objectWorldPos, float3 pointToCameraNormalized, uint pointLightIndex)
+float calcPointLightShadowFactor(float3 objectWorldPos, float3 map_normal, uint pointLightIndex)
 {
     float3 toObject = objectWorldPos - g_pointLight[pointLightIndex].position;
     
     float3 toObjectNormalized = normalize(toObject);
     
     uint cubeFaceIndex = selectCubeFace(toObjectNormalized);
+
+    objectWorldPos += (-toObjectNormalized * SHADOW_DEPTH_OFFSET);
     
-    float depth_in_light_space = getDepthInLightSpace(objectWorldPos + (-toObjectNormalized * SHADOW_DEPTH_OFFSET), pointLightIndex, cubeFaceIndex);
+    float4 posInLightClipSpace = mul(float4(objectWorldPos, 1.f), g_viewProjPointLight[pointLightIndex][cubeFaceIndex]);
     
-    float texelSize = length(toObject) * dot(cubeFaceDirections[cubeFaceIndex], toObjectNormalized) * 2.f / g_pointLightDSResolution;
-    float3 normal_offset = pointToCameraNormalized * texelSize;
+    float comaringDepth = posInLightClipSpace.z / posInLightClipSpace.w;
+    
+    float linearDepth = posInLightClipSpace.w;
+    
+    float texelSize = linearDepth * 2.f / g_pointLightDSResolution;
+    
+    float3 normal_offset = map_normal * texelSize;
     
     float4 sampleLocation = float4(toObject + normal_offset, pointLightIndex);
     
-    return g_pointLightShadows.SampleCmp(g_samplerComparisonState, sampleLocation, depth_in_light_space);
+    return g_pointLightShadows.SampleCmp(g_samplerComparisonState, sampleLocation, comaringDepth);
 }
 
 float calcDirectionalLightShadowFactor(float3 objectWorldPos, float3 pointToCameraNormalized, uint directionalLightIndex)

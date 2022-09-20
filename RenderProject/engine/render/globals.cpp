@@ -82,7 +82,7 @@ namespace engine
 		m_perFrameBuffer.BindPS(0);
 		m_perFrameBuffer.BindGS(0);
 		engine::s_deviceContext->PSSetSamplers(0, 1, &SamplerManager::instance().GetGlobalSamplerState().ptr());
-		engine::s_deviceContext->PSSetSamplers(1, 1, &SamplerManager::instance().GetSamplerState("ss_mmlmp").ptr());
+		engine::s_deviceContext->PSSetSamplers(1, 1, &SamplerManager::instance().GetSamplerState("ss_mmlmp_clamp").ptr());
 		engine::s_deviceContext->PSSetSamplers(2, 1, &SamplerManager::instance().GetSamplerState("ss_mmmp").ptr());
 		engine::s_deviceContext->PSSetSamplers(3, 1, &SamplerManager::instance().GetSamplerState("ss_cmmlmp").ptr());
 	}

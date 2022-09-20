@@ -14,7 +14,7 @@ TextureCube<float3> g_reflection : register(t12);
 float3 addEnvironmentReflection(in View view, in Surface surface)
 {
     float3 diffuseReflection = surface.albedo * (1.0f - surface.metalness) * g_irradiance.SampleLevel(g_linearClampSampler, surface.map_normal, 0.0f);
-    float2 reflectanceLUT = g_reflectance.Sample(g_linearClampSampler, float2(surface.roughness, 1.f - view.NdotV));
+    float2 reflectanceLUT = g_reflectance.SampleLevel(g_linearClampSampler, float2(surface.roughness, 1.f - view.NdotV), 0);
     float3 reflectance = reflectanceLUT.x * surface.F0 + reflectanceLUT.y;
     float3 specularReflection = reflectance * g_reflection.SampleLevel(g_linearClampSampler, view.reflectionDir, surface.roughness * g_reflectionMips);
     return diffuseReflection + specularReflection;
