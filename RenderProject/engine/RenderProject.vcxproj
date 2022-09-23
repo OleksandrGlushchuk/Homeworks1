@@ -153,8 +153,8 @@
     <ClCompile Include="math\camera.cpp" />
     <ClCompile Include="math\Triangle.cpp" />
     <ClCompile Include="math\vec3.cpp" />
-    <ClCompile Include="objects\Sky.cpp" />
     <ClCompile Include="render\d3d.cpp" />
+    <ClCompile Include="render\DepthStencilManager.cpp" />
     <ClCompile Include="render\DepthStencil.cpp" />
     <ClCompile Include="render\EmissiveInstances.cpp" />
     <ClCompile Include="render\globals.cpp" />
@@ -163,7 +163,9 @@
     <ClCompile Include="render\ModelManager.cpp" />
     <ClCompile Include="render\OpaqueInstances.cpp" />
     <ClCompile Include="render\PerFrameBuffer.cpp" />
+    <ClCompile Include="render\SamplerManager.cpp" />
     <ClCompile Include="render\ShaderManager.cpp" />
+    <ClCompile Include="render\ShadowManager.cpp" />
     <ClCompile Include="render\TextureManager.cpp" />
     <ClCompile Include="render\TransformSystem.cpp" />
     <ClCompile Include="render\TriangleOctree.cpp">
@@ -184,6 +186,7 @@
     <ClInclude Include="math\Floor.h" />
     <ClInclude Include="math\Intersection.h" />
     <ClInclude Include="math\Matr.h" />
+    <ClInclude Include="math\MatrixHelpers.h" />
     <ClInclude Include="math\MeshIntersection.h" />
     <ClInclude Include="math\Quaternion.h" />
     <ClInclude Include="math\ray.h" />
@@ -195,6 +198,7 @@
     <ClInclude Include="objects\Sky.h" />
     <ClInclude Include="render\ConstantBuffer.h" />
     <ClInclude Include="render\d3d.hpp" />
+    <ClInclude Include="render\DepthStencilManager.h" />
     <ClInclude Include="render\DepthStencil.h" />
     <ClInclude Include="render\DxRes.hpp" />
     <ClInclude Include="render\EmissiveInstances.h" />
@@ -210,9 +214,11 @@
     <ClInclude Include="render\OpaqueInstances.h" />
     <ClInclude Include="render\PerFrameBuffer.h" />
     <ClInclude Include="render\PostProcess.h" />
-    <ClInclude Include="render\RenderTarget.h" />
+    <ClInclude Include="render\RenderTargetView.h" />
+    <ClInclude Include="render\SamplerManager.h" />
     <ClInclude Include="render\Shader.h" />
     <ClInclude Include="render\ShaderManager.h" />
+    <ClInclude Include="render\ShadowManager.h" />
     <ClInclude Include="render\SolidVector.h" />
     <ClInclude Include="render\Texture.h" />
     <ClInclude Include="render\TextureManager.h" />
@@ -231,6 +237,10 @@
     <ClInclude Include="window\window.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="source\shaders\directional_light_shadow.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="source\shaders\emissive.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -243,6 +253,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="source\shaders\point_light_shadow.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="source\shaders\sky.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -251,9 +265,13 @@
   <ItemGroup>
     <None Include="source\assets\Knight\Knight.fbx" />
     <None Include="source\assets\Samurai\Samurai.fbx" />
+    <None Include="source\shaders\environment.hlsli" />
+    <None Include="source\shaders\fullscreen.hlsli" />
+    <None Include="source\shaders\opaque_helpers.hlsli" />
     <None Include="source\shaders\pbr_helpers.hlsli" />
     <None Include="source\shaders\globals.hlsli" />
     <None Include="source\shaders\resolve_helpers.hlsli" />
+    <None Include="source\shaders\shadow_helpers.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="source\assets\Brick\Brick_Wall_012_COLOR.dds" />
@@ -312,6 +330,9 @@
     <Image Include="source\assets\Samurai\Torso_Normal.dds" />
     <Image Include="source\assets\Samurai\Torso_Roughness.dds" />
     <Image Include="source\assets\Sky\night_street.dds" />
+    <Image Include="source\assets\Sky\night_street_irradiance.dds" />
+    <Image Include="source\assets\Sky\night_street_reflectance.dds" />
+    <Image Include="source\assets\Sky\night_street_reflection.dds" />
     <Image Include="source\assets\Stone\Stone_COLOR.dds" />
     <Image Include="source\assets\Stone\Stone_NORM.dds" />
     <Image Include="source\assets\Stone\Stone_ROUGH.dds" />

@@ -21,6 +21,7 @@ namespace engine
 		Vec3 radiance;
 		float radius;
 		uint32_t transformID;
+		
 		PointLight() {}
 		PointLight(const Vec3& _irradiance, float distance, const Vec3& _position, const float _radius)
 		{
@@ -41,5 +42,15 @@ namespace engine
 			position(engine::TransformSystem::instance().m_transforms[pointLight.transformID].getTransformMatrix()[3]),
 			radius(pointLight.radius)
 		{}
+	};
+
+	struct GpuDirectionalLight
+	{
+		Vec3 radiance;
+		float padding0;
+		Vec3 direction;
+		float padding1;
+		GpuDirectionalLight(){}
+		GpuDirectionalLight(const Vec3 &_radiance, const Vec3 &_direction) : radiance(_radiance), direction(_direction){}
 	};
 }

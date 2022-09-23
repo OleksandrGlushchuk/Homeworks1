@@ -54,6 +54,9 @@
     <Filter Include="source\assets\Sky">
       <UniqueIdentifier>{0298a816-93c8-4442-b5c7-c50048afd30d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="render\singletones">
+      <UniqueIdentifier>{79c9597a-5e32-426b-94c0-86e5e25ae8f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -80,34 +83,13 @@
     <ClCompile Include="render\d3d.cpp">
       <Filter>render</Filter>
     </ClCompile>
-    <ClCompile Include="render\globals.cpp">
-      <Filter>render</Filter>
-    </ClCompile>
     <ClCompile Include="DDSTextureLoader\DDSTextureLoader11.cpp">
       <Filter>DDSTextureLoader11</Filter>
-    </ClCompile>
-    <ClCompile Include="render\TextureManager.cpp">
-      <Filter>render</Filter>
-    </ClCompile>
-    <ClCompile Include="render\ShaderManager.cpp">
-      <Filter>render</Filter>
-    </ClCompile>
-    <ClCompile Include="objects\Sky.cpp">
-      <Filter>objects</Filter>
-    </ClCompile>
-    <ClCompile Include="render\ModelManager.cpp">
-      <Filter>render</Filter>
-    </ClCompile>
-    <ClCompile Include="render\MeshSystem.cpp">
-      <Filter>render</Filter>
     </ClCompile>
     <ClCompile Include="render\OpaqueInstances.cpp">
       <Filter>render</Filter>
     </ClCompile>
     <ClCompile Include="render\DepthStencil.cpp">
-      <Filter>render</Filter>
-    </ClCompile>
-    <ClCompile Include="render\LightSystem.cpp">
       <Filter>render</Filter>
     </ClCompile>
     <ClCompile Include="render\EmissiveInstances.cpp">
@@ -116,11 +98,38 @@
     <ClCompile Include="render\TriangleOctree.cpp">
       <Filter>render</Filter>
     </ClCompile>
-    <ClCompile Include="render\TransformSystem.cpp">
-      <Filter>render</Filter>
-    </ClCompile>
     <ClCompile Include="render\PerFrameBuffer.cpp">
       <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\LightSystem.cpp">
+      <Filter>render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="render\MeshSystem.cpp">
+      <Filter>render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="render\ModelManager.cpp">
+      <Filter>render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="render\SamplerManager.cpp">
+      <Filter>render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="render\TransformSystem.cpp">
+      <Filter>render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="render\TextureManager.cpp">
+      <Filter>render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="render\ShaderManager.cpp">
+      <Filter>render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="render\globals.cpp">
+      <Filter>render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="render\DepthStencilManager.cpp">
+      <Filter>render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="render\ShadowManager.cpp">
+      <Filter>render\singletones</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -172,9 +181,6 @@
     <ClInclude Include="render\DxRes.hpp">
       <Filter>render</Filter>
     </ClInclude>
-    <ClInclude Include="render\globals.hpp">
-      <Filter>render</Filter>
-    </ClInclude>
     <ClInclude Include="include\win.hpp">
       <Filter>include</Filter>
     </ClInclude>
@@ -187,20 +193,11 @@
     <ClInclude Include="DDSTextureLoader\DDSTextureLoader11.h">
       <Filter>DDSTextureLoader11</Filter>
     </ClInclude>
-    <ClInclude Include="render\TextureManager.h">
-      <Filter>render</Filter>
-    </ClInclude>
-    <ClInclude Include="render\ShaderManager.h">
-      <Filter>render</Filter>
-    </ClInclude>
     <ClInclude Include="render\PerFrameBuffer.h">
       <Filter>render</Filter>
     </ClInclude>
     <ClInclude Include="objects\Sky.h">
       <Filter>objects</Filter>
-    </ClInclude>
-    <ClInclude Include="render\ModelManager.h">
-      <Filter>render</Filter>
     </ClInclude>
     <ClInclude Include="render\VertexBuffer.h">
       <Filter>render</Filter>
@@ -223,9 +220,6 @@
     <ClInclude Include="render\TriangleIndices.h">
       <Filter>render</Filter>
     </ClInclude>
-    <ClInclude Include="render\MeshSystem.h">
-      <Filter>render</Filter>
-    </ClInclude>
     <ClInclude Include="render\OpaqueInstances.h">
       <Filter>render</Filter>
     </ClInclude>
@@ -235,19 +229,13 @@
     <ClInclude Include="render\Texture.h">
       <Filter>render</Filter>
     </ClInclude>
-    <ClInclude Include="render\ConstantBuffer.h">
-      <Filter>render</Filter>
-    </ClInclude>
-    <ClInclude Include="render\RenderTarget.h">
+    <ClInclude Include="render\RenderTargetView.h">
       <Filter>render</Filter>
     </ClInclude>
     <ClInclude Include="render\DepthStencil.h">
       <Filter>render</Filter>
     </ClInclude>
     <ClInclude Include="render\PostProcess.h">
-      <Filter>render</Filter>
-    </ClInclude>
-    <ClInclude Include="render\LightSystem.h">
       <Filter>render</Filter>
     </ClInclude>
     <ClInclude Include="render\Light.h">
@@ -265,9 +253,6 @@
     <ClInclude Include="math\Box.h">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="render\TransformSystem.h">
-      <Filter>render</Filter>
-    </ClInclude>
     <ClInclude Include="render\Mesh.h">
       <Filter>render</Filter>
     </ClInclude>
@@ -276,6 +261,42 @@
     </ClInclude>
     <ClInclude Include="render\ModelID.h">
       <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\LightSystem.h">
+      <Filter>render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ConstantBuffer.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\MeshSystem.h">
+      <Filter>render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ModelManager.h">
+      <Filter>render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="render\SamplerManager.h">
+      <Filter>render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="render\TransformSystem.h">
+      <Filter>render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="render\TextureManager.h">
+      <Filter>render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ShaderManager.h">
+      <Filter>render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="render\globals.hpp">
+      <Filter>render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="render\DepthStencilManager.h">
+      <Filter>render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ShadowManager.h">
+      <Filter>render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="math\MatrixHelpers.h">
+      <Filter>math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -289,6 +310,12 @@
       <Filter>source\shaders</Filter>
     </FxCompile>
     <FxCompile Include="source\shaders\emissive.hlsl">
+      <Filter>source\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="source\shaders\point_light_shadow.hlsl">
+      <Filter>source\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="source\shaders\directional_light_shadow.hlsl">
       <Filter>source\shaders</Filter>
     </FxCompile>
   </ItemGroup>
@@ -306,6 +333,18 @@
       <Filter>source\shaders</Filter>
     </None>
     <None Include="source\shaders\resolve_helpers.hlsli">
+      <Filter>source\shaders</Filter>
+    </None>
+    <None Include="source\shaders\fullscreen.hlsli">
+      <Filter>source\shaders</Filter>
+    </None>
+    <None Include="source\shaders\environment.hlsli">
+      <Filter>source\shaders</Filter>
+    </None>
+    <None Include="source\shaders\shadow_helpers.hlsli">
+      <Filter>source\shaders</Filter>
+    </None>
+    <None Include="source\shaders\opaque_helpers.hlsli">
       <Filter>source\shaders</Filter>
     </None>
   </ItemGroup>
@@ -485,6 +524,15 @@
       <Filter>source\assets\Stone</Filter>
     </Image>
     <Image Include="source\assets\Sky\night_street.dds">
+      <Filter>source\assets\Sky</Filter>
+    </Image>
+    <Image Include="source\assets\Sky\night_street_irradiance.dds">
+      <Filter>source\assets\Sky</Filter>
+    </Image>
+    <Image Include="source\assets\Sky\night_street_reflectance.dds">
+      <Filter>source\assets\Sky</Filter>
+    </Image>
+    <Image Include="source\assets\Sky\night_street_reflection.dds">
       <Filter>source\assets\Sky</Filter>
     </Image>
   </ItemGroup>

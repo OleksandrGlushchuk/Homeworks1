@@ -1,8 +1,9 @@
 #pragma once
 #include <math.h>
+#include <cstdint>
 #include <stdlib.h>
 
-template<int SIZE>
+template<uint32_t SIZE, typename TYPE = float>
 class Matr;
 
 class Vec3 {
@@ -51,9 +52,9 @@ public:
 
     inline static Vec3 Reflect(const Vec3& vec, const Vec3& normal);
 
-    Vec3& mult(const Matr<4>& matr, float w = 1);
-    Vec3& mult(const Matr<4>& matr, float w, float *w_out);
-    Vec3& mult(const Matr<3>& matr);
+    Vec3& mult(const Matr<4, float>& matr, float w = 1);
+    Vec3& mult(const Matr<4, float>& matr, float w, float *w_out);
+    Vec3& mult(const Matr<3, float>& matr);
 
     inline static void GetFrisvadsBasis(const Vec3& n, Vec3& b1, Vec3& b2);
     Vec3(const float*const & vec)

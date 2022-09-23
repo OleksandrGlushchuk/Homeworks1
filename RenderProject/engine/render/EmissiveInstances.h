@@ -28,7 +28,7 @@ namespace engine
 		{
 			Vec3 emission;
 			uint32_t transform_id;
-			Instance(const Vec3& _emission, uint32_t _transform_id) : emission(_emission), transform_id(_transform_id){}
+			Instance(const Vec3& _emission, uint32_t _transform_id) : emission(_emission), transform_id(_transform_id) {}
 			Instance(const Vec3& _emission, const Transform& transform)
 			{
 				transform_id = engine::TransformSystem::instance().m_transforms.insert(transform);

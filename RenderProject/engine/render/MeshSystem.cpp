@@ -1,4 +1,5 @@
 #include "MeshSystem.h"
+#include "LightSystem.h"
 
 namespace engine
 {

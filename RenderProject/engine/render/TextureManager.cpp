@@ -33,7 +33,7 @@ namespace engine
 		}
 		if (!need_to_force_sRGB)
 		{
-			HRESULT result = DirectX::CreateDDSTextureFromFile(engine::s_device, engine::s_deviceContext, fileName.c_str(), m_colorMap.reset(), m_shaderResourceView[fileName].reset());
+			HRESULT result = DirectX::CreateDDSTextureFromFile(engine::s_device, engine::s_deviceContext, fileName.c_str(), m_resource.reset(), m_shaderResourceView[fileName].reset());
 			ALWAYS_ASSERT(result >= 0 && "CreateDDSTextureFromFile");
 		}
 		else
@@ -41,7 +41,7 @@ namespace engine
 			HRESULT result = DirectX::CreateDDSTextureFromFileEx(engine::s_device, engine::s_deviceContext,	fileName.c_str(), 0,
 				D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
 				DirectX::DDS_LOADER_FORCE_SRGB,
-				m_colorMap.reset(), m_shaderResourceView[fileName].reset(), nullptr);
+				m_resource.reset(), m_shaderResourceView[fileName].reset(), nullptr);
 			
 			ALWAYS_ASSERT(result >= 0 && "CreateDDSTextureFromFile");
 		}

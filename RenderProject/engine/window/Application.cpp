@@ -1,5 +1,11 @@
 #include "Application.h"
-const float p_near = 0.01f, p_far = 10000.f, fovy = M_PI / 3.f;
+#include "../render/SamplerManager.h"
+#include "../render/LightSystem.h"
+#include "../render/ModelManager.h"
+#include "../render/MeshSystem.h"
+#include "../render/ShadowManager.h"
+
+const float p_near = 0.01f, p_far = 150.f, fovy = M_PI / 3.f;
 
 namespace engine::windows
 {
@@ -8,7 +14,7 @@ namespace engine::windows
 	{
 		ProcessInput();
 		wnd.BeginFrame();
-		renderer.Render(wnd.m_renderTarget, camera, m_postProcess);
+		renderer.Render(wnd.m_renderTargetView, camera, m_postProcess);
 		wnd.EndFrame();
 	}
 
@@ -19,34 +25,44 @@ namespace engine::windows
 		need_to_rotate_camera = false;
 		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
 		camera.updateAspect(aspect);
-		camera.updateBasis();
-		camera.updateMatrices();
 		renderer.need_to_resize_RTV = true;
 		Draw();
 	}
 
 	void Application::Init()
 	{
-
-		renderer.Init(8u, 8u);
+		renderer.Init(4u);
 		m_postProcess.Init();
+		ShadowManager::instance().SetDirectionalLightDSResolution(4096.f);
+		ShadowManager::instance().SetPointLightDSResolution(1024.f);
+
+
+		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
+		camera = Camera(fovy, aspect, p_near, p_far);
+		camera.setWorldOffset(Vec3(0, 0, -2));
+		LightSystem::instance().setDirectionalLightFrustum(camera);
 
 		//LIGHTS
 		{
-			engine::LightSystem::instance().addPointLight(Vec3(1, 1, 1), 2.f, Vec3(0, 1.f, -2.3f), 0.25f,
+			engine::LightSystem::instance().addPointLight(Vec3(1, 1, 1), 1.7f, Vec3(0, 1.f, -2.3f), 0.25f,
 				engine::ModelManager::instance().GetUnitSphereModel());
-			engine::LightSystem::instance().addPointLight(Vec3(1, 1, 1), 1.1f, Vec3(2.5f, 3.f, -1.f), 0.1f,
+			engine::LightSystem::instance().addPointLight(Vec3(1, 0.1f, 1), 1.1f, Vec3(1.3f, -0.5f, -0.5f), 0.1f,
 				engine::ModelManager::instance().GetUnitSphereModel());
-			engine::LightSystem::instance().addPointLight(Vec3(0.2f, 1, 0.2f), 0.7f, Vec3(1.3f, -0.7f, -0.5f), 0.1f,
-				engine::ModelManager::instance().GetUnitSphereModel());
-			engine::LightSystem::instance().addPointLight(Vec3(1.f, 1, 0.2f), 0.7f, Vec3(-1.5f, 0.7f, 0.f), 0.1f,
-				engine::ModelManager::instance().GetUnitSphereModel());
+
+			engine::LightSystem::instance().addDirectionalLight(Vec3(1.f, 1.f, 1.f), Vec3(-1, 1, -1));
+			engine::LightSystem::instance().addDirectionalLight(Vec3(1.f, 1.f, 1.f), Vec3(-1, 1, 1));
+
+			engine::ShadowManager::instance().UpdatePointLightShadowResources(engine::LightSystem::instance().getPointLights().size());
+			engine::ShadowManager::instance().UpdateDirectionalLightShadowResources(engine::LightSystem::instance().getDirectionalLights().size());
 		}
 
 		//SKY
 		{
 			renderer.m_sky.Init();
-			renderer.m_sky.SetTexture(L"source/assets/Sky/night_street.dds");
+			renderer.m_sky.m_texture.Load(L"source/assets/Sky/night_street.dds");
+			renderer.m_sky.SetEnvironment(L"source/assets/Sky/night_street_irradiance.dds", 
+				L"source/assets/Sky/night_street_reflectance.dds", 
+				L"source/assets/Sky/night_street_reflection.dds");
 		}
 		//KNIGHTS
 		{
@@ -76,7 +92,7 @@ namespace engine::windows
 			m[3].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, false, 0.01f);
 
 			m[4].m_colorMap.Load(L"source/assets/Knight/Eye_BaseColor.dds");
-			m[4].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, false, false, false, 0.02f, 0.1f);
+			m[4].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, false, false, false, 0.02f, 0.2f);
 
 			m[5].m_colorMap.Load(L"source/assets/Knight/Helmet_BaseColor.dds");
 			m[5].m_normalMap.Load(L"source/assets/Knight/Helmet_Normal.dds");
@@ -129,7 +145,7 @@ namespace engine::windows
 			m[1].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, true, true, false, 0.01f);
 
 			m[2].m_colorMap.Load(L"source/assets/Samurai/Eye_BaseColor.dds");
-			m[2].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, false, false, false, 0.02f, 0.1f);
+			m[2].m_materialConstantBuffer = OpaqueInstances::MaterialConstantBuffer(false, false, false, false, 0.02f, 0.2f);
 
 			m[3].m_colorMap.Load(L"source/assets/Samurai/Helmet_BaseColor.dds");
 			m[3].m_normalMap.Load(L"source/assets/Samurai/Helmet_Normal.dds");
@@ -192,7 +208,7 @@ namespace engine::windows
 			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
 			
 			transform.SetScale({ 4, 3, 0.5f });
-			transform.SetPosition({ 0, 0, 1.8f });
+			transform.SetPosition({ 0, 0, 1.6f });
 			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
 			
 			transform.SetScale({ 0.3f, 4, 3.8f });
@@ -218,12 +234,11 @@ namespace engine::windows
 			transform.SetScale({ 0.4f, 2, 0.4f });
 			transform.SetPosition({ 1.f, 3.4f, 0.f });
 			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
-		}
-		
 
-		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
-		camera = Camera(fovy, aspect, p_near, p_far);
-		camera.setWorldOffset(Vec3(0, 0, -5));
+			transform.SetPosition({ 5,0,0 });
+			transform.SetScale({ 1.f,100.f,100.f });
+			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
+		}
 	}
 
 	void Application::ProcessInput()
@@ -275,23 +290,23 @@ namespace engine::windows
 		{
 			if (input_state['1'])
 			{
-				engine::Globals::instance().SetGlobalSamplerState("ss_a");
+				engine::SamplerManager::instance().SetGlobalSamplerState("ss_a");
 			}
 			if (input_state['2'])
 			{
-				engine::Globals::instance().SetGlobalSamplerState("ss_mmmp");
+				engine::SamplerManager::instance().SetGlobalSamplerState("ss_mmmp");
 			}
 			if (input_state['3'])
 			{
-				engine::Globals::instance().SetGlobalSamplerState("ss_mpmlmp");
+				engine::SamplerManager::instance().SetGlobalSamplerState("ss_mpmlmp");
 			}
 			if (input_state['4'])
 			{
-				engine::Globals::instance().SetGlobalSamplerState("ss_mmlmp");
+				engine::SamplerManager::instance().SetGlobalSamplerState("ss_mmlmp");
 			}
 			if (input_state['5'])
 			{
-				engine::Globals::instance().SetGlobalSamplerState("ss_mmml");
+				engine::SamplerManager::instance().SetGlobalSamplerState("ss_mmml");
 			}
 		}
 
@@ -373,17 +388,15 @@ namespace engine::windows
 			}
 		}
 
-		if(need_to_rotate_camera)
+		if (need_to_rotate_camera)
 			RotateCamera();
 		if (need_to_move_camera)
 		{
 			MoveCamera(delta_time * offset);
-			if (need_to_move_object)
-			{
-				OnRMouseMove(mouse_x, mouse_y);
-			}
 			need_to_move_camera = false;
 		}
+		if (need_to_move_object)
+			OnRMouseMove(mouse_x, mouse_y);
 	}
 
 	void Application::OnKeyDown(WPARAM key)
@@ -497,7 +510,7 @@ namespace engine::windows
 
 	void Application::RotateCamera()
 	{
-			camera.addRelativeAngles(Angles(0, dir_rotation.e[1], dir_rotation.e[0]));
-			need_to_move_camera = true;
+		camera.addRelativeAngles(Angles(0, dir_rotation.e[1], dir_rotation.e[0]));
+		camera.updateMatrices();
 	}
 }

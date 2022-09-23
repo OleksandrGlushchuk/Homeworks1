@@ -22,43 +22,16 @@ namespace engine
 		ALWAYS_ASSERT(s_instance); return *s_instance;
 	}
 
-	void ShaderManager::InitComputeShader(const std::wstring& path, UINT Flags1)
+	void ShaderManager::InitShaders(const std::wstring& path, const ShaderEnabling& shaderEnabling, UINT Flags1)
 	{
+		std::unordered_map<std::wstring, std::tuple<DxResPtr<ID3D11VertexShader>, DxResPtr<ID3D11PixelShader>, DxResPtr<ID3D11GeometryShader>> >::iterator res;
+		if ((res = m_shader.find(path)) != m_shader.end())
+			return;
+
 		engine::DxResPtr<ID3DBlob> error;
 
-		auto& computeShader = m_computeShader[path];
-		auto& computeShaderBlob = m_computeShaderBlob[path];
-
-		HRESULT result = D3DCompileFromFile(path.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "cs_main", "cs_5_0", Flags1, 0, computeShaderBlob.reset(), error.reset());
-		ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
-
-		result = engine::s_device->CreateComputeShader(computeShaderBlob->GetBufferPointer(), computeShaderBlob->GetBufferSize(), nullptr, computeShader.reset());
-		ALWAYS_ASSERT(result >= 0 && "CreateComputeShader");
-	}
-
-	void ShaderManager::GetComputeShader(const std::wstring& path, engine::DxResPtr<ID3D11ComputeShader>& computeShader)
-	{
-		std::unordered_map<std::wstring, DxResPtr<ID3D11ComputeShader> >::iterator result;
-		ALWAYS_ASSERT((result = m_computeShader.find(path)) != m_computeShader.end() && "Bad path");
-		computeShader = result->second;
-	}
-
-	void ShaderManager::GetComputeShaderBlob(const std::wstring& path, engine::DxResPtr<ID3D10Blob>& computeShaderBlob)
-	{
-		std::unordered_map<std::wstring, DxResPtr<ID3D10Blob> >::iterator result;
-		ALWAYS_ASSERT((result = m_computeShaderBlob.find(path)) != m_computeShaderBlob .end() && "Bad path");
-		computeShaderBlob = result->second;
-	}
-
-	void ShaderManager::InitShaders(const std::wstring& path, UINT Flags1)
-	{
-		engine::DxResPtr<ID3DBlob> error;
-
-		auto& vertexShader = m_shader[path].first;
-		auto& vertexShaderBlob = m_shaderBlob[path].first;
-
-		auto& pixelShader = m_shader[path].second;
-		auto& pixelShaderBlob = m_shaderBlob[path].second;
+		auto& vertexShader = std::get<0>(m_shader[path]);
+		auto& vertexShaderBlob = m_shaderBlob[path][0];
 
 		HRESULT result = D3DCompileFromFile(path.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "vs_main", "vs_5_0", Flags1, 0, vertexShaderBlob.reset(), error.reset());
 		ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
@@ -66,28 +39,57 @@ namespace engine
 		result = engine::s_device->CreateVertexShader(vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize(), nullptr, vertexShader.reset());
 		ALWAYS_ASSERT(result >= 0 && "CreateVertexShader");
 
+		if (shaderEnabling.hasPS)
+		{
+			auto& pixelShader = std::get<1>(m_shader[path]);
+			auto& pixelShaderBlob = m_shaderBlob[path][1];
 
-		result = D3DCompileFromFile(path.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "ps_main", "ps_5_0", Flags1, 0, pixelShaderBlob.reset(), error.reset());
-		ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
+			result = D3DCompileFromFile(path.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "ps_main", "ps_5_0", Flags1, 0, pixelShaderBlob.reset(), error.reset());
+			ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
 
-		result = engine::s_device->CreatePixelShader(pixelShaderBlob->GetBufferPointer(), pixelShaderBlob->GetBufferSize(), nullptr, pixelShader.reset());
-		ALWAYS_ASSERT(result >= 0 && "CreatePixelShader");
+			result = engine::s_device->CreatePixelShader(pixelShaderBlob->GetBufferPointer(), pixelShaderBlob->GetBufferSize(), nullptr, pixelShader.reset());
+			ALWAYS_ASSERT(result >= 0 && "CreatePixelShader");
+		}
+
+		if (shaderEnabling.hasGS)
+		{
+			auto& geometryShader = std::get<2>(m_shader[path]);
+			auto& geometryShaderBlob = m_shaderBlob[path][2];
+
+			result = D3DCompileFromFile(path.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "gs_main", "gs_5_0", Flags1, 0, geometryShaderBlob.reset(), error.reset());
+			ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
+
+			result = engine::s_device->CreateGeometryShader(geometryShaderBlob->GetBufferPointer(), geometryShaderBlob->GetBufferSize(), nullptr, geometryShader.reset());
+			ALWAYS_ASSERT(result >= 0 && "CreateGeometryShader");
+		}
 	}
 
-	void ShaderManager::GetShaders(const std::wstring& shaderKey, engine::DxResPtr<ID3D11VertexShader>& vertexShader, engine::DxResPtr<ID3D11PixelShader>& pixelShader)
+	void ShaderManager::GetShaders(const std::wstring& shaderKey, DxResPtr<ID3D11VertexShader>& vertexShader,
+		DxResPtr<ID3D11PixelShader>& pixelShader, DxResPtr<ID3D11GeometryShader>& geomytryShader)
 	{
-		std::unordered_map<std::wstring, std::pair<engine::DxResPtr<ID3D11VertexShader>, engine::DxResPtr<ID3D11PixelShader>> >::iterator result;
+		std::unordered_map<std::wstring, std::tuple<DxResPtr<ID3D11VertexShader>, DxResPtr<ID3D11PixelShader>, DxResPtr<ID3D11GeometryShader>> >::iterator result;
 		ALWAYS_ASSERT((result = m_shader.find(shaderKey)) != m_shader.end() && "Bad shaderKey");
-		vertexShader = result->second.first;
-		pixelShader = result->second.second;
+
+		vertexShader = std::get<0>(result->second);
+
+		if(std::get<1>(result->second).ptr())
+			pixelShader = std::get<1>(result->second);
+		if(std::get<2>(result->second).ptr())
+			geomytryShader = std::get<2>(result->second);
 	}
 
-	void ShaderManager::GetShaderBlobs(const std::wstring& shaderKey, engine::DxResPtr<ID3D10Blob>& vertexShaderBlob, engine::DxResPtr<ID3D10Blob>& pixelShaderBlob)
+	void ShaderManager::GetShaderBlobs(const std::wstring& shaderKey, DxResPtr<ID3D10Blob>& vertexShaderBlob,
+		DxResPtr<ID3D10Blob>& pixelShaderBlob, DxResPtr<ID3D10Blob>& geometryShaderBlob)
 	{
-		std::unordered_map<std::wstring, std::pair<engine::DxResPtr<ID3D10Blob>, engine::DxResPtr<ID3D10Blob>> >::iterator result;
+		std::unordered_map<std::wstring, std::array<DxResPtr<ID3D10Blob>, 3> >::iterator result;
 		ALWAYS_ASSERT((result = m_shaderBlob.find(shaderKey)) != m_shaderBlob.end() && "Bad shaderKey");
-		vertexShaderBlob = result->second.first;
-		pixelShaderBlob = result->second.second;
+
+		vertexShaderBlob = std::get<0>(result->second);
+
+		if (std::get<1>(result->second).ptr())
+			pixelShaderBlob = std::get<1>(result->second);
+		if (std::get<2>(result->second).ptr())
+			geometryShaderBlob = std::get<2>(result->second);
 	}
 
 }

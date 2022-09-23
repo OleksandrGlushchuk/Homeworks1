@@ -121,5 +121,9 @@ namespace engine
 		void updateInstanceBuffers();
 
 		void render();
+
+		void renderSceneDepthToCubemaps();
+
+		void renderSceneDepthForDirectionalLights();
 	};
 }

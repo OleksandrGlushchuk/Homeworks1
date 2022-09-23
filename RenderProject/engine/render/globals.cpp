@@ -1,5 +1,6 @@
 #include "globals.hpp"
 #include <Windows.h>
+#include "SamplerManager.h"
 // Say NVidia or AMD driver to prefer a dedicated GPU instead of an integrated.
 // This has effect on laptops.
 extern "C"
@@ -16,8 +17,7 @@ namespace engine
 		ALWAYS_ASSERT(s_instance == nullptr);
 		s_instance = new Globals;
 		s_instance->initD3D();
-		s_instance->InitSamplerStates();
-		s_instance->InitPerFrameBuffer();
+		s_instance->m_perFrameBuffer.Init(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 	}
 	void Globals::deinit()
 	{
@@ -76,109 +76,23 @@ namespace engine
 		s_deviceContext = m_devcon4.ptr();
 	}
 
-	void Globals::InitSamplerStates()
-	{
-		{
-			D3D11_SAMPLER_DESC samplerDesc;
-			samplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_ANISOTROPIC;
-			samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
-			samplerDesc.MaxAnisotropy = 16;
-			samplerDesc.MinLOD = 0;
-			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-			samplerDesc.MipLODBias = 0;
-
-			CreateSamplerState(samplerDesc, "ss_a");
-		}
-
-		{
-			D3D11_SAMPLER_DESC samplerDesc;
-			samplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_POINT;
-			samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
-			samplerDesc.MaxAnisotropy = 1;
-			samplerDesc.MinLOD = 0;
-			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-			samplerDesc.MipLODBias = 0;
-
-			CreateSamplerState(samplerDesc, "ss_mmmp");
-		}
-
-		{
-			D3D11_SAMPLER_DESC samplerDesc;
-			samplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
-			samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
-			samplerDesc.MaxAnisotropy = 1;
-			samplerDesc.MinLOD = 0;
-			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-			samplerDesc.MipLODBias = 0;
-
-			CreateSamplerState(samplerDesc, "ss_mpmlmp");
-		}
-
-		{
-			D3D11_SAMPLER_DESC samplerDesc;
-			samplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-			samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
-			samplerDesc.MaxAnisotropy = 1;
-			samplerDesc.MinLOD = 0;
-			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-			samplerDesc.MipLODBias = 0;
-
-			CreateSamplerState(samplerDesc, "ss_mmlmp");
-		}
-
-		{
-			D3D11_SAMPLER_DESC samplerDesc;
-			samplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-			samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
-			samplerDesc.MaxAnisotropy = 1;
-			samplerDesc.MinLOD = 0;
-			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-			samplerDesc.MipLODBias = 0;
-
-			CreateSamplerState(samplerDesc, "ss_mmml");
-			SetGlobalSamplerState("ss_mmml");
-		}
-	}
-
-	void Globals::CreateSamplerState(D3D11_SAMPLER_DESC& samplerDesc, const std::string& samplerStateKey)
-	{
-		HRESULT result = engine::s_device->CreateSamplerState(&samplerDesc, m_samplerState[samplerStateKey].reset());
-		ALWAYS_ASSERT(result >= 0 && "CreateSamplerState");
-	}
-
-	void Globals::SetGlobalSamplerState(const std::string& _globalSamplerStateKey)
-	{
-		std::unordered_map< std::string, engine::DxResPtr<ID3D11SamplerState> >::iterator result;
-		ALWAYS_ASSERT((result = m_samplerState.find(_globalSamplerStateKey)) != m_samplerState.end() && "Bad globalSamplerStateKey");
-		engine::Globals::instance().m_globalSamplerState = result->second;
-	}
-
-	void Globals::InitPerFrameBuffer()
-	{
-		m_perFrameBuffer.Init(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
-	}
-
 	void Globals::Bind()
 	{
 		m_perFrameBuffer.BindVS(0);
 		m_perFrameBuffer.BindPS(0);
-		engine::s_deviceContext->PSSetSamplers(0, 1, &m_globalSamplerState.ptr());
-		engine::s_deviceContext->PSSetSamplers(1, 1, &m_samplerState["ss_mmmp"].ptr());
+		m_perFrameBuffer.BindGS(0);
+		engine::s_deviceContext->PSSetSamplers(0, 1, &SamplerManager::instance().GetGlobalSamplerState().ptr());
+		engine::s_deviceContext->PSSetSamplers(1, 1, &SamplerManager::instance().GetSamplerState("ss_mmlmp_clamp").ptr());
+		engine::s_deviceContext->PSSetSamplers(2, 1, &SamplerManager::instance().GetSamplerState("ss_mmmp").ptr());
+		engine::s_deviceContext->PSSetSamplers(3, 1, &SamplerManager::instance().GetSamplerState("ss_cmmlmp").ptr());
 	}
 
 	void Globals::UpdatePerFrameBuffer(const Camera& camera)
 	{
-		m_perFrameBuffer.Update(PerFrameBuffer(camera, engine::LightSystem::instance().getPointLights()));
+		LightSystem::instance().updatePointLightMatrices();
+		LightSystem::instance().updateDirectionalLightMatrices(camera);
+		m_perFrameBuffer.Update(PerFrameBuffer(camera, engine::LightSystem::instance().getPointLights(),
+			engine::LightSystem::instance().getDirectionalLights()));
 	}
 
 	Globals::~Globals()
