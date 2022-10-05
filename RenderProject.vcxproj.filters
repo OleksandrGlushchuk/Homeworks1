@@ -1,0 +1,620 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="engine">
+      <UniqueIdentifier>{7b351fb2-215b-4a10-8b9b-623acb3bbc5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\shaders">
+      <UniqueIdentifier>{2ac4442b-bb13-42bf-ae50-e79b09d623e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\source">
+      <UniqueIdentifier>{40e146ff-2e2c-42f5-a003-c8e3e361c33b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\assets">
+      <UniqueIdentifier>{ee0ac286-477a-4b46-ad95-0a93491a70e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\assets\Brick">
+      <UniqueIdentifier>{2f1c61bd-29d3-4251-968e-67f65cd4878f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\assets\Stone">
+      <UniqueIdentifier>{e6e6e2e0-74a8-4405-8283-76148e867b09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\assets\Sky">
+      <UniqueIdentifier>{1824b8ae-2da3-4780-a48d-607b564f3fef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\assets\Samurai">
+      <UniqueIdentifier>{0d4b40f1-3176-44d7-b56f-33d4de112b1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\assets\Knight">
+      <UniqueIdentifier>{bbc177ab-73cd-44e2-8e3e-3f2a96c0065a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\source\include">
+      <UniqueIdentifier>{d40e8bd6-72a4-44e0-97ea-1c2189ebd732}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\source\render">
+      <UniqueIdentifier>{ecde5f57-b023-4a13-b6ac-9ce8719b4edc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\source\render\singletones">
+      <UniqueIdentifier>{8dbf2c6e-2d47-4310-ae07-01bdbf79717a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\source\math">
+      <UniqueIdentifier>{a437ac1e-9fc0-4b3c-99ac-d63f307fd464}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\source\objects">
+      <UniqueIdentifier>{aaf75c7d-4e01-4073-9034-e1d6c56d36d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\source\window">
+      <UniqueIdentifier>{9a1f3085-9fb4-45a5-9d9f-0083d662c006}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\source\DDSTextureLoader">
+      <UniqueIdentifier>{0c7fc932-1847-4810-86c3-1da7d5be176a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\assets\Smoke">
+      <UniqueIdentifier>{32f622de-3a21-48ca-900d-508fd9ce6bd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\assets\Grass">
+      <UniqueIdentifier>{0e8d0bf8-b69b-48d8-a6ee-dbcdab4e74e1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="engine\assets\Brick\Brick_Wall_012_COLOR.dds">
+      <Filter>engine\assets\Brick</Filter>
+    </Image>
+    <Image Include="engine\assets\Brick\Brick_Wall_012_NORM.dds">
+      <Filter>engine\assets\Brick</Filter>
+    </Image>
+    <Image Include="engine\assets\Brick\Brick_Wall_012_ROUGH.dds">
+      <Filter>engine\assets\Brick</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Cape_BaseColor.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Cape_Normal.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Cape_Roughness.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Eye_BaseColor.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Fur_BaseColor.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Fur_Normal.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Fur_Roughness.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Glove_BaseColor.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Glove_Metallic.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Glove_Normal.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Glove_Roughness.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Head_BaseColor.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Head_Normal.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Head_Roughness.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Helmet_BaseColor.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Helmet_Metallic.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Helmet_Normal.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Helmet_Roughness.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Legs_BaseColor.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Legs_Metallic.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Legs_Normal.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Legs_Roughness.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Skirt_BaseColor.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Skirt_Normal.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Skirt_Roughness.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Torso_BaseColor.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Torso_Metallic.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Torso_Normal.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Knight\Torso_Roughness.dds">
+      <Filter>engine\assets\Knight</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Eye_BaseColor.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Hand_BaseColor.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Hand_Normal.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Hand_Roughness.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Head_BaseColor.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Head_Normal.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Head_Roughness.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Helmet_BaseColor.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Helmet_Metallic.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Helmet_Normal.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Helmet_Roughness.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Legs_BaseColor.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Legs_Metallic.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Legs_Normal.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Legs_Roughness.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Sword_BaseColor.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Sword_Metallic.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Sword_Normal.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Sword_Roughness.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Torso_BaseColor.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Torso_Metallic.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Torso_Normal.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Samurai\Torso_Roughness.dds">
+      <Filter>engine\assets\Samurai</Filter>
+    </Image>
+    <Image Include="engine\assets\Sky\night_street.dds">
+      <Filter>engine\assets\Sky</Filter>
+    </Image>
+    <Image Include="engine\assets\Sky\night_street_irradiance.dds">
+      <Filter>engine\assets\Sky</Filter>
+    </Image>
+    <Image Include="engine\assets\Sky\night_street_reflectance.dds">
+      <Filter>engine\assets\Sky</Filter>
+    </Image>
+    <Image Include="engine\assets\Sky\night_street_reflection.dds">
+      <Filter>engine\assets\Sky</Filter>
+    </Image>
+    <Image Include="engine\assets\Stone\Stone_COLOR.dds">
+      <Filter>engine\assets\Stone</Filter>
+    </Image>
+    <Image Include="engine\assets\Stone\Stone_NORM.dds">
+      <Filter>engine\assets\Stone</Filter>
+    </Image>
+    <Image Include="engine\assets\Stone\Stone_ROUGH.dds">
+      <Filter>engine\assets\Stone</Filter>
+    </Image>
+    <Image Include="engine\assets\Grass\Albedo.dds">
+      <Filter>engine\assets\Grass</Filter>
+    </Image>
+    <Image Include="engine\assets\Grass\AO.dds">
+      <Filter>engine\assets\Grass</Filter>
+    </Image>
+    <Image Include="engine\assets\Grass\Normal.dds">
+      <Filter>engine\assets\Grass</Filter>
+    </Image>
+    <Image Include="engine\assets\Grass\Opacity.dds">
+      <Filter>engine\assets\Grass</Filter>
+    </Image>
+    <Image Include="engine\assets\Grass\Roughness.dds">
+      <Filter>engine\assets\Grass</Filter>
+    </Image>
+    <Image Include="engine\assets\Grass\Translucency.dds">
+      <Filter>engine\assets\Grass</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="engine\assets\Knight\Knight.fbx">
+      <Filter>engine\assets\Knight</Filter>
+    </None>
+    <None Include="engine\assets\Samurai\Samurai.fbx">
+      <Filter>engine\assets\Samurai</Filter>
+    </None>
+    <None Include="engine\shaders\environment.hlsli">
+      <Filter>engine\shaders</Filter>
+    </None>
+    <None Include="engine\shaders\fullscreen.hlsli">
+      <Filter>engine\shaders</Filter>
+    </None>
+    <None Include="engine\shaders\globals.hlsli">
+      <Filter>engine\shaders</Filter>
+    </None>
+    <None Include="engine\shaders\opaque_helpers.hlsli">
+      <Filter>engine\shaders</Filter>
+    </None>
+    <None Include="engine\shaders\pbr_helpers.hlsli">
+      <Filter>engine\shaders</Filter>
+    </None>
+    <None Include="engine\shaders\resolve_helpers.hlsli">
+      <Filter>engine\shaders</Filter>
+    </None>
+    <None Include="engine\shaders\shadow_helpers.hlsli">
+      <Filter>engine\shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="engine\shaders\directional_light_shadow.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\emissive.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\opaque.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\point_light_shadow.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\resolve.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\sky.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\particle.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\dissoluble.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\grass.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\grass_shadow_point_light.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\grass_shadow_directional_light.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="engine\source\include\win.hpp">
+      <Filter>engine\source\include</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\include\win_def.hpp">
+      <Filter>engine\source\include</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\include\win_undef.hpp">
+      <Filter>engine\source\include</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\singletones\DepthStencilManager.h">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\singletones\globals.hpp">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\singletones\MeshSystem.h">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\singletones\ModelManager.h">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\singletones\SamplerManager.h">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\singletones\ShaderManager.h">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\singletones\ShadowManager.h">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\singletones\TextureManager.h">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\singletones\TransformSystem.h">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\ConstantBuffer.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\d3d.hpp">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\DepthStencil.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\DxRes.hpp">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\EmissiveInstances.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\IndexBuffer.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\Light.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\Mesh.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\Model.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\ModelID.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\OpaqueInstances.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\PerFrameBuffer.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\PostProcess.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\RenderTargetView.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\Shader.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\SolidVector.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\Texture.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\TriangleIndices.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\TriangleOctree.hpp">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\Vertex.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\VertexBuffer.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\math\Box.h">
+      <Filter>engine\source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\math\camera.h">
+      <Filter>engine\source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\math\Floor.h">
+      <Filter>engine\source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\math\Intersection.h">
+      <Filter>engine\source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\math\Matr.h">
+      <Filter>engine\source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\math\MatrixHelpers.h">
+      <Filter>engine\source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\math\MeshIntersection.h">
+      <Filter>engine\source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\math\Quaternion.h">
+      <Filter>engine\source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\math\ray.h">
+      <Filter>engine\source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\math\Transform.h">
+      <Filter>engine\source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\math\Triangle.h">
+      <Filter>engine\source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\math\vec2.h">
+      <Filter>engine\source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\math\vec3.h">
+      <Filter>engine\source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\math\vec4.h">
+      <Filter>engine\source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\objects\Sky.h">
+      <Filter>engine\source\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\window\Application.h">
+      <Filter>engine\source\window</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\window\InputState.h">
+      <Filter>engine\source\window</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\window\Renderer.h">
+      <Filter>engine\source\window</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\window\window.h">
+      <Filter>engine\source\window</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\DDSTextureLoader\DDSTextureLoader11.h">
+      <Filter>engine\source\DDSTextureLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\singletones\LightSystem.h">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\singletones\ParticleSystem.h">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\Particle.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\singletones\BlendStateManager.h">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\SmokeEmitter.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\math\Timer.h">
+      <Filter>engine\source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\singletones\RasteriserStateManager.h">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\DissolubleInstances.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\GrassField.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\MaterialConstantBuffer.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="engine\source\render\singletones\DepthStencilManager.cpp">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\singletones\globals.cpp">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\singletones\MeshSystem.cpp">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\singletones\ModelManager.cpp">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\singletones\SamplerManager.cpp">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\singletones\ShaderManager.cpp">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\singletones\ShadowManager.cpp">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\singletones\TextureManager.cpp">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\singletones\TransformSystem.cpp">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\d3d.cpp">
+      <Filter>engine\source\render</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\DepthStencil.cpp">
+      <Filter>engine\source\render</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\EmissiveInstances.cpp">
+      <Filter>engine\source\render</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\OpaqueInstances.cpp">
+      <Filter>engine\source\render</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\PerFrameBuffer.cpp">
+      <Filter>engine\source\render</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\TriangleOctree.cpp">
+      <Filter>engine\source\render</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\main.cpp">
+      <Filter>engine\source</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\math\camera.cpp">
+      <Filter>engine\source\math</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\math\Triangle.cpp">
+      <Filter>engine\source\math</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\math\vec3.cpp">
+      <Filter>engine\source\math</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\window\Application.cpp">
+      <Filter>engine\source\window</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\window\Renderer.cpp">
+      <Filter>engine\source\window</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\window\window.cpp">
+      <Filter>engine\source\window</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\DDSTextureLoader\DDSTextureLoader11.cpp">
+      <Filter>engine\source\DDSTextureLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\singletones\LightSystem.cpp">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\singletones\BlendStateManager.cpp">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\singletones\ParticleSystem.cpp">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\singletones\RasteriserStateManager.cpp">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\SmokeEmitter.cpp">
+      <Filter>engine\source\render</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\DissolubleInstances.cpp">
+      <Filter>engine\source\render</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\GrassField.cpp">
+      <Filter>engine\source\render</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
