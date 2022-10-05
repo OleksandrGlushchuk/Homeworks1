@@ -65,7 +65,7 @@ GS_INPUT vs_main(VS_INPUT input, uint vertexID : SV_VertexID)
 [maxvertexcount(MAX_VERTEX_COUNT)]
 void gs_main(triangle GS_INPUT input[3], inout TriangleStream<GS_OUT> outputStream)
 {
-    float angle = 2.f * M_PI / TEXTURES_IN_ONE_BUSH;
+    float angle = M_PI / TEXTURES_IN_ONE_BUSH;
     float angle_cos, angle_sin;
 
     [unroll]
