@@ -43,9 +43,9 @@ namespace engine::windows
 		/*ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(0.f, 0, 0.f), Vec3(1.f, 1.f, 1.f), 
 			0.8f, 10.2f, 0.5f, 2.1f, 2.0f, 1.0f, 0.05f, 8, 8));*/
 		ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(-0.5f, 0, 0.f), Vec3(0.5f, 0.1f, 5.f), 
-			1.f, 2.5f, 0.5f, 0.01f, 0.5f, 1.01f, 0.2f, 8, 8));
+			1.f, 2.5f, 0.9f, 0.05f, 0.5f, 1.01f, 0.2f, 8, 8));
 		ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(0.995f, 0.8f, 0.6f), Vec3(0.01f, 0.01f, 0.01f),
-			0.5f, 3.5f, 0.1f, 0.02f, 0.15f, 1.009f, 0.01f, 8, 8));
+			0.5f, 3.5f, 0.2f, 0.05f, 0.15f, 1.005f, 0.01f, 8, 8));
 		/*ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(0.5f, -0.5, -2.f), Vec3(0.10f, 0.15f, 0.02f),
 			0.8f, 1.5f, 0.8f, 0.01f, 0.2f, 1.02f, 0.05f, 8, 8));*/
 		/*ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(0.5f, 0.5f, 0.5f), Vec3(1.f, 1.f, 1.f),

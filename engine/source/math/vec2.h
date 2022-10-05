@@ -22,4 +22,10 @@ public:
         e[1] *= k;
         return *this;
     }
+    Vec2 operator+=(float k)
+    {
+        e[0] += k;
+        e[1] += k;
+        return *this;
+    }
 };
