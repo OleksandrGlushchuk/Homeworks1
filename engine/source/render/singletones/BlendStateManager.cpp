@@ -45,7 +45,6 @@ namespace engine
 			HRESULT result = engine::s_device->CreateBlendState(&blendDesc, &m_blendStates["alphaToCoverage"].ptr());
 			ALWAYS_ASSERT(result >= 0 && "CreateBlendState");
 		}
-
 	}
 	void BlendStateManager::init()
 	{

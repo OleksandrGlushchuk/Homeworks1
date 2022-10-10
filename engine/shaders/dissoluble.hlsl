@@ -31,8 +31,8 @@ struct PS_INPUT
     float3 tangent : TANGENT;
     float3 bitangent : BITANGENT;
     float4 world_pos : WORLD_POS;
-    float creationTime : CREATION_TIME;
-    float lifeTime : LIFE_TIME;
+    nointerpolation float creationTime : CREATION_TIME;
+    nointerpolation float lifeTime : LIFE_TIME;
 };
 
 PS_INPUT vs_main(VS_INPUT input)

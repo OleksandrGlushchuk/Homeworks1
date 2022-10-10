@@ -4,6 +4,7 @@
 #include "singletones/ShaderManager.h"
 #include "singletones/ModelManager.h"
 #include "singletones/MeshSystem.h"
+#include "singletones/VegetationSystem.h"
 #include "singletones/LightSystem.h"
 #include "singletones/TransformSystem.h"
 #include "singletones/SamplerManager.h"
@@ -37,9 +38,11 @@ namespace engine
 		RasteriserStateManager::init();
 		ParticleSystem::init();
 		MeshSystem::init();
+		VegetationSystem::init();
 	}
 	void deinit()
 	{
+		VegetationSystem::deinit();
 		MeshSystem::deinit();
 		ParticleSystem::deinit();
 		RasteriserStateManager::deinit();

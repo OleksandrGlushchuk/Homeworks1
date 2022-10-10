@@ -8,13 +8,13 @@ namespace engine
 {
 	std::default_random_engine SmokeEmitter::s_random_engine;
 
-	void SmokeEmitter::Update(float deltaTime)
+	void SmokeEmitter::Update(const std::chrono::steady_clock::time_point& currentTime, float deltaTime)
 	{
-		float now = std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::steady_clock::now().time_since_epoch()).count();
+		float now = std::chrono::duration_cast<std::chrono::duration<float>>(currentTime.time_since_epoch()).count();
 		auto it = std::remove_if(m_particles.begin(), m_particles.end(), [&now](Particle& particle)
 			{
 				return now - particle.creationTime
-					>= particle.lifeTime;
+					> particle.lifeTime;
 			});
 		m_particles.erase(it, m_particles.end());
 
@@ -28,7 +28,7 @@ namespace engine
 					Vec2(m_spawnParticleSize, m_spawnParticleSize),
 					m_random(s_random_engine, std::uniform_real<float>::param_type(-M_PI, M_PI)),
 					Vec4(m_tint.e[0], m_tint.e[1], m_tint.e[2], 0),
-					std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::steady_clock::now().time_since_epoch()).count(),
+					std::chrono::duration_cast<std::chrono::duration<float>>(currentTime.time_since_epoch()).count(),
 					m_particleSaturateTime + m_particleFadingTime));
 			}
 		}
@@ -36,8 +36,8 @@ namespace engine
 		float currentLifeDuration;
 		for (auto& particle : m_particles)
 		{
-			particle.position += Vec3(0, m_particleSpeed * deltaTime, 0);
-			particle.size *= m_scalingFactor;
+			particle.position += Vec3(0, m_particleSpeed * deltaTime / FRAME_DURATION, 0);
+			particle.size *= m_scalingFactor * deltaTime / FRAME_DURATION;
 			currentLifeDuration = now - particle.creationTime;
 			if (currentLifeDuration <= m_particleSaturateTime)
 			{

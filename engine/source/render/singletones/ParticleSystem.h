@@ -56,6 +56,6 @@ namespace engine
 		void CreateDepthSRV();
 		void CopyDepthTexture(ID3D11Texture2D* src);
 		void AddSmokeEmitter(const SmokeEmitter& smokeEmitter) { m_smokeEmitters.emplace_back(smokeEmitter); }
-		void UpdateSmokeEmitters(const Camera& camera, float deltaTime);
+		void UpdateSmokeEmitters(const Camera& camera, const std::chrono::steady_clock::time_point& currentTime, float deltaTime);
 	};
 }

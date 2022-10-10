@@ -2,6 +2,7 @@
 #include "../DxRes.hpp"
 #include "../ConstantBuffer.h"
 #include "../PerFrameBuffer.h"
+#include <chrono>
 namespace engine
 {
 	class Globals // a singletone for accessing global rendering resources
@@ -29,7 +30,7 @@ namespace engine
 		static void deinit();
 		static Globals& instance();
 		void Bind();
-		void UpdatePerFrameBuffer(const Camera& camera, uint32_t sampleCount);
+		void UpdatePerFrameBuffer(const Camera& camera, const std::chrono::steady_clock::time_point& currentTime, uint32_t sampleCount);
 		~Globals();
 	};
 }

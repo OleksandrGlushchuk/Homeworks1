@@ -4,9 +4,10 @@
 
 namespace engine
 {
-	PerFrameBuffer::PerFrameBuffer(const Camera& camera, const std::vector<PointLight>& pointLights, const std::vector<GpuDirectionalLight>& directionalLights, uint32_t _sampleCount) :
+	PerFrameBuffer::PerFrameBuffer(const Camera& camera, const std::vector<PointLight>& pointLights, 
+		const std::vector<GpuDirectionalLight>& directionalLights, const std::chrono::steady_clock::time_point& currentTime, uint32_t _sampleCount) :
 		viewProj(camera.m_viewProj), viewInv(camera.m_viewInv), BL(camera.BottomLeft), Right(camera.BR_M_BL), 
-		time_since_epoch(std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::steady_clock::now().time_since_epoch()).count()), 
+		time_since_epoch(std::chrono::duration_cast<std::chrono::duration<float>>(currentTime.time_since_epoch()).count()),
 		Top(camera.TL_M_BL), cameraPos(camera.position()), pointLightNum(pointLights.size()), 
 		directionalLightNum(directionalLights.size()), sampleCount(_sampleCount)
 	{

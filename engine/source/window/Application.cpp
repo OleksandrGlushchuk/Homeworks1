@@ -6,6 +6,7 @@
 #include "../render/singletones/MeshSystem.h"
 #include "../render/singletones/ShadowManager.h"
 #include "../render/singletones/ParticleSystem.h"
+#include "../render/singletones/VegetationSystem.h"
 
 const float p_near = 0.01f, p_far = 100.f, fovy = M_PI / 3.f;
 
@@ -16,8 +17,9 @@ namespace engine::windows
 	{
 		ProcessInput();
 		CheckDissolutionObjects();
+		UpdateCurrentTime();
 		wnd.BeginFrame();
-		renderer.Render(wnd.m_renderTargetView, camera, m_postProcess, delta_time);
+		renderer.Render(wnd.m_renderTargetView, camera, m_postProcess, m_currentTime, delta_time);
 		wnd.EndFrame();
 	}
 
@@ -34,22 +36,17 @@ namespace engine::windows
 
 	void Application::Init()
 	{
+		m_currentTime = std::chrono::steady_clock::now();
 		renderer.Init(4u);
 		m_postProcess.Init(1.5f);
 		ShadowManager::instance().SetDirectionalLightDSResolution(2048.f);
 		ShadowManager::instance().SetDirectionalLightShadowDistance(60.f);
 		ShadowManager::instance().SetPointLightDSResolution(1024.f);
 
-		/*ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(0.f, 0, 0.f), Vec3(1.f, 1.f, 1.f), 
-			0.8f, 10.2f, 0.5f, 2.1f, 2.0f, 1.0f, 0.05f, 8, 8));*/
 		ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(-0.5f, 0, 0.f), Vec3(0.5f, 0.1f, 5.f), 
-			1.f, 2.5f, 0.9f, 0.05f, 0.5f, 1.01f, 0.2f, 8, 8));
+			1.f, 2.5f, 0.015f, 0.05f, 0.5f, 1.01f, 0.2f, 8, 8));
 		ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(0.995f, 0.8f, 0.6f), Vec3(0.01f, 0.01f, 0.01f),
-			0.5f, 3.5f, 0.2f, 0.05f, 0.15f, 1.005f, 0.01f, 8, 8));
-		/*ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(0.5f, -0.5, -2.f), Vec3(0.10f, 0.15f, 0.02f),
-			0.8f, 1.5f, 0.8f, 0.01f, 0.2f, 1.02f, 0.05f, 8, 8));*/
-		/*ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(0.5f, 0.5f, 0.5f), Vec3(1.f, 1.f, 1.f),
-			0.5f, 10.f, 0.0f, 0.1f, 0.5f, 1.0f, 0.01f,8,8));*/
+			0.5f, 3.5f, 0.005f, 0.05f, 0.15f, 1.005f, 0.01f, 8, 8));
 
 
 		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
@@ -57,7 +54,8 @@ namespace engine::windows
 		LightSystem::instance().setDirectionalLightFrustum(camera);
 		camera.setWorldOffset(Vec3(0, 0, -2));
 
-		MeshSystem::instance().grassField.SetGrassArea(4, 4, 0.4f, { -7,-2,-2 });
+		VegetationSystem::instance().AddGrassArea(3, 3, 0.4f, { -7,-2,-2 });
+		VegetationSystem::instance().AddGrassArea(2, 2, 0.4f, { -10, -2,-2 });
 
 		//LIGHTS
 		{
@@ -275,6 +273,8 @@ namespace engine::windows
 
 	void Application::CheckDissolutionObjects()
 	{
+		if (time_stopped) return;
+
 		auto& dissolutionInstances = MeshSystem::instance().dissolubleInstances;
 		if (dissolutionInstances.m_modelIDs.empty())
 			return;
@@ -282,7 +282,7 @@ namespace engine::windows
 		bool need_to_reduce_material_instances = false, need_to_reduce_model_instances = false;
 		uint32_t out_materialIndex, out_instanceIndex, meshMaterialWriteOffset = 0;
 		int transformID = -1;
-		float now = std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::steady_clock::now().time_since_epoch()).count();
+		float now = std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count();
 		for (uint32_t id = 0; id < dissolutionInstances.m_modelIDs.size(); ++id)
 		{
 			auto modelID = dissolutionInstances.m_modelIDs.at(id);
@@ -393,6 +393,14 @@ namespace engine::windows
 				transformID = -1;
 			}
 		}
+	}
+
+	void Application::UpdateCurrentTime()
+	{
+		if (time_stopped)
+			m_currentTime = stop_time_point;
+		else
+			m_currentTime = std::chrono::steady_clock::now() - stop_duration;
 	}
 
 	void Application::ProcessInput()
@@ -550,7 +558,7 @@ namespace engine::windows
 			Vec3 cameraForward = camera.forward();
 			transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
 			MeshSystem::instance().addInstance(SamuraiModel, m_dissolubleSamuraiMaterial, DissolubleInstances::Instance(transform,
-				std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::steady_clock::now().time_since_epoch()).count(),
+				std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
 				3.f));
 			input_state['N'] = false;
 		}
@@ -563,7 +571,7 @@ namespace engine::windows
 			Vec3 cameraForward = camera.forward();
 			transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
 			MeshSystem::instance().addInstance(SamuraiModel, m_dissolubleSamuraiMaterial1, DissolubleInstances::Instance(transform,
-				std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::steady_clock::now().time_since_epoch()).count(),
+				std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
 				3.f));
 			input_state['M'] = false;
 		}
@@ -575,7 +583,7 @@ namespace engine::windows
 			Vec3 cameraForward = camera.forward();
 			transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
 			MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial, DissolubleInstances::Instance(transform,
-				std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::steady_clock::now().time_since_epoch()).count(),
+				std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
 				3.f));
 			input_state['K'] = false;
 		}
@@ -587,7 +595,7 @@ namespace engine::windows
 			Vec3 cameraForward = camera.forward();
 			transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
 			MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial1, DissolubleInstances::Instance(transform,
-				std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::steady_clock::now().time_since_epoch()).count(),
+				std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
 				3.f));
 			input_state['J'] = false;
 		}
@@ -599,7 +607,7 @@ namespace engine::windows
 			Vec3 cameraForward = camera.forward();
 			transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
 			MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial2, DissolubleInstances::Instance(transform,
-				std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::steady_clock::now().time_since_epoch()).count(),
+				std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
 				3.f));
 			input_state['H'] = false;
 		}
@@ -713,6 +721,26 @@ namespace engine::windows
 		mouse_x = x;
 		mouse_y = y;
 		need_to_move_object = false;
+	}
+
+	void Application::OnEnterSizeMove()
+	{
+		if (!time_stopped)
+		{
+			time_stopped = true;
+			delta_time = 0;
+			stop_time_point = m_currentTime;
+		}
+	}
+
+	void Application::OnExitSizeMove()
+	{
+		if (time_stopped)
+		{
+			time_stopped = false;
+			unstop_time_point = std::chrono::steady_clock::now();
+			stop_duration = unstop_time_point - stop_time_point;
+		}
 	}
 
 	void Application::OnMouseWheel(short wheel_data)

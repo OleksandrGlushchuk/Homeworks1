@@ -19,7 +19,8 @@ namespace engine::windows
 		bool need_to_resize_RTV;
 	public:
 		void Init(UINT sampleCount);
-		void Render(RenderTargetView& windowRenderTarget, const Camera& camera, PostProcess &postProcess, float deltaTime);
+		void Render(RenderTargetView& windowRenderTarget, const Camera& camera, PostProcess &postProcess,
+			const std::chrono::steady_clock::time_point& currentTime, float deltaTime);
 		void ResizeRTV(RenderTargetView& windowRenderTarget);
 		void RenderShadows();
 		friend class Application;

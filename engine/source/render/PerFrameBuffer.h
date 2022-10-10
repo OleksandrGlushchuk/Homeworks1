@@ -1,6 +1,7 @@
 #pragma once
 #include "singletones/LightSystem.h"
 #include <vector>
+#include <chrono>
 class Camera;
 namespace engine
 {
@@ -24,6 +25,7 @@ namespace engine
 		Matr<4> viewProjDirectionalLight[LightSystem::MAX_DIRECTIONAL_LIGHTS];
 
 		PerFrameBuffer() {}
-		PerFrameBuffer(const Camera& camera, const std::vector<PointLight>& pointLights, const std::vector<GpuDirectionalLight> &directionalLights, uint32_t _sampleCount);
+		PerFrameBuffer(const Camera& camera, const std::vector<PointLight>& pointLights, 
+			const std::vector<GpuDirectionalLight> &directionalLights, const std::chrono::steady_clock::time_point& currentTime, uint32_t _sampleCount);
 	};
 }

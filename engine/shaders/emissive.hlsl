@@ -23,7 +23,7 @@ struct PS_INPUT
     float4 position : SV_POSITION;
     float3 worldPos : WORLS_POS;
     float3 normal : NORMAL;
-    float3 emission : EMISSION;
+    nointerpolation float3 emission : EMISSION;
 };
 
 PS_INPUT vs_main(VS_INPUT input)

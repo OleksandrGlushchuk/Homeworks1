@@ -1,6 +1,7 @@
 #pragma once
 #include "DxRes.hpp"
 #include <functional>
+static	FLOAT clearColor[4] = { 0.0f, 0.0f, 0.f, 0.f };
 namespace engine
 {
 	class RenderTargetView
@@ -94,8 +95,7 @@ namespace engine
 		
 		void Clear()
 		{
-			FLOAT color[4] = { 0.25f, 0.5f, 1.f, 1.f };
-			engine::s_deviceContext->ClearRenderTargetView(m_renderTargetView.ptr(), color);
+			engine::s_deviceContext->ClearRenderTargetView(m_renderTargetView.ptr(), clearColor);
 		}
 
 		void Release()

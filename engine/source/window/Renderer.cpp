@@ -1,6 +1,8 @@
 #include "Renderer.h"
 #include "../render/singletones/ShadowManager.h"
 #include "../render/singletones/ParticleSystem.h"
+#include "../render/singletones/MeshSystem.h"
+#include "../render/singletones/VegetationSystem.h"
 
 namespace engine::windows
 {
@@ -34,7 +36,8 @@ namespace engine::windows
 		ParticleSystem::instance().CreateDepthSRV();
 	}
 
-	void Renderer::Render(RenderTargetView& windowRenderTarget, const Camera& camera, PostProcess& postProcess, float deltaTime)
+	void Renderer::Render(RenderTargetView& windowRenderTarget, const Camera& camera, PostProcess& postProcess,
+		const std::chrono::steady_clock::time_point &currentTime, float deltaTime)
 	{
 		if (need_to_resize_RTV)
 		{
@@ -42,7 +45,7 @@ namespace engine::windows
 			need_to_resize_RTV = false;
 		}
 		MeshSystem::instance().updateInstances();
-		engine::Globals::instance().UpdatePerFrameBuffer(camera, m_sampleCount);
+		engine::Globals::instance().UpdatePerFrameBuffer(camera, currentTime, m_sampleCount);
 		engine::Globals::instance().Bind();
 
 		RenderShadows();
@@ -52,21 +55,20 @@ namespace engine::windows
 
 		m_hdrRenderTarget.Clear();
 		m_hdrDepthStencil.Clear();
+
 		m_hdrDepthStencil.BindDepthStencilState();
 		engine::s_deviceContext->OMSetRenderTargets(1, m_hdrRenderTarget.GetRTVPtrToPrt(), m_hdrDepthStencil.GetDepthStencilViewPtr());
-
-		engine::MeshSystem::instance().render();
 		m_sky.BindEnvironment();
+
+		engine::VegetationSystem::instance().render();
+		engine::MeshSystem::instance().render();
+
 		m_sky.Draw();
-		engine::MeshSystem::instance().grassField.render();
 		
-		
+
 		ParticleSystem::instance().CopyDepthTexture(m_hdrDepthStencil.GetDepthStencilResource());
-		ParticleSystem::instance().UpdateSmokeEmitters(camera, deltaTime);
+		ParticleSystem::instance().UpdateSmokeEmitters(camera, currentTime, deltaTime);
 		ParticleSystem::instance().render();
-
-	
-
 
 		engine::s_deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 
@@ -98,8 +100,10 @@ namespace engine::windows
 	{
 		engine::ShadowManager::instance().BindPointLightDepthStencils();
 		engine::MeshSystem::instance().renderSceneDepthToCubemaps();
+		engine::VegetationSystem::instance().renderSceneDepthToCubemaps();
 
 		engine::ShadowManager::instance().BindDirectionalLightDepthStencils();
 		engine::MeshSystem::instance().renderSceneDepthForDirectionalLights();
+		engine::VegetationSystem::instance().renderSceneDepthForDirectionalLights();
 	}
 }

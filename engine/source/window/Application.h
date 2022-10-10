@@ -16,6 +16,13 @@ namespace engine::windows
 		Camera camera;
 		PostProcess m_postProcess;
 
+		bool time_stopped = false;
+		std::chrono::steady_clock::time_point stop_time_point;
+		std::chrono::steady_clock::time_point unstop_time_point;
+		std::chrono::steady_clock::duration stop_duration = std::chrono::steady_clock::duration(0);
+
+		std::chrono::steady_clock::time_point m_currentTime;
+
 		bool need_to_create_dissoluble_samurai_material = true;
 		std::vector<OpaqueInstances::Material> m_samuraiMaterial = std::vector<OpaqueInstances::Material>(8);
 		std::vector<OpaqueInstances::Material> m_knightMaterial = std::vector<OpaqueInstances::Material>(9);
@@ -57,8 +64,9 @@ namespace engine::windows
 		void MoveCamera(const Vec3& offset);
 		void ProcessInput();
 		void CheckDissolutionObjects();
+		void UpdateCurrentTime();
 	public:
-		float delta_time;
+		float delta_time = 0;
 		Application(engine::windows::Window &_wnd, engine::windows::Renderer& _scene) : wnd(_wnd), renderer(_scene){}
 
 		void OnKeyDown(WPARAM key);
@@ -71,6 +79,9 @@ namespace engine::windows
 		void OnRMouseDown(WORD x, WORD y);
 		void OnRMouseMove(WORD x, WORD y);
 		void OnRMouseUp(WORD x, WORD y);
+
+		void OnEnterSizeMove();
+		void OnExitSizeMove();
 
 		void OnMouseWheel(short wheel_data);
 

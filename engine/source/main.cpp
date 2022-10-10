@@ -22,7 +22,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 	MSG msg;
 	Timer timer;
 	timer.StartTimer();
-	float delta_time;
+	float delta_time = 0;
 	while (true)
 	{
 		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -35,9 +35,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 			DispatchMessage(&msg);
 
 		}
-		delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count();
+		
 		if (timer.TimeElapsed(FRAME_DURATION))
 		{
+			delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count();
 			application.Draw();
 			application.delta_time = std::max(std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count() - delta_time, FRAME_DURATION);
 		}
@@ -53,6 +54,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	switch (msg)
 	{
+
+	case WM_ENTERSIZEMOVE:
+		application.OnEnterSizeMove();
+		break;
+
+	case WM_EXITSIZEMOVE:
+		application.OnExitSizeMove();
+		break;
+
 	case WM_SIZE:
 		application.OnChangeWindowSize();
 		break;

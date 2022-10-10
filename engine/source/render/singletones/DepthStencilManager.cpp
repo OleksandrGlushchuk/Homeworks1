@@ -26,6 +26,10 @@ namespace engine
 		depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
 		CreateDepthStencilState(depthStencilDesc, "default");
 		
+		depthStencilDesc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
+		CreateDepthStencilState(depthStencilDesc, "always");
+
+		depthStencilDesc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_GREATER_EQUAL;
 		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ZERO;
 		CreateDepthStencilState(depthStencilDesc, "readonly");
 	}

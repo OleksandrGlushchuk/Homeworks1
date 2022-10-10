@@ -3,6 +3,7 @@
 #include "singletones/RasteriserStateManager.h"
 #include "singletones/ShadowManager.h"
 #include "singletones/LightSystem.h"
+#include "singletones/DepthStencilManager.h"
 #include <vector>
 #include <random>
 #include <iterator>
@@ -31,12 +32,13 @@ namespace engine
 		m_grassTranslucency.Load(L"engine/assets/Grass/Translucency.dds");
 		m_blendState = BlendStateManager::instance().GetBlendState("alphaToCoverage");
 		m_rasterizerState = RasteriserStateManager::instance().GetRasteriserState("front_and_back");
+		m_depthStensilState = DepthStencilManager::instance().GetDepthStencilState("default");
 
 		ShadowManager::instance().m_pointLightGrassShadowShader.Init(L"engine/shaders/grass_shadow_point_light.hlsl", desc, 1, ShaderEnabling(true, true));
 		ShadowManager::instance().m_directionalLightGrassShadowShader.Init(L"engine/shaders/grass_shadow_directional_light.hlsl", desc, 1, ShaderEnabling(true, true));
 	}
 
-	void GrassField::SetGrassArea(float width, float height, float r, const Vec3& world_pos)
+	void GrassField::AddGrassArea(float width, float height, float r, const Vec3& world_pos)
 	{
 		typedef std::uniform_real<float>::param_type frange;
 		typedef std::uniform_int<int>::param_type irange;
@@ -135,8 +137,16 @@ namespace engine
 		elem.erase(it, elem.end());
 
 		std::transform(elem.begin(), elem.end(), elem.begin(), [&world_pos](GrassInstance& i) {return GrassInstance(i.position + world_pos); });
+		
+		uint32_t prev_size = m_instances.size();
+		m_instances.resize(prev_size + elem.size());
 
-		m_instanceBuffer.Init(elem);
+		auto insert_it = m_instances.begin();
+		std::advance(insert_it, prev_size);
+		
+		std::copy(elem.begin(), elem.end(), insert_it);
+		
+		m_instanceBuffer.Init(m_instances);
 	}
 
 	FLOAT blendFactor[4] = { 0,0,0,0 };
@@ -146,6 +156,7 @@ namespace engine
 	{
 		engine::s_deviceContext->OMSetBlendState(m_blendState.ptr(), blendFactor, sampleMask);
 		engine::s_deviceContext->RSSetState(m_rasterizerState.ptr());
+		engine::s_deviceContext->OMSetDepthStencilState(m_depthStensilState.ptr(), 0);
 
 		s_deviceContext->PSSetShaderResources(8, 1, &ShadowManager::instance().m_srvPointLightShadow.ptr());
 		s_deviceContext->PSSetShaderResources(9, 1, &ShadowManager::instance().m_srvDirectionalLightShadow.ptr());

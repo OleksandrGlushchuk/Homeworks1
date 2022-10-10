@@ -1,6 +1,7 @@
 #pragma once
 #include "../render/singletones/globals.hpp"
 #include "../render/Shader.h"
+#include "../render/singletones/BlendStateManager.h"
 
 class Sky
 {

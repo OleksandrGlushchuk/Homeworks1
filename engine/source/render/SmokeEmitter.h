@@ -36,7 +36,7 @@ namespace engine
 			m_frameDuration = (m_particleSaturateTime + m_particleFadingTime) / float(m_atlasRowsNum * m_atlasColsNum);
 			m_timer.StartTimer();
 		}
-		void Update(float deltaTime);
+		void Update(const std::chrono::steady_clock::time_point& currentTime, float deltaTime);
 		uint32_t GetParticleNum() { return m_particles.size(); }
 
 		friend class ParticleSystem;

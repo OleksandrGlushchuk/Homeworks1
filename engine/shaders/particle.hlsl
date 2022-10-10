@@ -23,8 +23,8 @@ struct VS_INPUT
     float4 tint : TINT;
     float angle : ANGLE;
     float thickness : THICKNESS;
-    float creationTime : CREATION_TIME;
-    float lifeTime : LIFE_TIME;
+    nointerpolation float creationTime : CREATION_TIME;
+    nointerpolation float lifeTime : LIFE_TIME;
 };
 
 struct PS_INPUT
@@ -33,10 +33,10 @@ struct PS_INPUT
     float3 world_pos : WORLD_POS;
     float2 tex_coord : TEXCOORD0;
     float2 tex_coord_next : TEXCOORD1;
-    float4 tint : TINT;
-    float frameFracTime : FRAME_FRAC_TIME;
-    float3x3 rotation_z : ROTATION_Z;
-    float thickness : THICKNESS;
+    nointerpolation float4 tint : TINT;
+    nointerpolation float frameFracTime : FRAME_FRAC_TIME;
+    nointerpolation float3x3 rotation_z : ROTATION_Z;
+    nointerpolation float thickness : THICKNESS;
 };
 
 void GetTexCoordsInAtlas(float creationTime, float lifeTime, uint vertexID, out float frameFracTime, out float2 currentTexCoord, out float2 nextTexCoord)

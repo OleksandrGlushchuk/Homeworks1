@@ -42,27 +42,12 @@ GS_INPUT vs_main(VS_INPUT input, uint vertexID : SV_VertexID)
     GS_INPUT output;
     float3 pos;
     pos.z = 0;
-    if (vertexID == 0 || vertexID == 5)
-    {
-        pos.xy = float2(-0.5f, -0.5f);
-        output.tex_coord = float2(0, 1);
-    }
-    else if (vertexID == 1)
-    {
-        pos.xy = float2(-0.5f, 0.5f);
-        output.tex_coord = float2(0, 0);
-    }
-    else if (vertexID == 2 || vertexID == 3)
-    {
-        pos.xy = float2(0.5f, 0.5f);
-        output.tex_coord = float2(1, 0);
-    }
-    else if(vertexID == 4)
-    {
-        pos.xy = float2(0.5f, -0.5f);
-        output.tex_coord = float2(1, 1);
-    }
-
+    
+    uint vertexID_new = vertexID > 2 ? 5 - vertexID : vertexID;
+    int2 xy = int2(vertexID_new == 2, vertexID_new != 0);
+    pos.xy = vertexID == 4 ? float2(-0.5f, -0.5f) + xy.yx : float2(-0.5f, -0.5f) + xy;
+    output.tex_coord = vertexID == 4 ? float2(1, 1) : float2(xy.x, xy.y == 0);
+    
     output.vertex_pos = pos;
     output.grass_pos = input.grass_pos;
     output.normal = float3(0, 0, -1.f);
@@ -122,6 +107,8 @@ cbuffer MaterialConstantBuffer : register(b1)
 #include "opaque_helpers.hlsli"
 #include "shadow_helpers.hlsli"
 
+static const float TRANSLUCENCY_POWER = 40;
+
 float4 ps_main(PS_INPUT input, bool isFrontFace : SV_IsFrontFace) : SV_Target
 {
     Surface surface;
@@ -141,7 +128,7 @@ float4 ps_main(PS_INPUT input, bool isFrontFace : SV_IsFrontFace) : SV_Target
         pointToLight = g_pointLight[i].position - input.world_pos.xyz;
         NdotL = dot(normalize(pointToLight), surface.map_normal);
         
-        transmission = NdotL < 0 ? g_pointLight[i].radiance * transmittanceRGB * pow(-NdotL, 30) : 0;
+        transmission = NdotL < 0 ? g_pointLight[i].radiance * transmittanceRGB * pow(-NdotL, TRANSLUCENCY_POWER) : 0;
         
         shadowFactor = calcPointLightShadowFactor(input.world_pos.xyz, surface.map_normal, i);
         hdrColor += (1.f - shadowFactor) * (transmission + CalculatePointLight(g_pointLight[i], pointToLight, view, surface));
@@ -151,13 +138,14 @@ float4 ps_main(PS_INPUT input, bool isFrontFace : SV_IsFrontFace) : SV_Target
     {
         NdotL = dot(g_directionalLight[j].direction, surface.map_normal);
         
-        transmission = NdotL < 0 ? g_directionalLight[j].radiance * transmittanceRGB * pow(-NdotL, 30) : 0;
+        transmission = NdotL < 0 ? g_directionalLight[j].radiance * transmittanceRGB * pow(-NdotL, TRANSLUCENCY_POWER) : 0;
         
         shadowFactor = calcDirectionalLightShadowFactor(input.world_pos.xyz, view.PointToCameraNormalized, j);
         hdrColor += (1.f - shadowFactor) * (transmission + CalculateDirectionalLight(g_directionalLight[j], view, surface));
     }
     hdrColor += addEnvironmentDiffuseReflection(surface);
     hdrColor *= g_AOMap.Sample(g_samplerState, input.tex_coord);
-    return float4(hdrColor, g_opacityMap.Sample(g_samplerState, input.tex_coord));
+    float alpha = g_opacityMap.Sample(g_samplerState, input.tex_coord);
+    return float4(hdrColor, alpha);
 }
 

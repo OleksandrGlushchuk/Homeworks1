@@ -50,12 +50,14 @@ namespace engine
 		ALWAYS_ASSERT(s_instance); return *s_instance;
 	}
 
-	void ParticleSystem::UpdateSmokeEmitters(const Camera& camera, float deltaTime)
+	void ParticleSystem::UpdateSmokeEmitters(const Camera& camera, const std::chrono::steady_clock::time_point& currentTime, float deltaTime)
 	{
+		if (deltaTime == 0) return;
+
 		uint32_t particleNum = 0;
 		for (auto& emitter : m_smokeEmitters)
 		{
-			emitter.Update(deltaTime);
+			emitter.Update(currentTime, deltaTime);
 			particleNum += emitter.GetParticleNum();
 		}
 

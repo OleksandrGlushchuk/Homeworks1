@@ -3,7 +3,6 @@
 #include "../OpaqueInstances.h"
 #include "../EmissiveInstances.h"
 #include "../DissolubleInstances.h"
-#include "../GrassField.h"
 
 namespace engine
 {
@@ -25,7 +24,6 @@ namespace engine
 		}
 	public:
 		DissolubleInstances dissolubleInstances;
-		GrassField grassField;
 
 		static void init();
 		static void deinit();
@@ -62,13 +60,11 @@ namespace engine
 		void renderSceneDepthToCubemaps()
 		{
 			opaqueInstances.renderSceneDepthToCubemaps();
-			grassField.renderSceneDepthToCubemaps();
 		}
 
 		void renderSceneDepthForDirectionalLights()
 		{
 			opaqueInstances.renderSceneDepthForDirectionalLights();
-			grassField.renderSceneDepthForDirectionalLights();
 		}
 
 		void render()
