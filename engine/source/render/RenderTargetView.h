@@ -1,7 +1,6 @@
 #pragma once
 #include "DxRes.hpp"
-#include <functional>
-static	FLOAT clearColor[4] = { 0.0f, 0.0f, 0.f, 0.f };
+static	FLOAT clearColor[4] = { 0.0f, 0.0f, 0.f, 1.f };
 namespace engine
 {
 	class RenderTargetView
