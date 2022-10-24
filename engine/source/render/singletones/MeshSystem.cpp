@@ -112,6 +112,46 @@ namespace engine
 		return result;
 	}
 
+	bool MeshSystem::findIntersectionOpaque(const ray& _ray, engine::MeshIntersection& out_intersection, uint32_t& out_transformID, uint16_t &out_meshID)
+	{
+		uint32_t out_materialIndex, out_instanceIndex, transformID;
+		uint16_t meshID;
+		bool result = false;
+		const Matr<4>* transform = nullptr;
+		const Matr<4>* mesh_to_model = nullptr;
+		for (ModelID& modelID : opaqueInstances.m_modelIDs)
+		{
+			auto& model = opaqueInstances.m_modelInstances[modelID.model_index];
+			for (uint32_t i = 0; i < model.meshInstances.size(); ++i)
+			{
+				GetMaterialAndInstanceIndex<OpaqueInstances>(modelID, i, out_materialIndex, out_instanceIndex);
+				auto& meshInstance = model.meshInstances[i];
+
+				transformID = meshInstance.materialInstances[out_materialIndex].instances[out_instanceIndex].transform_id;
+				meshID = meshInstance.materialInstances[out_materialIndex].instances[out_instanceIndex].meshID;
+
+				const Matr<4>& transformInv = engine::TransformSystem::instance().m_transforms[transformID].getTransformInvMatrix();
+				Matr<4> InvMatr = transformInv * model.model->m_meshes[i].meshToModelMatrix.invert();
+
+				ray model_ray = _ray;
+				model_ray.origin.mult(InvMatr);
+				model_ray.direction.mult(InvMatr, 0);
+
+				if (model.model->m_meshes[i].triangleOctree.intersect(model_ray, out_intersection))
+				{
+					out_transformID = transformID;
+					out_meshID = meshID;
+					transform = &engine::TransformSystem::instance().m_transforms[transformID].getTransformMatrix();
+					mesh_to_model = &model.model->m_meshes[i].meshToModelMatrix;
+					result = true;
+				}
+			}
+		}
+		if (transform && mesh_to_model)
+			out_intersection.pos.mult((*mesh_to_model) * (*transform));
+		return result;
+	}
+
 	void MeshSystem::addInstance(const std::shared_ptr<Model>& model, const std::vector<OpaqueInstances::Material>& material, const OpaqueInstances::Instance& _instance)
 	{
 		OpaqueInstances::ModelInstance* modelPtr = nullptr;
@@ -128,7 +168,15 @@ namespace engine
 		}
 		if (modelPtr == nullptr)
 		{
-			opaqueInstances.m_modelInstances.push_back(OpaqueInstances::ModelInstance(model, material, _instance));
+			auto& mod_inst = opaqueInstances.m_modelInstances.emplace_back(OpaqueInstances::ModelInstance(model, material, _instance));
+			for (auto& mesh : mod_inst.meshInstances)
+			{
+				for (auto& inst : mesh.materialInstances[0].instances)
+				{
+					inst.meshID = m_meshIDsCounter++;
+				}
+			}
+
 			modelID.model_index = opaqueInstances.m_modelInstances.size()-1;
 			auto& newModel = opaqueInstances.m_modelInstances.back();
 			newModel.meshIDs.resize(newModel.model->m_meshes.size() * 2, 0);
@@ -147,7 +195,8 @@ namespace engine
 				{
 					if (modelPtr->meshInstances[i].materialInstances[j].material == material[i])
 					{
-						modelPtr->meshInstances[i].materialInstances[j].instances.push_back(_instance);
+						auto& inst = modelPtr->meshInstances[i].materialInstances[j].instances.emplace_back(_instance);
+						inst.meshID = m_meshIDsCounter++;
 						modelPtr->meshIDs[modelID.meshesBlock_index + (i * 2)] = j; //MATERIAL_INDEX
 						modelPtr->meshIDs[modelID.meshesBlock_index + (i * 2 + 1)] = modelPtr->meshInstances[i].materialInstances[j].instances.size() - 1; //INSTANCE_INDEX
 						need_to_add_material_instance = false;
@@ -156,9 +205,9 @@ namespace engine
 				}
 				if (need_to_add_material_instance)
 				{
-					modelPtr->meshInstances[i].materialInstances.push_back(
+					auto& mat_inst = modelPtr->meshInstances[i].materialInstances.emplace_back(
 							OpaqueInstances::MaterialInstance(material[i], _instance));
-
+					mat_inst.instances[0].meshID = m_meshIDsCounter++;
 					modelPtr->meshIDs[modelID.meshesBlock_index + (i * 2)] = modelPtr->meshInstances[i].materialInstances.size() - 1; //MATERIAL_INDEX
 					modelPtr->meshIDs[modelID.meshesBlock_index + (i * 2 + 1)] = 0; //INSTANCE_INDEX
 				}

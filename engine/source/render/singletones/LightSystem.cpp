@@ -27,7 +27,7 @@ namespace engine
 
 	void LightSystem::addPointLight(const Vec3& _irradiance, float distance, const Vec3& _position, const float _radius, const std::shared_ptr<Model>& model)
 	{
-		ALWAYS_ASSERT(m_pointLights.size() < MAX_POINT_LIGHTS, "cannot add more pointLights than MAX_POINT_LIGHTS." 
+		ALWAYS_ASSERT(m_pointLights.size() < MAX_POINT_LIGHTS, "cannot add more pointLights than MAX_POINT_LIGHTS."
 			"Change this constant in globals.hlsli and LightSystem.h");
 
 		m_pointLights.emplace_back(_irradiance, distance, _position, _radius);
@@ -40,6 +40,34 @@ namespace engine
 		engine::MeshSystem::instance().addInstance(model, EmissiveInstances::Instance(pointLight.radiance, pointLight.transformID));
 
 		m_viewProjPointLight.resize(m_viewProjPointLight.size() + 6);
+	}
+
+	void LightSystem::updatePointLightInstanceBuffer()
+	{
+		uint32_t size = m_pointLights.size();
+		
+		m_pointLightInstanceBuffer.Init(size, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
+		auto mapping = m_pointLightInstanceBuffer.Map();
+		PointLightInstanceBuffer* dst = (PointLightInstanceBuffer*)mapping.pData;
+		for (uint32_t i = 0; i < size; ++i)
+		{
+			std::copy(m_viewProjPointLight.begin() + i * 6, m_viewProjPointLight.begin() + (i + 1) * 6, dst[i].viewProj);
+		}
+		m_pointLightInstanceBuffer.Unmap();
+	}
+
+	void LightSystem::updateDirectionalLightInstanceBuffer()
+	{
+		uint32_t size = m_directionalLights.size();
+
+		m_directionalLightInstanceBuffer.Init(size, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
+		auto mapping = m_directionalLightInstanceBuffer.Map();
+		DirectionalLightInstanceBuffer* dst = (DirectionalLightInstanceBuffer*)mapping.pData;
+		for (uint32_t i = 0; i < size; ++i)
+		{
+			dst[i].viewProj = m_viewProjDirectionalLight[i];
+		}
+		m_directionalLightInstanceBuffer.Unmap();
 	}
 
 	void LightSystem::addDirectionalLight(const Vec3& radiance, const Vec3& direction)

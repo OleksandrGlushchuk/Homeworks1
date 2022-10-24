@@ -24,10 +24,15 @@ struct VS_INPUT
     float4 transform_y : TRANSFORM_Y;
     float4 transform_z : TRANSFORM_Z;
     float4 transform_w : TRANSFORM_W;
+    float creationTime : CREATION_TIME;
+    float lifeTime : LIFE_TIME;
 };
 struct VS_OUT
 {
     float4 world_pos : WORLD_POS;
+    float2 tex_coord : TEXCOORD0;
+    nointerpolation float creationTime : CREATION_TIME;
+    nointerpolation float lifeTime : LIFE_TIME;
 };
 
 VS_OUT vs_main(VS_INPUT input)
@@ -39,6 +44,9 @@ VS_OUT vs_main(VS_INPUT input)
     pos = mul(pos, TransformMatrix);
     
     output.world_pos = pos;
+    output.tex_coord = input.tex_coord;
+    output.lifeTime = input.lifeTime;
+    output.creationTime = input.creationTime;
     
     return output;
 }
@@ -47,6 +55,9 @@ struct GS_OUT
 {
     float4 position : SV_Position;
     nointerpolation uint slice : SV_RenderTargetArrayIndex;
+    float2 tex_coord : TEXCOORD0;
+    nointerpolation float creationTime : CREATION_TIME;
+    nointerpolation float lifeTime : LIFE_TIME;
 };
 
 [maxvertexcount(18)]
@@ -61,8 +72,22 @@ void gs_main(triangle VS_OUT input[3], inout TriangleStream<GS_OUT> outputStream
             GS_OUT output;
             output.slice = g_lightIndex * 6 + face;
             output.position = mul(input[i].world_pos, g_viewProjPointLight[face]);
+            output.tex_coord = input[i].tex_coord;
+            output.lifeTime = input[i].lifeTime;
+            output.creationTime = input[i].creationTime;
+            
             outputStream.Append(output);
         }
         outputStream.RestartStrip();
     }
+}
+
+Texture2D<float> g_dissolubleMap : register(t4);
+
+float4 ps_main(GS_OUT input) : SV_Target
+{
+    float dissolutionValue = g_dissolubleMap.Sample(g_samplerState, input.tex_coord);
+    float currentLifeDuration = (g_time - input.creationTime) / input.lifeTime;
+    float alpha = currentLifeDuration < dissolutionValue ? 0 : 1;
+    return float4(0, 0, 0, alpha);
 }

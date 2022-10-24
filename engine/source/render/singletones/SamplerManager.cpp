@@ -103,6 +103,19 @@ namespace engine
 
 			CreateSamplerState(samplerDesc, "ss_cmmlmp");
 		}
+		{
+			D3D11_SAMPLER_DESC samplerDesc;
+			samplerDesc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+			samplerDesc.AddressU = samplerDesc.AddressV = samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_CLAMP;
+			samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
+			samplerDesc.ComparisonFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
+			samplerDesc.MaxAnisotropy = 1;
+			samplerDesc.MinLOD = 0;
+			samplerDesc.MaxLOD = 4;
+			samplerDesc.MipLODBias = 0;
+
+			CreateSamplerState(samplerDesc, "ss_masked");
+		}
 	}
 
 	void SamplerManager::init()

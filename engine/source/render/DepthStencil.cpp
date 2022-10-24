@@ -73,7 +73,6 @@ namespace engine
 	{
 		m_sampleCount = sampleCount;
 		initDepthStencilResource(width, height, sampleCount);
-		m_depthStencilState = DepthStencilManager::instance().GetDepthStencilState("default");
 		initDepthStencilView();
 	}
 
@@ -81,7 +80,6 @@ namespace engine
 	{
 		m_sampleCount = 1;
 		initCubemapArrayDepthStencilResource(size, numCubemaps);
-		m_depthStencilState = DepthStencilManager::instance().GetDepthStencilState("default");
 		initCubemapArrayDepthStencilView(numCubemaps);
 	}
 
@@ -120,7 +118,6 @@ namespace engine
 	{
 		m_sampleCount = 1;
 		initTexture2DArrayDepthStencilResource(size, numTextures);
-		m_depthStencilState = DepthStencilManager::instance().GetDepthStencilState("default");
 		initTexture2DArrayDepthStencilView(numTextures);
 	}
 
@@ -130,14 +127,9 @@ namespace engine
 		initDepthStencilView();
 	}
 
-	void DepthStencil::BindDepthStencilState()
-	{
-		engine::s_deviceContext->OMSetDepthStencilState(m_depthStencilState.ptr(), 1);
-	}
-
 	void DepthStencil::Clear()
 	{
-		s_deviceContext->ClearDepthStencilView(m_depthStencilView.ptr(), D3D11_CLEAR_FLAG::D3D11_CLEAR_DEPTH, 0.0f, 0); 
+		s_deviceContext->ClearDepthStencilView(m_depthStencilView.ptr(), D3D11_CLEAR_FLAG::D3D11_CLEAR_DEPTH | D3D11_CLEAR_FLAG::D3D11_CLEAR_STENCIL, 0.0f, 0);
 	}
 
 }

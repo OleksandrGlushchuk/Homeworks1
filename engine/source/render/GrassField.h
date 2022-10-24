@@ -29,7 +29,6 @@ namespace engine
 
 		VertexBuffer<GrassInstance> m_instanceBuffer;
 		ConstantBuffer<MaterialConstantBuffer> m_materialConstantBuffer;
-		DxResPtr<ID3D11DepthStencilState> m_depthStensilState;
 
 		DxResPtr<ID3D11BlendState> m_blendState;
 		DxResPtr<ID3D11RasterizerState> m_rasterizerState;
@@ -41,6 +40,9 @@ namespace engine
 		void render();
 		void renderSceneDepthToCubemaps();
 		void renderSceneDepthForDirectionalLights();
-
+		uint32_t NumInstances()
+		{
+			return m_instances.size();
+		}
 	};
 }

@@ -38,6 +38,9 @@ namespace engine
 
 		HRESULT result = engine::s_device->CreateRasterizerState(&desc, &m_rasteriserState["front_and_back"].ptr());
 		ALWAYS_ASSERT(result >= 0 && "CreateRasterizerState");
+		desc.CullMode = D3D11_CULL_FRONT;
+		result = engine::s_device->CreateRasterizerState(&desc, &m_rasteriserState["back"].ptr());
+		ALWAYS_ASSERT(result >= 0 && "CreateRasterizerState");
 	}
 	DxResPtr<ID3D11RasterizerState>& RasteriserStateManager::GetRasteriserState(const std::string& key)
 	{

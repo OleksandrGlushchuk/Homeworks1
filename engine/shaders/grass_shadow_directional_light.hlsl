@@ -1,4 +1,5 @@
 #include "globals.hlsli"
+#include "wind.hlsli"
 
 static const uint TEXTURES_IN_ONE_BUSH = 6;
 static const uint MAX_VERTEX_COUNT = TEXTURES_IN_ONE_BUSH * 3;
@@ -25,10 +26,11 @@ struct GS_OUT
     float2 tex_coord : TEXCOORD0;
 };
 
-cbuffer LightIndex : register(b2)
+cbuffer DirectionalLightShadowBuffer : register(b2)
 {
     uint g_lightIndex;
-    float3 paddingPLI;
+    float3 paddingDLSB;
+    float4x4 g_viewProjDirectionalLight;
 }
 
 GS_INPUT vs_main(VS_INPUT input, uint vertexID : SV_VertexID)
@@ -52,6 +54,20 @@ void gs_main(triangle GS_INPUT input[3], inout TriangleStream<GS_OUT> outputStre
 {
     float angle = M_PI / TEXTURES_IN_ONE_BUSH;
     float angle_cos, angle_sin;
+    
+    float2 inst_pos = input[0].grass_pos.xz;
+    float sw, cw;
+    sw = WIND_DIR.y;
+    cw = WIND_DIR.x;
+    
+    float3x3 windMatr = float3x3(float3(cw, 0, -sw), float3(0, 1, 0), float3(sw, 0, cw));
+    float3x3 windInvMatr = transpose(windMatr);
+    float wangle = computeGrassAngle(inst_pos, float2(1, 0));
+    wangle = abs(wangle) > 0.01f ? wangle : sign(wangle) * 0.01f;
+    float R = 1.f / wangle;
+
+    sincos(wangle, sw, cw);
+    float3x3 windRotationMatrix = float3x3(float3(cw, -sw, 0), float3(sw, cw, 0), float3(0, 0, 1));
 
     [unroll]
     for (uint i = 0; i < TEXTURES_IN_ONE_BUSH; ++i)
@@ -66,10 +82,21 @@ void gs_main(triangle GS_INPUT input[3], inout TriangleStream<GS_OUT> outputStre
             
             float3 pos = input[vertex].vertex_pos;
             pos = mul(pos, rotate_y);
-            pos += input[vertex].grass_pos;
 
+            if (pos.y > 0)
+            {
+                pos = mul(pos, windMatr);
+                
+                pos.x -= R;
+                pos = mul(pos, windRotationMatrix);
+                
+                pos.x += R;
+                pos = mul(pos, windInvMatr);
+            }
+            
+            pos += input[vertex].grass_pos;
             output.slice = g_lightIndex;
-            output.position = mul(float4(pos, 1.f), g_viewProjDirectionalLight[g_lightIndex]);
+            output.position = mul(float4(pos, 1.f), g_viewProjDirectionalLight);
             output.tex_coord = input[vertex].tex_coord;
             
             outputStream.Append(output);

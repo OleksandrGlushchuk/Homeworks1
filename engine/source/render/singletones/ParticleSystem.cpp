@@ -2,6 +2,7 @@
 #include "BlendStateManager.h"
 #include "DepthStencilManager.h"
 #include "ModelManager.h"
+#include "LightSystem.h"
 #include "../../math/camera.h"
 static float blendFactor[4] = { 0.f,0.f,0.f,0.f };
 static UINT sampleMask = 0xffffffff;
@@ -15,6 +16,7 @@ namespace engine
 		s_instance = new ParticleSystem;
 		s_instance->m_blendState = BlendStateManager::instance().GetBlendState("default");
 		s_instance->m_readonlyDepthStencilState = DepthStencilManager::instance().GetDepthStencilState("readonly");
+
 
 		s_instance->m_smokeEMVA.Load(L"engine/assets/Smoke/test_EMVA_1.dds");
 		s_instance->m_smokeRLT.Load(L"engine/assets/Smoke/test_RLT_1.dds");
@@ -87,7 +89,7 @@ namespace engine
 		engine::s_deviceContext->OMSetDepthStencilState(m_readonlyDepthStencilState.ptr(), 1);
 
 		engine::s_deviceContext->PSSetShaderResources(1 - m_depthTextureRegisterIndex + 3, 1, SRVnullptr);
-		engine::s_deviceContext->PSSetShaderResources(m_depthTextureRegisterIndex + 3, 1, &m_depthSRV.ptr());
+		m_depthTexture.Bind(m_depthTextureRegisterIndex + 3);
 
 		if (m_particleInstanceBuffer.Size() == 0)
 			return;
@@ -100,6 +102,8 @@ namespace engine
 		m_particleConstantBuffer.BindVS(1);
 
 		m_particleModel->m_vertexBuffer.Bind(0);
+		m_particleModel->m_indexBuffer.Bind();
+
 		m_particleInstanceBuffer.Bind(1);
 
 		s_deviceContext->DrawIndexedInstanced(m_particleModel->m_meshes[0].indexNum, m_particleInstanceBuffer.Size(), 0, 0, 0);
@@ -107,29 +111,5 @@ namespace engine
 		engine::s_deviceContext->OMSetBlendState(nullptr, nullptr, sampleMask);
 
 		engine::s_deviceContext->PSSetShaderResources(m_depthTextureRegisterIndex + 3, 1, SRVnullptr);
-	}
-	
-	void ParticleSystem::CreateDepthSRVDesc(uint32_t sampleCount)
-	{
-		if (sampleCount == 1)
-		{
-			s_instance->m_depthSRVDesc = CD3D11_SHADER_RESOURCE_VIEW_DESC(D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D, DXGI_FORMAT_R24_UNORM_X8_TYPELESS, 0, 1);
-			m_depthTextureRegisterIndex = 0;
-		}
-		else //DELETE
-		{
-			s_instance->m_depthSRVDesc = CD3D11_SHADER_RESOURCE_VIEW_DESC(D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2DMS, DXGI_FORMAT_R24_UNORM_X8_TYPELESS);
-			m_depthTextureRegisterIndex = 1;
-		}
-	}
-
-	void ParticleSystem::CreateDepthSRV()
-	{
-		HRESULT result = engine::s_device->CreateShaderResourceView(m_depthTexture.ptr(), &m_depthSRVDesc, m_depthSRV.reset());
-		ALWAYS_ASSERT(result >= 0 && "CreateShaderResourceView");
-	}
-	void ParticleSystem::CopyDepthTexture(ID3D11Texture2D* src)
-	{
-		engine::s_deviceContext->CopyResource(m_depthTexture.ptr(), src);
 	}
 }

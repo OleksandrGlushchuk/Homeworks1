@@ -30,7 +30,8 @@ namespace engine
 		static void deinit();
 		static Globals& instance();
 		void Bind();
-		void UpdatePerFrameBuffer(const Camera& camera, const std::chrono::steady_clock::time_point& currentTime, uint32_t sampleCount);
+		void UpdatePerFrameBuffer(const Camera& camera, const std::chrono::steady_clock::time_point& currentTime, 
+			uint32_t sampleCount, uint32_t _screenWidth, uint32_t _screenHeight);
 		~Globals();
 	};
 }

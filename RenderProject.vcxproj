@@ -93,13 +93,46 @@
     <None Include="engine\assets\Samurai\Samurai.fbx" />
     <None Include="engine\shaders\environment.hlsli" />
     <None Include="engine\shaders\fullscreen.hlsli" />
+    <None Include="engine\shaders\gbuffer.hlsli" />
+    <None Include="engine\shaders\gbuffer_unpack.hlsli" />
     <None Include="engine\shaders\globals.hlsli" />
+    <None Include="engine\shaders\octahedron.hlsli" />
     <None Include="engine\shaders\opaque_helpers.hlsli" />
     <None Include="engine\shaders\pbr_helpers.hlsli" />
+    <None Include="engine\shaders\pbr_structs.hlsli" />
     <None Include="engine\shaders\resolve_helpers.hlsli" />
     <None Include="engine\shaders\shadow_helpers.hlsli" />
+    <None Include="engine\shaders\wind.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="engine\shaders\decal.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\deferred_dl_grass_shading.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\deferred_dl_shading.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\deferred_env_grass_shading.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\deferred_env_shading.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\deferred_pl_grass_shading.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\deferred_pl_shading.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="engine\shaders\directional_light_shadow.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -107,6 +140,14 @@
     <FxCompile Include="engine\shaders\dissoluble.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\dissoluble_dl_shadow.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\dissoluble_pl_shadow.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="engine\shaders\emissive.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -186,6 +227,7 @@
     <ClInclude Include="engine\source\render\RenderTargetView.h" />
     <ClInclude Include="engine\source\render\Shader.h" />
     <ClInclude Include="engine\source\render\singletones\BlendStateManager.h" />
+    <ClInclude Include="engine\source\render\singletones\DecalSystem.h" />
     <ClInclude Include="engine\source\render\singletones\DepthStencilManager.h" />
     <ClInclude Include="engine\source\render\singletones\globals.hpp" />
     <ClInclude Include="engine\source\render\singletones\LightSystem.h" />
@@ -225,6 +267,7 @@
     <ClCompile Include="engine\source\render\OpaqueInstances.cpp" />
     <ClCompile Include="engine\source\render\PerFrameBuffer.cpp" />
     <ClCompile Include="engine\source\render\singletones\BlendStateManager.cpp" />
+    <ClCompile Include="engine\source\render\singletones\DecalSystem.cpp" />
     <ClCompile Include="engine\source\render\singletones\DepthStencilManager.cpp" />
     <ClCompile Include="engine\source\render\singletones\globals.cpp" />
     <ClCompile Include="engine\source\render\singletones\LightSystem.cpp" />

@@ -400,9 +400,9 @@ namespace engine
 					setPos(side, vertex[2], quad[2]);
 
 					{
-						Vec3 AB = vertex[1].position - vertex[0].position;
-						Vec3 AC = vertex[2].position - vertex[0].position;
-						vertex[0].normal = vertex[1].normal = vertex[2].normal = Vec3::cross(AC,AB).normalized();
+						vertex[0].normal = vertex[0].position;
+						vertex[1].normal = vertex[1].position;
+						vertex[2].normal = vertex[2].position;
 					}
 
 					triangle[0] = TriangleIndices(vertex - mesh.vertices.data() + 2, vertex - mesh.vertices.data() + 1, vertex - mesh.vertices.data());
@@ -416,9 +416,9 @@ namespace engine
 					setPos(side, vertex[2], quad[2]);
 
 					{
-						Vec3 AB = vertex[1].position - vertex[0].position;
-						Vec3 AC = vertex[2].position - vertex[0].position;
-						vertex[0].normal = vertex[1].normal = vertex[2].normal = Vec3::cross(AC, AB).normalized();
+						vertex[0].normal = vertex[0].position;
+						vertex[1].normal = vertex[1].position;
+						vertex[2].normal = vertex[2].position;
 					}
 
 					triangle[0] = TriangleIndices(vertex - mesh.vertices.data()+2, vertex - mesh.vertices.data() + 1, vertex - mesh.vertices.data());

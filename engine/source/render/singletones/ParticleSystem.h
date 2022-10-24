@@ -34,10 +34,7 @@ namespace engine
 		Texture m_smokeEMVA;
 		Texture m_smokeRLT;
 		Texture m_smokeBotBF;
-
-		DxResPtr<ID3D11ShaderResourceView> m_depthSRV;
-		D3D11_SHADER_RESOURCE_VIEW_DESC m_depthSRVDesc;
-
+		Texture m_depthTexture;
 		ConstantBuffer<ParticleConstantBuffer> m_particleConstantBuffer;
 
 		Shader m_shader;
@@ -50,11 +47,18 @@ namespace engine
 		static void init();
 		static void deinit();
 		static ParticleSystem& instance();
-		DxResPtr<ID3D11Texture2D> m_depthTexture;
+		
 		void render();
-		void CreateDepthSRVDesc(uint32_t sampleCount);
-		void CreateDepthSRV();
-		void CopyDepthTexture(ID3D11Texture2D* src);
+
+		void CreateCopyDepthTexture(const D3D11_TEXTURE2D_DESC& desc)
+		{
+			m_depthTexture.CreateCopy(desc);
+		}
+		void CopyDepthTexture(DxResPtr<ID3D11Texture2D>& srcResource)
+		{
+			m_depthTexture.Copy(srcResource);
+		}
+
 		void AddSmokeEmitter(const SmokeEmitter& smokeEmitter) { m_smokeEmitters.emplace_back(smokeEmitter); }
 		void UpdateSmokeEmitters(const Camera& camera, const std::chrono::steady_clock::time_point& currentTime, float deltaTime);
 	};

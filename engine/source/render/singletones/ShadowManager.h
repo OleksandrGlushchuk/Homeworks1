@@ -3,6 +3,7 @@
 #include "../ConstantBuffer.h"
 #include "../DepthStencil.h"
 #include "../Shader.h"
+#include "../../math/Matr.h"
 namespace engine
 {
 	class ShadowManager
@@ -14,20 +15,7 @@ namespace engine
 		ShadowManager(ShadowManager&& other) noexcept = delete;
 		ShadowManager& operator=(ShadowManager&& other) noexcept = delete;
 
-		struct LightIndexBuffer
-		{
-			LightIndexBuffer() {}
-			LightIndexBuffer(uint32_t index) : lightIndex(index) {}
-			uint32_t lightIndex;
-			float padding[3];
-		};
-		struct ResolutionBuffer
-		{
-			ResolutionBuffer(){}
-			ResolutionBuffer(float _resolution) : resolution(_resolution) {}
-			float resolution;
-			float padding[3];
-		};
+		
 		D3D11_SHADER_RESOURCE_VIEW_DESC m_srvPointLightShadowDesc;
 		DepthStencil m_pointLightShadowDepthStencil;
 
@@ -38,6 +26,39 @@ namespace engine
 		float m_directionalLightShadowDistance;
 		float m_pointLightDSResolution;
 	public:
+		struct PointLightShadowBuffer
+		{
+			PointLightShadowBuffer() {}
+			explicit PointLightShadowBuffer(uint32_t _lightIndex);
+
+			uint32_t lightIndex;
+			float padding[3];
+			Matr<4> viewProjPointLight[6];
+		};
+		struct DirectionalLightShadowBuffer
+		{
+			DirectionalLightShadowBuffer() {}
+			explicit DirectionalLightShadowBuffer(uint32_t _lightIndex);
+
+			uint32_t lightIndex;
+			float padding[3];
+			Matr<4> viewProjDirectionalLight;
+		};
+		struct ResolutionBuffer
+		{
+			ResolutionBuffer() {}
+			ResolutionBuffer(float _resolution) : resolution(_resolution) {}
+			float resolution;
+			float padding[3];
+		};
+
+		DxResPtr<ID3D11ShaderResourceView> m_srvPointLightShadow;
+		DxResPtr<ID3D11ShaderResourceView> m_srvDirectionalLightShadow;
+		ConstantBuffer<DirectionalLightShadowBuffer> m_directionalLightShadowBuffer;
+
+		ConstantBuffer<PointLightShadowBuffer> m_pointLightShadowBuffer;
+		ConstantBuffer<ResolutionBuffer> m_pointLightDSResolutionBuffer;
+
 		static void init();
 		static void deinit();
 		static ShadowManager& instance();
@@ -71,13 +92,11 @@ namespace engine
 			m_pointLightDSResolutionBuffer.Update(m_pointLightDSResolution);
 		}
 
-		DxResPtr<ID3D11ShaderResourceView> m_srvPointLightShadow;
-		DxResPtr<ID3D11ShaderResourceView> m_srvDirectionalLightShadow;
-
-		ConstantBuffer<LightIndexBuffer> m_lightIndexBuffer;
-		ConstantBuffer<ResolutionBuffer> m_pointLightDSResolutionBuffer;
 		Shader m_pointLightOpaqueShadowShader;
 		Shader m_directionalLightOpaqueShadowShader;
+
+		Shader m_pointLightDissolubleShadowShader;
+		Shader m_directionalLightDissolubleShadowShader;
 
 		Shader m_pointLightGrassShadowShader;
 		Shader m_directionalLightGrassShadowShader;

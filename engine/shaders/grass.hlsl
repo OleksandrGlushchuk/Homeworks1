@@ -1,5 +1,6 @@
 #include "globals.hlsli"
-
+#include "gbuffer.hlsli"
+#include "wind.hlsli"
 static const uint TEXTURES_IN_ONE_BUSH = 6;
 static const uint MAX_VERTEX_COUNT = TEXTURES_IN_ONE_BUSH * 3;
 
@@ -37,6 +38,8 @@ struct PS_INPUT
     float3 bitangent : PBITANGENT;
 };
 
+
+
 GS_INPUT vs_main(VS_INPUT input, uint vertexID : SV_VertexID)
 {
     GS_INPUT output;
@@ -59,31 +62,65 @@ GS_INPUT vs_main(VS_INPUT input, uint vertexID : SV_VertexID)
 [maxvertexcount(MAX_VERTEX_COUNT)]
 void gs_main(triangle GS_INPUT input[3], inout TriangleStream<PS_INPUT> outputStream)
 {
-    float angle = M_PI / TEXTURES_IN_ONE_BUSH;
+    float bush_angle = M_PI / TEXTURES_IN_ONE_BUSH;
+
+    float2 inst_pos = input[0].grass_pos.xz;
+    float sw, cw;
+    sw = WIND_DIR.y;
+    cw = WIND_DIR.x;
+    
+    float3x3 windMatr = float3x3(float3(cw, 0, -sw), float3(0, 1, 0), float3(sw, 0, cw));
+    float3x3 windInvMatr = transpose(windMatr);
+    float wangle = computeGrassAngle(inst_pos, float2(1,0));
+    wangle = abs(wangle) > 0.01f ? wangle : sign(wangle) * 0.01f;
+    float R = 1.f / wangle;
+
+    sincos(wangle, sw, cw);
+    float3x3 windRotationMatrix = float3x3(float3(cw, -sw, 0), float3(sw, cw, 0), float3(0, 0, 1));
     
     [unroll]
     for (uint i = 0; i < TEXTURES_IN_ONE_BUSH; ++i)
     {
         float angle_cos, angle_sin;
-        sincos(angle * i, angle_sin, angle_cos);
+        sincos(bush_angle * i, angle_sin, angle_cos);
         float3x3 rotate_y = float3x3(float3(angle_cos, 0, angle_sin), float3(0, 1, 0), float3(-angle_sin, 0, angle_cos));
         
         [unroll]
         for (uint vertex = 0; vertex < 3; ++vertex)
         {
             PS_INPUT output;
-            
             float3 pos = input[vertex].vertex_pos;
             pos = mul(pos, rotate_y);
             output.normal = mul(input[vertex].normal, rotate_y);
             output.tangent = mul(input[vertex].tangent, rotate_y);
             output.bitangent = mul(input[vertex].bitangent, rotate_y);
+
+            if (pos.y > 0)
+            {
+                pos = mul(pos, windMatr);
+                output.normal = mul(output.normal, windMatr);
+                output.tangent = mul(output.tangent, windMatr);
+                output.bitangent = mul(output.bitangent, windMatr);
+                
+                pos.x -= R;
+                pos = mul(pos, windRotationMatrix);
+                output.normal = mul(output.normal, windRotationMatrix);
+                output.tangent = mul(output.tangent, windRotationMatrix);
+                output.bitangent = mul(output.bitangent, windRotationMatrix);
+                
+                pos.x += R;
+                pos = mul(pos, windInvMatr);
+                output.normal = mul(output.normal, windInvMatr);
+                output.tangent = mul(output.tangent, windInvMatr);
+                output.bitangent = mul(output.bitangent, windInvMatr);
+            }
+           
+
             pos += input[vertex].grass_pos;
-            
             output.world_pos = pos;
-            
             output.position = mul(float4(pos, 1), g_viewProj);
             output.tex_coord = input[vertex].tex_coord;
+           
             outputStream.Append(output);
         }
         outputStream.RestartStrip();
@@ -102,50 +139,42 @@ cbuffer MaterialConstantBuffer : register(b1)
     float2 paddingMCB;
 }
 
-#include "pbr_helpers.hlsli"
-#include "environment.hlsli"
-#include "opaque_helpers.hlsli"
-#include "shadow_helpers.hlsli"
 
-static const float TRANSLUCENCY_POWER = 40;
-
-float4 ps_main(PS_INPUT input, bool isFrontFace : SV_IsFrontFace) : SV_Target
+float4 grassRGBA(float2 tc)
 {
+    float4 color;
+    color.xyz = g_colorMap.Sample(g_maskedSamplerState, tc).xyz;
+    color.a = g_opacityMap.Sample(g_maskedSamplerState, tc);
+
+    const int FADING_PIXELS = 1;
+    const float THRESHOLD = 0.1;
+    float deltaAlpha = min(1.0, abs(ddx(color.a)) + abs(ddy(color.a)));
+    float edgeDistance = (color.a - THRESHOLD) / deltaAlpha;
+    color.a = saturate(edgeDistance / FADING_PIXELS);
+	
+    return color;
+}
+
+#include "opaque_helpers.hlsli"
+
+PS_OUTPUT ps_main(PS_INPUT input, bool isFrontFace : SV_IsFrontFace)
+{
+    float4 grassColor = grassRGBA(input.tex_coord);
+    if (grassColor.a < 0.01f)
+    {
+        discard;
+        PS_OUTPUT output;
+        return output;
+    }
+    
     Surface surface;
-    View view;
+    fillSurfaceStructure(surface, input.tex_coord, input.normal, 
+    input.tangent, input.bitangent, g_translucency.Sample(g_samplerState,input.tex_coord), isFrontFace);
     
-    fillSurfaceStructure(surface, input.tex_coord, input.normal, input.tangent, input.bitangent);
-    fillViewStructure(view, isFrontFace ? surface.map_normal : -surface.map_normal, input.world_pos);
-        
-    float shadowFactor;
-    float3 hdrColor = float3(0, 0, 0);
-    float3 pointToLight;
-    float3 transmission = float3(0, 0, 0);
-    float3 transmittanceRGB = g_translucency.Sample(g_samplerState, input.tex_coord);
-    float NdotL;
-    for (uint i = 0; i < g_pointLightNum; ++i)
-    {
-        pointToLight = g_pointLight[i].position - input.world_pos.xyz;
-        NdotL = dot(normalize(pointToLight), surface.map_normal);
-        
-        transmission = NdotL < 0 ? g_pointLight[i].radiance * transmittanceRGB * pow(-NdotL, TRANSLUCENCY_POWER) : 0;
-        
-        shadowFactor = calcPointLightShadowFactor(input.world_pos.xyz, surface.map_normal, i);
-        hdrColor += (1.f - shadowFactor) * (transmission + CalculatePointLight(g_pointLight[i], pointToLight, view, surface));
-    }
+    surface.albedo = grassColor.xyz;
+    surface.albedo *= g_AOMap.Sample(g_samplerState, input.tex_coord);
     
-    for (uint j = 0; j < g_directionalLightNum; ++j)
-    {
-        NdotL = dot(g_directionalLight[j].direction, surface.map_normal);
-        
-        transmission = NdotL < 0 ? g_directionalLight[j].radiance * transmittanceRGB * pow(-NdotL, TRANSLUCENCY_POWER) : 0;
-        
-        shadowFactor = calcDirectionalLightShadowFactor(input.world_pos.xyz, view.PointToCameraNormalized, j);
-        hdrColor += (1.f - shadowFactor) * (transmission + CalculateDirectionalLight(g_directionalLight[j], view, surface));
-    }
-    hdrColor += addEnvironmentDiffuseReflection(surface);
-    hdrColor *= g_AOMap.Sample(g_samplerState, input.tex_coord);
-    float alpha = g_opacityMap.Sample(g_samplerState, input.tex_coord);
-    return float4(hdrColor, alpha);
+    PS_OUTPUT gbuffer = GBuffer(surface, 0);
+    return gbuffer;
 }
 

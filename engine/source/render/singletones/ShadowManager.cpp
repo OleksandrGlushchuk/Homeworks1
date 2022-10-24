@@ -8,7 +8,8 @@ namespace engine
 	{
 		ALWAYS_ASSERT(s_instance == nullptr);
 		s_instance = new ShadowManager;
-		s_instance->m_lightIndexBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
+		s_instance->m_pointLightShadowBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
+		s_instance->m_directionalLightShadowBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 		s_instance->m_pointLightDSResolutionBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 
 		s_instance->m_srvPointLightShadowDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
@@ -60,9 +61,8 @@ namespace engine
 		auto viewPort = CD3D11_VIEWPORT(0.f, 0.f, m_pointLightDSResolution, m_pointLightDSResolution);
 		engine::s_deviceContext->RSSetViewports(1, &viewPort);
 
-		m_pointLightShadowDepthStencil.BindDepthStencilState();
 		m_pointLightShadowDepthStencil.Clear();
-		engine::s_deviceContext->OMSetRenderTargets(0, nullptr, m_pointLightShadowDepthStencil.GetDepthStencilViewPtr());
+		engine::s_deviceContext->OMSetRenderTargets(0, nullptr, m_pointLightShadowDepthStencil.GetDepthStencilView().ptr());
 	}
 
 	void ShadowManager::BindDirectionalLightDepthStencils()
@@ -72,8 +72,18 @@ namespace engine
 		auto viewPort = CD3D11_VIEWPORT(0.f, 0.f, m_directionalLightDSResolution, m_directionalLightDSResolution);
 		engine::s_deviceContext->RSSetViewports(1, &viewPort);
 
-		m_directionalLightShadowDepthStencil.BindDepthStencilState();
 		m_directionalLightShadowDepthStencil.Clear();
-		engine::s_deviceContext->OMSetRenderTargets(0, nullptr, m_directionalLightShadowDepthStencil.GetDepthStencilViewPtr());
+		engine::s_deviceContext->OMSetRenderTargets(0, nullptr, m_directionalLightShadowDepthStencil.GetDepthStencilView().ptr());
+	}
+
+	ShadowManager::PointLightShadowBuffer::PointLightShadowBuffer(uint32_t _lightIndex) : lightIndex(_lightIndex)
+	{
+		const auto& pl_matrices = LightSystem::instance().getAllViewProjPointLight();
+		std::copy(pl_matrices.begin() + _lightIndex * 6, pl_matrices.begin() + (_lightIndex + 1) * 6, viewProjPointLight);
+	}
+
+	ShadowManager::DirectionalLightShadowBuffer::DirectionalLightShadowBuffer(uint32_t _lightIndex) : lightIndex(_lightIndex)
+	{
+		viewProjDirectionalLight = LightSystem::instance().getViewProjDirectionalLight(_lightIndex);
 	}
 }

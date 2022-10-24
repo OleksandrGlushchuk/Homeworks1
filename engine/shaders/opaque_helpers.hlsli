@@ -1,7 +1,9 @@
 #ifndef _OPAQUE_HELPERS_HLSLI_
 #define _OPAQUE_HELPERS_HLSLI_
+#include "globals.hlsli"
+#include "pbr_helpers.hlsli"
 
-void fillSurfaceStructure(out Surface surface, float2 tex_coord, float3 normal, float3 tangent, float3 bitangent)
+void fillSurfaceStructure(out Surface surface, float2 tex_coord, float3 normal, float3 tangent, float3 bitangent, float3 emission, bool isFrontFace)
 {
     surface.albedo = g_colorMap.Sample(g_samplerState, tex_coord).xyz;
     surface.metalness = g_hasMetalnessMap ? g_metalnessMap.Sample(g_samplerState, tex_coord) : g_metalnessValue;
@@ -19,14 +21,9 @@ void fillSurfaceStructure(out Surface surface, float2 tex_coord, float3 normal, 
     }
     else
         surface.map_normal = surface.geometry_normal;
+    
+    surface.emission = emission;
+    surface.isFrontFace = isFrontFace;
 }
-
-void fillViewStructure(out View view, float3 map_normal, float3 world_pos)
-{
-    view.PointToCameraNormalized = normalize(g_cameraPos - world_pos);
-    view.NdotV = max(dot(map_normal, view.PointToCameraNormalized), 0.001f);
-    view.reflectionDir = reflect(-view.PointToCameraNormalized, map_normal);
-}
-
 
 #endif

@@ -4,6 +4,7 @@
 #include "singletones/ShadowManager.h"
 #include "singletones/LightSystem.h"
 #include "singletones/DepthStencilManager.h"
+#include "singletones/SamplerManager.h"
 #include <vector>
 #include <random>
 #include <iterator>
@@ -30,9 +31,8 @@ namespace engine
 		m_grassAO.Load(L"engine/assets/Grass/AO.dds");
 		m_grassOpacity.Load(L"engine/assets/Grass/Opacity.dds");
 		m_grassTranslucency.Load(L"engine/assets/Grass/Translucency.dds");
-		m_blendState = BlendStateManager::instance().GetBlendState("alphaToCoverage");
 		m_rasterizerState = RasteriserStateManager::instance().GetRasteriserState("front_and_back");
-		m_depthStensilState = DepthStencilManager::instance().GetDepthStencilState("default");
+		m_blendState = BlendStateManager::instance().GetBlendState("alphaToCoverage");
 
 		ShadowManager::instance().m_pointLightGrassShadowShader.Init(L"engine/shaders/grass_shadow_point_light.hlsl", desc, 1, ShaderEnabling(true, true));
 		ShadowManager::instance().m_directionalLightGrassShadowShader.Init(L"engine/shaders/grass_shadow_directional_light.hlsl", desc, 1, ShaderEnabling(true, true));
@@ -154,13 +154,10 @@ namespace engine
 
 	void GrassField::render()
 	{
-		engine::s_deviceContext->OMSetBlendState(m_blendState.ptr(), blendFactor, sampleMask);
-		engine::s_deviceContext->RSSetState(m_rasterizerState.ptr());
-		engine::s_deviceContext->OMSetDepthStencilState(m_depthStensilState.ptr(), 0);
+		if (m_instanceBuffer.Size() == 0)
+			return;
 
-		s_deviceContext->PSSetShaderResources(8, 1, &ShadowManager::instance().m_srvPointLightShadow.ptr());
-		s_deviceContext->PSSetShaderResources(9, 1, &ShadowManager::instance().m_srvDirectionalLightShadow.ptr());
-		ShadowManager::instance().m_pointLightDSResolutionBuffer.BindPS(8);
+		engine::s_deviceContext->RSSetState(m_rasterizerState.ptr());
 
 		m_shader.Bind();
 		m_instanceBuffer.Bind(0);
@@ -177,11 +174,7 @@ namespace engine
 		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		engine::s_deviceContext->DrawInstanced(6, m_instanceBuffer.Size(), 0, 0);
 
-		engine::s_deviceContext->OMSetBlendState(nullptr, blendFactor, sampleMask);
 		engine::s_deviceContext->RSSetState(nullptr);
-
-		engine::s_deviceContext->PSSetShaderResources(8, 1, SRVnullptr);
-		engine::s_deviceContext->PSSetShaderResources(9, 1, SRVnullptr);
 	}
 
 	void GrassField::renderSceneDepthToCubemaps()
@@ -193,7 +186,7 @@ namespace engine
 		engine::s_deviceContext->RSSetState(m_rasterizerState.ptr());
 
 		ShadowManager::instance().m_pointLightGrassShadowShader.Bind();
-		ShadowManager::instance().m_lightIndexBuffer.BindGS(2);
+		ShadowManager::instance().m_pointLightShadowBuffer.BindGS(2);
 
 		m_instanceBuffer.Bind(0);
 
@@ -203,7 +196,7 @@ namespace engine
 
 		for (uint32_t i = 0; i < pointLightNum; ++i)
 		{
-			ShadowManager::instance().m_lightIndexBuffer.Update(i);
+			ShadowManager::instance().m_pointLightShadowBuffer.Update(ShadowManager::PointLightShadowBuffer(i));
 			engine::s_deviceContext->DrawInstanced(6, m_instanceBuffer.Size(), 0, 0);
 		}
 
@@ -222,7 +215,7 @@ namespace engine
 		engine::s_deviceContext->RSSetState(m_rasterizerState.ptr());
 
 		ShadowManager::instance().m_directionalLightGrassShadowShader.Bind();
-		ShadowManager::instance().m_lightIndexBuffer.BindGS(2);
+		ShadowManager::instance().m_directionalLightShadowBuffer.BindGS(2);
 
 		m_instanceBuffer.Bind(0);
 
@@ -232,7 +225,7 @@ namespace engine
 
 		for (uint32_t i = 0; i < directionalLightNum; ++i)
 		{
-			ShadowManager::instance().m_lightIndexBuffer.Update(i);
+			ShadowManager::instance().m_directionalLightShadowBuffer.Update(ShadowManager::DirectionalLightShadowBuffer(i));
 			engine::s_deviceContext->DrawInstanced(6, m_instanceBuffer.Size(), 0, 0);
 		}
 

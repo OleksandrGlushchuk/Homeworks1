@@ -19,9 +19,9 @@ uint selectCubeFace(float3 unitDir)
     return index + (asuint(unitDir[index / 2]) >> 31);
 }
 
-float calcPointLightShadowFactor(float3 objectWorldPos, float3 map_normal, uint pointLightIndex)
+float calcPointLightShadowFactor(float3 objectWorldPos, float3 map_normal, uint pointLightIndex, float3 pointLightPosition, float4x4 viewProjPointLightMatrices[6])
 {
-    float3 toObject = objectWorldPos - g_pointLight[pointLightIndex].position;
+    float3 toObject = objectWorldPos - pointLightPosition;
     
     float3 toObjectNormalized = normalize(toObject);
     
@@ -29,7 +29,7 @@ float calcPointLightShadowFactor(float3 objectWorldPos, float3 map_normal, uint 
 
     objectWorldPos += (-toObjectNormalized * SHADOW_DEPTH_OFFSET);
     
-    float4 posInLightClipSpace = mul(float4(objectWorldPos, 1.f), g_viewProjPointLight[pointLightIndex][cubeFaceIndex]);
+    float4 posInLightClipSpace = mul(float4(objectWorldPos, 1.f), viewProjPointLightMatrices[cubeFaceIndex]);
     
     float comaringDepth = posInLightClipSpace.z / posInLightClipSpace.w;
     
@@ -44,11 +44,11 @@ float calcPointLightShadowFactor(float3 objectWorldPos, float3 map_normal, uint 
     return g_pointLightShadows.SampleCmp(g_samplerComparisonState, sampleLocation, comaringDepth);
 }
 
-float calcDirectionalLightShadowFactor(float3 objectWorldPos, float3 pointToCameraNormalized, uint directionalLightIndex)
+float calcDirectionalLightShadowFactor(float3 objectWorldPos, uint directionalLightIndex, float3 dirLightDirection, float4x4 viewProjDirectionalLight)
 {
-    objectWorldPos += g_directionalLight[directionalLightIndex].direction * 20 * SHADOW_DEPTH_OFFSET;
+    objectWorldPos += dirLightDirection * 20 * SHADOW_DEPTH_OFFSET;
     
-    float4 posInLightSpace = mul(float4(objectWorldPos, 1.f), g_viewProjDirectionalLight[directionalLightIndex]);
+    float4 posInLightSpace = mul(float4(objectWorldPos, 1.f), viewProjDirectionalLight);
 
     float depthInLightSpace = posInLightSpace.z;
     

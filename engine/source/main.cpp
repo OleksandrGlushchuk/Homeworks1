@@ -15,7 +15,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 {
 	engine::init();
 
-	window = engine::windows::Window(L"homework-9", hinstance, WndProc);
+	window = engine::windows::Window(L"homework-10", hinstance, WndProc);
 	application.Init();
 	window.Show();
 

@@ -31,7 +31,7 @@ namespace engine
 			blendDesc.AlphaToCoverageEnable = TRUE;
 
 				D3D11_RENDER_TARGET_BLEND_DESC rtBlendDesc;
-				rtBlendDesc.BlendEnable = TRUE;
+				rtBlendDesc.BlendEnable = FALSE;
 				rtBlendDesc.BlendOp = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
 				rtBlendDesc.BlendOpAlpha = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
 				rtBlendDesc.DestBlend = D3D11_BLEND::D3D11_BLEND_INV_SRC_ALPHA;
@@ -43,6 +43,25 @@ namespace engine
 			blendDesc.RenderTarget[0] = rtBlendDesc;
 
 			HRESULT result = engine::s_device->CreateBlendState(&blendDesc, &m_blendStates["alphaToCoverage"].ptr());
+			ALWAYS_ASSERT(result >= 0 && "CreateBlendState");
+		}
+		{
+			D3D11_BLEND_DESC blendDesc;
+			ZeroMemory(&blendDesc, sizeof(blendDesc));
+
+			D3D11_RENDER_TARGET_BLEND_DESC rtBlendDesc;
+			rtBlendDesc.BlendEnable = TRUE;
+			rtBlendDesc.BlendOp = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
+			rtBlendDesc.BlendOpAlpha = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
+			rtBlendDesc.DestBlend = D3D11_BLEND::D3D11_BLEND_ONE;
+			rtBlendDesc.DestBlendAlpha = D3D11_BLEND::D3D11_BLEND_INV_SRC_ALPHA;
+			rtBlendDesc.SrcBlend = D3D11_BLEND::D3D11_BLEND_ONE;
+			rtBlendDesc.SrcBlendAlpha = D3D11_BLEND::D3D11_BLEND_ONE;
+			rtBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE::D3D11_COLOR_WRITE_ENABLE_ALL;
+
+			blendDesc.RenderTarget[0] = rtBlendDesc;
+
+			HRESULT result = engine::s_device->CreateBlendState(&blendDesc, &m_blendStates["additive"].ptr());
 			ALWAYS_ASSERT(result >= 0 && "CreateBlendState");
 		}
 	}

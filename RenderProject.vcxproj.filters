@@ -298,6 +298,21 @@
     <None Include="engine\shaders\shadow_helpers.hlsli">
       <Filter>engine\shaders</Filter>
     </None>
+    <None Include="engine\shaders\octahedron.hlsli">
+      <Filter>engine\shaders</Filter>
+    </None>
+    <None Include="engine\shaders\gbuffer.hlsli">
+      <Filter>engine\shaders</Filter>
+    </None>
+    <None Include="engine\shaders\pbr_structs.hlsli">
+      <Filter>engine\shaders</Filter>
+    </None>
+    <None Include="engine\shaders\gbuffer_unpack.hlsli">
+      <Filter>engine\shaders</Filter>
+    </None>
+    <None Include="engine\shaders\wind.hlsli">
+      <Filter>engine\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="engine\shaders\directional_light_shadow.hlsl">
@@ -331,6 +346,33 @@
       <Filter>engine\shaders</Filter>
     </FxCompile>
     <FxCompile Include="engine\shaders\grass_shadow_directional_light.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\deferred_pl_shading.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\deferred_dl_shading.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\deferred_env_shading.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\dissoluble_pl_shadow.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\dissoluble_dl_shadow.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\decal.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\deferred_env_grass_shading.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\deferred_dl_grass_shading.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\deferred_pl_grass_shading.hlsl">
       <Filter>engine\shaders</Filter>
     </FxCompile>
   </ItemGroup>
@@ -527,6 +569,9 @@
     <ClInclude Include="engine\source\render\singletones\VegetationSystem.h">
       <Filter>engine\source\render\singletones</Filter>
     </ClInclude>
+    <ClInclude Include="engine\source\render\singletones\DecalSystem.h">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine\source\render\singletones\DepthStencilManager.cpp">
@@ -620,6 +665,9 @@
       <Filter>engine\source\render</Filter>
     </ClCompile>
     <ClCompile Include="engine\source\render\singletones\VegetationSystem.cpp">
+      <Filter>engine\source\render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\singletones\DecalSystem.cpp">
       <Filter>engine\source\render\singletones</Filter>
     </ClCompile>
   </ItemGroup>
