@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="engine\assets\Brick\Brick_Wall_012_COLOR.dds" />
+    <Image Include="engine\assets\Brick\Brick_Wall_012_NORM.dds" />
+    <Image Include="engine\assets\Brick\Brick_Wall_012_ROUGH.dds" />
+    <Image Include="engine\assets\Grass\Albedo.dds" />
+    <Image Include="engine\assets\Grass\AO.dds" />
+    <Image Include="engine\assets\Grass\Normal.dds" />
+    <Image Include="engine\assets\Grass\Opacity.dds" />
+    <Image Include="engine\assets\Grass\Roughness.dds" />
+    <Image Include="engine\assets\Grass\Translucency.dds" />
+    <Image Include="engine\assets\Knight\Cape_BaseColor.dds" />
+    <Image Include="engine\assets\Knight\Cape_Normal.dds" />
+    <Image Include="engine\assets\Knight\Cape_Roughness.dds" />
+    <Image Include="engine\assets\Knight\Eye_BaseColor.dds" />
+    <Image Include="engine\assets\Knight\Fur_BaseColor.dds" />
+    <Image Include="engine\assets\Knight\Fur_Normal.dds" />
+    <Image Include="engine\assets\Knight\Fur_Roughness.dds" />
+    <Image Include="engine\assets\Knight\Glove_BaseColor.dds" />
+    <Image Include="engine\assets\Knight\Glove_Metallic.dds" />
+    <Image Include="engine\assets\Knight\Glove_Normal.dds" />
+    <Image Include="engine\assets\Knight\Glove_Roughness.dds" />
+    <Image Include="engine\assets\Knight\Head_BaseColor.dds" />
+    <Image Include="engine\assets\Knight\Head_Normal.dds" />
+    <Image Include="engine\assets\Knight\Head_Roughness.dds" />
+    <Image Include="engine\assets\Knight\Helmet_BaseColor.dds" />
+    <Image Include="engine\assets\Knight\Helmet_Metallic.dds" />
+    <Image Include="engine\assets\Knight\Helmet_Normal.dds" />
+    <Image Include="engine\assets\Knight\Helmet_Roughness.dds" />
+    <Image Include="engine\assets\Knight\Legs_BaseColor.dds" />
+    <Image Include="engine\assets\Knight\Legs_Metallic.dds" />
+    <Image Include="engine\assets\Knight\Legs_Normal.dds" />
+    <Image Include="engine\assets\Knight\Legs_Roughness.dds" />
+    <Image Include="engine\assets\Knight\Skirt_BaseColor.dds" />
+    <Image Include="engine\assets\Knight\Skirt_Normal.dds" />
+    <Image Include="engine\assets\Knight\Skirt_Roughness.dds" />
+    <Image Include="engine\assets\Knight\Torso_BaseColor.dds" />
+    <Image Include="engine\assets\Knight\Torso_Metallic.dds" />
+    <Image Include="engine\assets\Knight\Torso_Normal.dds" />
+    <Image Include="engine\assets\Knight\Torso_Roughness.dds" />
+    <Image Include="engine\assets\Samurai\Eye_BaseColor.dds" />
+    <Image Include="engine\assets\Samurai\Hand_BaseColor.dds" />
+    <Image Include="engine\assets\Samurai\Hand_Normal.dds" />
+    <Image Include="engine\assets\Samurai\Hand_Roughness.dds" />
+    <Image Include="engine\assets\Samurai\Head_BaseColor.dds" />
+    <Image Include="engine\assets\Samurai\Head_Normal.dds" />
+    <Image Include="engine\assets\Samurai\Head_Roughness.dds" />
+    <Image Include="engine\assets\Samurai\Helmet_BaseColor.dds" />
+    <Image Include="engine\assets\Samurai\Helmet_Metallic.dds" />
+    <Image Include="engine\assets\Samurai\Helmet_Normal.dds" />
+    <Image Include="engine\assets\Samurai\Helmet_Roughness.dds" />
+    <Image Include="engine\assets\Samurai\Legs_BaseColor.dds" />
+    <Image Include="engine\assets\Samurai\Legs_Metallic.dds" />
+    <Image Include="engine\assets\Samurai\Legs_Normal.dds" />
+    <Image Include="engine\assets\Samurai\Legs_Roughness.dds" />
+    <Image Include="engine\assets\Samurai\Sword_BaseColor.dds" />
+    <Image Include="engine\assets\Samurai\Sword_Metallic.dds" />
+    <Image Include="engine\assets\Samurai\Sword_Normal.dds" />
+    <Image Include="engine\assets\Samurai\Sword_Roughness.dds" />
+    <Image Include="engine\assets\Samurai\Torso_BaseColor.dds" />
+    <Image Include="engine\assets\Samurai\Torso_Metallic.dds" />
+    <Image Include="engine\assets\Samurai\Torso_Normal.dds" />
+    <Image Include="engine\assets\Samurai\Torso_Roughness.dds" />
+    <Image Include="engine\assets\Sky\night_street.dds" />
+    <Image Include="engine\assets\Sky\night_street_irradiance.dds" />
+    <Image Include="engine\assets\Sky\night_street_reflectance.dds" />
+    <Image Include="engine\assets\Sky\night_street_reflection.dds" />
+    <Image Include="engine\assets\Stone\Stone_COLOR.dds" />
+    <Image Include="engine\assets\Stone\Stone_NORM.dds" />
+    <Image Include="engine\assets\Stone\Stone_ROUGH.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="engine\assets\Knight\Knight.fbx" />
+    <None Include="engine\assets\Samurai\Samurai.fbx" />
+    <None Include="engine\shaders\environment.hlsli" />
+    <None Include="engine\shaders\fullscreen.hlsli" />
+    <None Include="engine\shaders\globals.hlsli" />
+    <None Include="engine\shaders\opaque_helpers.hlsli" />
+    <None Include="engine\shaders\pbr_helpers.hlsli" />
+    <None Include="engine\shaders\resolve_helpers.hlsli" />
+    <None Include="engine\shaders\shadow_helpers.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="engine\shaders\directional_light_shadow.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\dissoluble.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\emissive.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\grass.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\grass_shadow_point_light.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\grass_shadow_directional_light.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\opaque.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\particle.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\point_light_shadow.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\resolve.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\sky.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="engine\source\DDSTextureLoader\DDSTextureLoader11.h" />
+    <ClInclude Include="engine\source\include\win.hpp" />
+    <ClInclude Include="engine\source\include\win_def.hpp" />
+    <ClInclude Include="engine\source\include\win_undef.hpp" />
+    <ClInclude Include="engine\source\math\Box.h" />
+    <ClInclude Include="engine\source\math\camera.h" />
+    <ClInclude Include="engine\source\math\Floor.h" />
+    <ClInclude Include="engine\source\math\Intersection.h" />
+    <ClInclude Include="engine\source\math\Matr.h" />
+    <ClInclude Include="engine\source\math\MatrixHelpers.h" />
+    <ClInclude Include="engine\source\math\MeshIntersection.h" />
+    <ClInclude Include="engine\source\math\Quaternion.h" />
+    <ClInclude Include="engine\source\math\ray.h" />
+    <ClInclude Include="engine\source\math\Timer.h" />
+    <ClInclude Include="engine\source\math\Transform.h" />
+    <ClInclude Include="engine\source\math\Triangle.h" />
+    <ClInclude Include="engine\source\math\vec2.h" />
+    <ClInclude Include="engine\source\math\vec3.h" />
+    <ClInclude Include="engine\source\math\vec4.h" />
+    <ClInclude Include="engine\source\objects\Sky.h" />
+    <ClInclude Include="engine\source\render\ConstantBuffer.h" />
+    <ClInclude Include="engine\source\render\d3d.hpp" />
+    <ClInclude Include="engine\source\render\DepthStencil.h" />
+    <ClInclude Include="engine\source\render\DissolubleInstances.h" />
+    <ClInclude Include="engine\source\render\DxRes.hpp" />
+    <ClInclude Include="engine\source\render\EmissiveInstances.h" />
+    <ClInclude Include="engine\source\render\GrassField.h" />
+    <ClInclude Include="engine\source\render\IndexBuffer.h" />
+    <ClInclude Include="engine\source\render\Light.h" />
+    <ClInclude Include="engine\source\render\MaterialConstantBuffer.h" />
+    <ClInclude Include="engine\source\render\Mesh.h" />
+    <ClInclude Include="engine\source\render\Model.h" />
+    <ClInclude Include="engine\source\render\ModelID.h" />
+    <ClInclude Include="engine\source\render\OpaqueInstances.h" />
+    <ClInclude Include="engine\source\render\Particle.h" />
+    <ClInclude Include="engine\source\render\PerFrameBuffer.h" />
+    <ClInclude Include="engine\source\render\PostProcess.h" />
+    <ClInclude Include="engine\source\render\RenderTargetView.h" />
+    <ClInclude Include="engine\source\render\Shader.h" />
+    <ClInclude Include="engine\source\render\singletones\BlendStateManager.h" />
+    <ClInclude Include="engine\source\render\singletones\DepthStencilManager.h" />
+    <ClInclude Include="engine\source\render\singletones\globals.hpp" />
+    <ClInclude Include="engine\source\render\singletones\LightSystem.h" />
+    <ClInclude Include="engine\source\render\singletones\MeshSystem.h" />
+    <ClInclude Include="engine\source\render\singletones\ModelManager.h" />
+    <ClInclude Include="engine\source\render\singletones\ParticleSystem.h" />
+    <ClInclude Include="engine\source\render\singletones\RasteriserStateManager.h" />
+    <ClInclude Include="engine\source\render\singletones\SamplerManager.h" />
+    <ClInclude Include="engine\source\render\singletones\ShaderManager.h" />
+    <ClInclude Include="engine\source\render\singletones\ShadowManager.h" />
+    <ClInclude Include="engine\source\render\singletones\TextureManager.h" />
+    <ClInclude Include="engine\source\render\singletones\TransformSystem.h" />
+    <ClInclude Include="engine\source\render\singletones\VegetationSystem.h" />
+    <ClInclude Include="engine\source\render\SmokeEmitter.h" />
+    <ClInclude Include="engine\source\render\SolidVector.h" />
+    <ClInclude Include="engine\source\render\Texture.h" />
+    <ClInclude Include="engine\source\render\TriangleIndices.h" />
+    <ClInclude Include="engine\source\render\TriangleOctree.hpp" />
+    <ClInclude Include="engine\source\render\Vertex.h" />
+    <ClInclude Include="engine\source\render\VertexBuffer.h" />
+    <ClInclude Include="engine\source\window\Application.h" />
+    <ClInclude Include="engine\source\window\InputState.h" />
+    <ClInclude Include="engine\source\window\Renderer.h" />
+    <ClInclude Include="engine\source\window\window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="engine\source\DDSTextureLoader\DDSTextureLoader11.cpp" />
+    <ClCompile Include="engine\source\main.cpp" />
+    <ClCompile Include="engine\source\math\camera.cpp" />
+    <ClCompile Include="engine\source\math\Triangle.cpp" />
+    <ClCompile Include="engine\source\math\vec3.cpp" />
+    <ClCompile Include="engine\source\render\d3d.cpp" />
+    <ClCompile Include="engine\source\render\DepthStencil.cpp" />
+    <ClCompile Include="engine\source\render\DissolubleInstances.cpp" />
+    <ClCompile Include="engine\source\render\EmissiveInstances.cpp" />
+    <ClCompile Include="engine\source\render\GrassField.cpp" />
+    <ClCompile Include="engine\source\render\OpaqueInstances.cpp" />
+    <ClCompile Include="engine\source\render\PerFrameBuffer.cpp" />
+    <ClCompile Include="engine\source\render\singletones\BlendStateManager.cpp" />
+    <ClCompile Include="engine\source\render\singletones\DepthStencilManager.cpp" />
+    <ClCompile Include="engine\source\render\singletones\globals.cpp" />
+    <ClCompile Include="engine\source\render\singletones\LightSystem.cpp" />
+    <ClCompile Include="engine\source\render\singletones\MeshSystem.cpp" />
+    <ClCompile Include="engine\source\render\singletones\ModelManager.cpp" />
+    <ClCompile Include="engine\source\render\singletones\ParticleSystem.cpp" />
+    <ClCompile Include="engine\source\render\singletones\RasteriserStateManager.cpp" />
+    <ClCompile Include="engine\source\render\singletones\SamplerManager.cpp" />
+    <ClCompile Include="engine\source\render\singletones\ShaderManager.cpp" />
+    <ClCompile Include="engine\source\render\singletones\ShadowManager.cpp" />
+    <ClCompile Include="engine\source\render\singletones\TextureManager.cpp" />
+    <ClCompile Include="engine\source\render\singletones\TransformSystem.cpp" />
+    <ClCompile Include="engine\source\render\singletones\VegetationSystem.cpp" />
+    <ClCompile Include="engine\source\render\SmokeEmitter.cpp" />
+    <ClCompile Include="engine\source\render\TriangleOctree.cpp" />
+    <ClCompile Include="engine\source\window\Application.cpp" />
+    <ClCompile Include="engine\source\window\Renderer.cpp" />
+    <ClCompile Include="engine\source\window\window.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{7fd8b628-9c14-4327-ac78-5aef85adf41d}</ProjectGuid>
+    <RootNamespace>RenderProject</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>.\engine\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>.\engine\source\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "engine\source\bin\*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>.\engine\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\engine\source\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "engine\source\bin\*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
