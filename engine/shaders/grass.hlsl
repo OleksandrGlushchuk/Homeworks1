@@ -155,7 +155,7 @@ float4 grassRGBA(float2 tc)
 PS_OUTPUT ps_main(PS_INPUT input, bool isFrontFace : SV_IsFrontFace)
 {
     float4 grassColor = grassRGBA(input.tex_coord);
-    if (grassColor.a < 1.f)
+    if (grassColor.a < 0.999f)
     {
         discard;
         PS_OUTPUT output;
