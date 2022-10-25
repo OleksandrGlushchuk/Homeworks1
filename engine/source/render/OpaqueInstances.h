@@ -47,7 +47,7 @@ namespace engine
 		struct Instance
 		{
 			uint32_t transform_id;
-			uint16_t meshID;
+			uint16_t modelID;
 			Instance() {}
 			explicit Instance(const Transform& transform)
 			{
@@ -59,10 +59,10 @@ namespace engine
 		struct GpuInstance
 		{
 			Matr<4> transform;
-			uint16_t meshID;
+			uint16_t modelID;
 			GpuInstance(){}
 			explicit GpuInstance(const Instance& instance) : transform(TransformSystem::instance().m_transforms[instance.transform_id].getTransformMatrix()),
-				meshID(instance.meshID)
+				modelID(instance.modelID)
 			{}
 		};
 

@@ -1,10 +1,10 @@
 #include "globals.hlsli"
 #include "gbuffer.hlsli"
 #include "wind.hlsli"
-static const uint TEXTURES_IN_ONE_BUSH = 6;
+static const uint TEXTURES_IN_ONE_BUSH = 5;
 static const uint MAX_VERTEX_COUNT = TEXTURES_IN_ONE_BUSH * 3;
 
-Texture2D g_colorMap : register(t0);
+Texture2D<float3> g_colorMap : register(t0);
 Texture2D<float3> g_normalMap : register(t1);
 Texture2D<float> g_roughnessMap : register(t2);
 Texture2D<float> g_metalnessMap : register(t3);
@@ -15,6 +15,8 @@ Texture2D<float3> g_translucency : register(t6);
 
 struct VS_INPUT
 {
+    float3 position : POSITION;
+    float2 tex_coord : TEXCOORD0;
     float3 grass_pos : GRASS_POS;
 };
 
@@ -43,15 +45,8 @@ struct PS_INPUT
 GS_INPUT vs_main(VS_INPUT input, uint vertexID : SV_VertexID)
 {
     GS_INPUT output;
-    float3 pos;
-    pos.z = 0;
-    
-    uint vertexID_new = vertexID > 2 ? 5 - vertexID : vertexID;
-    int2 xy = int2(vertexID_new == 2, vertexID_new != 0);
-    pos.xy = vertexID == 4 ? float2(-0.5f, -0.5f) + xy.yx : float2(-0.5f, -0.5f) + xy;
-    output.tex_coord = vertexID == 4 ? float2(1, 1) : float2(xy.x, xy.y == 0);
-    
-    output.vertex_pos = pos;
+    output.vertex_pos = input.position;
+    output.tex_coord = input.tex_coord;
     output.grass_pos = input.grass_pos;
     output.normal = float3(0, 0, -1.f);
     output.tangent = float3(1.f, 0, 0);
@@ -73,10 +68,8 @@ void gs_main(triangle GS_INPUT input[3], inout TriangleStream<PS_INPUT> outputSt
     float3x3 windInvMatr = transpose(windMatr);
     float wangle = computeGrassAngle(inst_pos, float2(1,0));
     wangle = abs(wangle) > 0.01f ? wangle : sign(wangle) * 0.01f;
-    float R = 1.f / wangle;
-
-    sincos(wangle, sw, cw);
-    float3x3 windRotationMatrix = float3x3(float3(cw, -sw, 0), float3(sw, cw, 0), float3(0, 0, 1));
+    float R = (0.5f) / (wangle);
+    
     
     [unroll]
     for (uint i = 0; i < TEXTURES_IN_ONE_BUSH; ++i)
@@ -95,8 +88,10 @@ void gs_main(triangle GS_INPUT input[3], inout TriangleStream<PS_INPUT> outputSt
             output.tangent = mul(input[vertex].tangent, rotate_y);
             output.bitangent = mul(input[vertex].bitangent, rotate_y);
 
-            if (pos.y > 0)
             {
+                sincos(wangle * pos.y/0.5f, sw, cw);
+                float3x3 windRotationMatrix = float3x3(float3(cw, -sw, 0), float3(sw, cw, 0), float3(0, 0, 1));
+                
                 pos = mul(pos, windMatr);
                 output.normal = mul(output.normal, windMatr);
                 output.tangent = mul(output.tangent, windMatr);
@@ -160,7 +155,7 @@ float4 grassRGBA(float2 tc)
 PS_OUTPUT ps_main(PS_INPUT input, bool isFrontFace : SV_IsFrontFace)
 {
     float4 grassColor = grassRGBA(input.tex_coord);
-    if (grassColor.a < 0.01f)
+    if (grassColor.a < 1.f)
     {
         discard;
         PS_OUTPUT output;

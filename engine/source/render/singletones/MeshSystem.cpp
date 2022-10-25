@@ -112,10 +112,10 @@ namespace engine
 		return result;
 	}
 
-	bool MeshSystem::findIntersectionOpaque(const ray& _ray, engine::MeshIntersection& out_intersection, uint32_t& out_transformID, uint16_t &out_meshID)
+	bool MeshSystem::findIntersectionOpaque(const ray& _ray, engine::MeshIntersection& out_intersection, uint32_t& out_transformID, uint16_t &out_modelID)
 	{
 		uint32_t out_materialIndex, out_instanceIndex, transformID;
-		uint16_t meshID;
+		uint16_t o_modelID;
 		bool result = false;
 		const Matr<4>* transform = nullptr;
 		const Matr<4>* mesh_to_model = nullptr;
@@ -128,7 +128,7 @@ namespace engine
 				auto& meshInstance = model.meshInstances[i];
 
 				transformID = meshInstance.materialInstances[out_materialIndex].instances[out_instanceIndex].transform_id;
-				meshID = meshInstance.materialInstances[out_materialIndex].instances[out_instanceIndex].meshID;
+				o_modelID = meshInstance.materialInstances[out_materialIndex].instances[out_instanceIndex].modelID;
 
 				const Matr<4>& transformInv = engine::TransformSystem::instance().m_transforms[transformID].getTransformInvMatrix();
 				Matr<4> InvMatr = transformInv * model.model->m_meshes[i].meshToModelMatrix.invert();
@@ -140,7 +140,7 @@ namespace engine
 				if (model.model->m_meshes[i].triangleOctree.intersect(model_ray, out_intersection))
 				{
 					out_transformID = transformID;
-					out_meshID = meshID;
+					out_modelID = o_modelID;
 					transform = &engine::TransformSystem::instance().m_transforms[transformID].getTransformMatrix();
 					mesh_to_model = &model.model->m_meshes[i].meshToModelMatrix;
 					result = true;
@@ -173,7 +173,7 @@ namespace engine
 			{
 				for (auto& inst : mesh.materialInstances[0].instances)
 				{
-					inst.meshID = m_meshIDsCounter++;
+					inst.modelID = m_modelIDsCounter;
 				}
 			}
 
@@ -196,7 +196,7 @@ namespace engine
 					if (modelPtr->meshInstances[i].materialInstances[j].material == material[i])
 					{
 						auto& inst = modelPtr->meshInstances[i].materialInstances[j].instances.emplace_back(_instance);
-						inst.meshID = m_meshIDsCounter++;
+						inst.modelID = m_modelIDsCounter;
 						modelPtr->meshIDs[modelID.meshesBlock_index + (i * 2)] = j; //MATERIAL_INDEX
 						modelPtr->meshIDs[modelID.meshesBlock_index + (i * 2 + 1)] = modelPtr->meshInstances[i].materialInstances[j].instances.size() - 1; //INSTANCE_INDEX
 						need_to_add_material_instance = false;
@@ -207,12 +207,13 @@ namespace engine
 				{
 					auto& mat_inst = modelPtr->meshInstances[i].materialInstances.emplace_back(
 							OpaqueInstances::MaterialInstance(material[i], _instance));
-					mat_inst.instances[0].meshID = m_meshIDsCounter++;
+					mat_inst.instances[0].modelID = m_modelIDsCounter;
 					modelPtr->meshIDs[modelID.meshesBlock_index + (i * 2)] = modelPtr->meshInstances[i].materialInstances.size() - 1; //MATERIAL_INDEX
 					modelPtr->meshIDs[modelID.meshesBlock_index + (i * 2 + 1)] = 0; //INSTANCE_INDEX
 				}
 			}
 		}
+		++m_modelIDsCounter;
 		opaqueInstances.updateInstanceBuffers();
 	}
 

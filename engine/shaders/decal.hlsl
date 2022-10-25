@@ -2,17 +2,17 @@
 
 Texture2D<float4> g_decalNormalMap : register(t0);
 Texture2D<float4> g_GBufferNormals : register(t1);
-Texture2D<uint> g_meshID : register(t2);
+Texture2D<uint> g_modelID : register(t2);
 Texture2D<float> g_depth : register(t3);
 
-static const float DECAL_ROUGHNESS = 0.1f;
+static const float DECAL_ROUGHNESS = 0.05f;
 
 struct VS_INPUT
 {
     float3 position : POSITION;
     
     float3 albedo : ALBEDO;
-    uint meshID : MESH_ID;
+    uint modelID : MODEL_ID;
     float4 transform_x : TRANSFORM_X;
     float4 transform_y : TRANSFORM_Y;
     float4 transform_z : TRANSFORM_Z;
@@ -29,7 +29,7 @@ struct PS_INPUT
     float4 position : SV_POSITION;
     float3 decal_right : RIGHT;
     nointerpolation float3 albedo : ALBEDO;
-    nointerpolation uint meshID : MESH_ID;
+    nointerpolation uint modelID : MODEL_ID;
     nointerpolation float4x4 transform_inv : TRANSFORM_INV;
 };
 
@@ -58,7 +58,7 @@ PS_INPUT vs_main(VS_INPUT input)
 
     output.decal_right = mul(float3(1, 0, 0), rotation).xyz;
     output.albedo = input.albedo;
-    output.meshID = input.meshID;
+    output.modelID = input.modelID;
     output.transform_inv = float4x4(input.transform_inv_x, input.transform_inv_y, input.transform_inv_z, input.transform_inv_w);
     return output;
 }
@@ -68,8 +68,8 @@ PS_INPUT vs_main(VS_INPUT input)
 PS_OUTPUT ps_main(PS_INPUT input)
 {
     PS_OUTPUT output;
-    uint meshID = g_meshID.Load(int3(input.position.xy, 0));
-    if (meshID != input.meshID)
+    uint modelID = g_modelID.Load(int3(input.position.xy, 0));
+    if (modelID != input.modelID)
     {
         discard;
         return output;
@@ -123,6 +123,9 @@ PS_OUTPUT ps_main(PS_INPUT input)
     output.normals.zw = gbufferNormals.zw;
     output.albedo.xyz = input.albedo;
     output.emission = float4(0, 0, 0, 1);
-    output.rmf = float4(DECAL_ROUGHNESS, 0, true, 1);
+    output.rmf.r = DECAL_ROUGHNESS;
+    output.rmf.g = 0;
+    output.rmf.b = true;
+    output.rmf.a = 1;
     return output;
 }

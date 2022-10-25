@@ -6,7 +6,7 @@ float computeGrassAngle(float2 instancePos, float2 windDir) // windDir may be re
 {
     const float MAX_VARIATION = M_PI;
     float WIND_WAVE_LENGTH = 50;
-    float POWER_WAVE_LENGTH = 2;
+    float POWER_WAVE_LENGTH = 233;
     const float WIND_OSCILLATION_FREQ = 0.666;
     const float POWER_OSCILLATION_FREQ = 1.0 / 8.0;
 

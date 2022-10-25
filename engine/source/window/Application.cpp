@@ -41,7 +41,7 @@ namespace engine::windows
 		renderer.Init(1u);
 		m_postProcess.Init(1.5f);
 		ShadowManager::instance().SetDirectionalLightDSResolution(2048.f);
-		ShadowManager::instance().SetDirectionalLightShadowDistance(60.f);
+		ShadowManager::instance().SetDirectionalLightShadowDistance(40.f);
 		ShadowManager::instance().SetPointLightDSResolution(1024.f);
 
 		ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(-0.5f, 0, 0.f), Vec3(0.2f, 0.1f, 1.f), 
@@ -55,7 +55,7 @@ namespace engine::windows
 		LightSystem::instance().setDirectionalLightFrustum(camera);
 		camera.setWorldOffset(Vec3(0, 0, -2));
 
-		VegetationSystem::instance().AddGrassArea(5, 5, 0.8f, { -7,-2,-2 });
+		VegetationSystem::instance().AddGrassArea(4, 4, 0.6f, { -7,-2.55f,-2 });
 		//VegetationSystem::instance().AddGrassArea(2, 6, 0.7f, { -10, -2,-2.5f });
 
 		DecalSystem::instance().SetDecalSize(0.4f);
@@ -624,18 +624,30 @@ namespace engine::windows
 			if (input_state['F'])
 			{
 				Vec3 cameraForward = camera.forward();
-				ray r(camera.position(), cameraForward);
+				ray r;
 				MeshIntersection outIntersection;
 				outIntersection.reset(1);
 
-				uint32_t outTransformId;
-				uint16_t outMeshID;
+				float xx = (mouse_x + 0.5f) / ((wnd.screen.right) / 2.f) - 1.f;
+				float yy = (mouse_y + 0.5f) / ((wnd.screen.bottom) / (-2.f)) + 1.f;
+				r.origin = Vec3(xx, yy, 1);
 
-				if (MeshSystem::instance().findIntersectionOpaque(r, outIntersection, outTransformId, outMeshID))
+				float w;
+				r.origin.mult(camera.m_viewProjInv, 1, &w);
+				r.origin /= w;
+
+				r.direction = r.origin - camera.position();
+				r.direction.normalize();
+
+
+				uint32_t outTransformId;
+				uint16_t outModelID;
+
+				if (MeshSystem::instance().findIntersectionOpaque(r, outIntersection, outTransformId, outModelID))
 				{
 					Vec3 cameraRight = camera.right();
 					Vec3 cameraUp = camera.top();
-					DecalSystem::instance().AddDecalInstance(cameraRight, cameraUp, cameraForward, outIntersection.pos, outIntersection.normal, outTransformId, outMeshID);
+					DecalSystem::instance().AddDecalInstance(cameraRight, cameraUp, cameraForward, outIntersection.pos, outIntersection.normal, outTransformId, outModelID);
 				}
 				input_state['F'] = false;
 			}
@@ -650,7 +662,7 @@ namespace engine::windows
 			need_to_move_camera = false;
 		}
 		if (need_to_move_object)
-			OnRMouseMove(mouse_x, mouse_y);
+			OnRMouseMove();
 	}
 
 	void Application::OnKeyDown(WPARAM key)
@@ -661,6 +673,12 @@ namespace engine::windows
 	void Application::OnKeyUp(WPARAM key)
 	{
 		input_state[key] = false;
+	}
+
+	void Application::OnMouseMove(WORD x, WORD y)
+	{
+		mouse_x = x;
+		mouse_y = y;
 	}
 
 	void Application::MoveCamera(const Vec3& offset)
@@ -679,12 +697,10 @@ namespace engine::windows
 		dir_rotation = Vec3(0, 0, 1);
 	}
 
-	void Application::OnLMouseMove(WORD x, WORD y)
+	void Application::OnLMouseMove()
 	{
-		mouse_x = x;
-		mouse_y = y;
-		end_rotation.e[0] = x;
-		end_rotation.e[1] = y;
+		end_rotation.e[0] = mouse_x;
+		end_rotation.e[1] = mouse_y;
 		dir_rotation = delta_time * (start_rotation - end_rotation) * M_PI / wnd.screen.right;
 	}
 
@@ -722,14 +738,12 @@ namespace engine::windows
 		}
 	}
 
-	void Application::OnRMouseMove(WORD x, WORD y)
+	void Application::OnRMouseMove()
 	{
 		if (need_to_move_object)
 		{
-			mouse_x = x;
-			mouse_y = y;
-			float xx = (x + 0.5f) / ((wnd.screen.right) / 2.f) - 1.f;
-			float yy = (y + 0.5f) / ((wnd.screen.bottom) / (-2.f)) + 1.f;
+			float xx = (mouse_x + 0.5f) / ((wnd.screen.right) / 2.f) - 1.f;
+			float yy = (mouse_y + 0.5f) / ((wnd.screen.bottom) / (-2.f)) + 1.f;
 
 			ray_clicked_to_object.origin = Vec3(xx, yy, 1);
 

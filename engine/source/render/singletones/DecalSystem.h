@@ -14,14 +14,14 @@ namespace engine
 			Decal() {}
 			uint32_t meshTransformID;
 			Vec3 albedo;
-			uint16_t meshID;
+			uint16_t modelID;
 			Matr<4> transformInMeshSpace;
 		};
 
 		struct GpuDecal
 		{
 			Vec3 albedo;
-			uint16_t meshID;
+			uint16_t modelID;
 			Matr<4> transform;
 			Matr<4> transformInv;
 			GpuDecal() {}
@@ -54,7 +54,7 @@ namespace engine
 			MIN_DECAL_DEPTH = m_decalSize/1.5f;
 			MAX_DECAL_DEPTH = m_decalSize * 5;
 		}
-		void AddDecalInstance(const Vec3 &right, const Vec3& up, const Vec3 &forward, const Vec3& pos, const Vec3& normal, uint32_t meshTransformID, uint16_t meshID);
+		void AddDecalInstance(const Vec3 &right, const Vec3& up, const Vec3 &forward, const Vec3& pos, const Vec3& normal, uint32_t meshTransformID, uint16_t modelID);
 		void render();
 		void update();
 	};

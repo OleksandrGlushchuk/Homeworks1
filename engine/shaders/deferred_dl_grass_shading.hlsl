@@ -48,9 +48,9 @@ float4 ps_main(PS_INPUT input) : SV_Target
     Surface surface;
     float3 world_pos;
     UnpackGbuffer(input.position.xy, world_pos, surface);
-    
+    surface.map_normal = surface.isFrontFace ? surface.map_normal : -surface.map_normal;
     View view;
-    fillViewStructure(view, surface.isFrontFace ? surface.map_normal : -surface.map_normal, world_pos.xyz);
+    fillViewStructure(view, surface.map_normal, world_pos.xyz);
     
     float3 transmittanceRGB = surface.emission;
     float NdotL = dot(g_directionalLight[input.dl_index].direction, surface.map_normal);

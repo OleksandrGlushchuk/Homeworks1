@@ -17,7 +17,7 @@ namespace engine
 			{"POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 
 			{"ALBEDO", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"MESH_ID", 0, DXGI_FORMAT::DXGI_FORMAT_R16_UINT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"MODEL_ID", 0, DXGI_FORMAT::DXGI_FORMAT_R16_UINT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 
 			{"TRANSFORM_X", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 			{"TRANSFORM_Y", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
@@ -52,12 +52,12 @@ namespace engine
 		ALWAYS_ASSERT(s_instance); return *s_instance;
 	}
 
-	void DecalSystem::AddDecalInstance(const Vec3& right, const Vec3& up, const Vec3& forward, const Vec3 &pos, const Vec3 &normal, uint32_t meshTransformID, uint16_t meshID)
+	void DecalSystem::AddDecalInstance(const Vec3& right, const Vec3& up, const Vec3& forward, const Vec3 &pos, const Vec3 &normal, uint32_t meshTransformID, uint16_t modelID)
 	{
 		Decal& newDecal = m_instances.emplace_back();
 		newDecal.meshTransformID = meshTransformID;
 		newDecal.albedo = Vec3(m_random(m_r_engine), m_random(m_r_engine), m_random(m_r_engine));
-		newDecal.meshID = meshID;
+		newDecal.modelID = modelID;
 		float depth = MIN_DECAL_DEPTH + (MAX_DECAL_DEPTH - MIN_DECAL_DEPTH) * (1.f - Vec3::dot(normal, -forward));
 		Matr<3> basis({
 			{right.e[0] * m_decalSize, right.e[1] * m_decalSize, right.e[2] * m_decalSize},
@@ -115,7 +115,7 @@ namespace engine
 		}
 		m_instanceBuffer.Unmap();
 	}
-	DecalSystem::GpuDecal::GpuDecal(const Decal& decal) : albedo(decal.albedo), meshID(decal.meshID)
+	DecalSystem::GpuDecal::GpuDecal(const Decal& decal) : albedo(decal.albedo), modelID(decal.modelID)
 	{
 		transform = decal.transformInMeshSpace * TransformSystem::instance().m_transforms[decal.meshTransformID].getTransformMatrix();
 		transformInv = transform.invert();

@@ -80,20 +80,21 @@ float4 ps_main(PS_INPUT input) : SV_Target
     float3 world_pos;
     
     UnpackGbuffer(input.position.xy, world_pos, surface);
-    
+    surface.map_normal = surface.isFrontFace ? surface.map_normal : -surface.map_normal;
     View view;
-    fillViewStructure(view, surface.isFrontFace ? surface.map_normal : -surface.map_normal, world_pos.xyz);
+    fillViewStructure(view,surface.map_normal, world_pos.xyz);
 
     float3 transmittanceRGB = surface.emission;
     float3 pointToLight = g_pointLight[input.pl_index].position - world_pos.xyz;
     float NdotL = dot(normalize(pointToLight), surface.map_normal);
     float3 transmission = NdotL < 0 ? g_pointLight[input.pl_index].radiance * transmittanceRGB * pow(-NdotL, TRANSLUCENCY_POWER) : 0;
+    transmission /= pow(max(0.001, length(pointToLight)), 2);
     
     float shadowFactor;
     float3 hdrColor = float3(0, 0, 0);
     
     shadowFactor = calcPointLightShadowFactor(world_pos.xyz, surface.map_normal, input.pl_index, g_pointLight[input.pl_index].position, input.viewProjPointLightMatrices);
     hdrColor += (1.f - shadowFactor) * 
-    (transmission + CalculatePointLight(g_pointLight[input.pl_index], pointToLight, view, surface));
+    (CalculatePointLight(g_pointLight[input.pl_index], pointToLight, view, surface) + transmission);
     return float4(hdrColor, 1.f);
 }

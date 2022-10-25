@@ -1,7 +1,7 @@
 #include "globals.hlsli"
 #include "wind.hlsli"
 
-static const uint TEXTURES_IN_ONE_BUSH = 6;
+static const uint TEXTURES_IN_ONE_BUSH = 5;
 static const uint MAX_VERTEX_COUNT = TEXTURES_IN_ONE_BUSH * 3;
 
 Texture2D<float> g_opacityMap : register(t0);
@@ -9,6 +9,8 @@ Texture2D<float> g_opacityMap : register(t0);
 
 struct VS_INPUT
 {
+    float3 position : POSITION;
+    float2 tex_coord : TEXCOORD0;
     float3 grass_pos : GRASS_POS;
 };
 
@@ -36,15 +38,9 @@ cbuffer PointLightShadowBuffer : register(b2)
 GS_INPUT vs_main(VS_INPUT input, uint vertexID : SV_VertexID)
 {
     GS_INPUT output;
-    float3 pos;
-    pos.z = 0;
     
-    uint vertexID_new = vertexID > 2 ? 5 - vertexID : vertexID;
-    int2 xy = int2(vertexID_new == 2, vertexID_new != 0);
-    pos.xy = vertexID == 4 ? float2(-0.5f, -0.5f) + xy.yx : float2(-0.5f, -0.5f) + xy;
-    output.tex_coord = vertexID == 4 ? float2(1, 1) : float2(xy.x, xy.y == 0);
-
-    output.vertex_pos = pos;
+    output.vertex_pos = input.position;
+    output.tex_coord = input.tex_coord;
     output.grass_pos = input.grass_pos;
     return output;
 }
@@ -65,10 +61,6 @@ void gs_main(triangle GS_INPUT input[3], inout TriangleStream<GS_OUT> outputStre
     float wangle = computeGrassAngle(inst_pos, float2(1, 0));
     wangle = abs(wangle) > 0.01f ? wangle : sign(wangle) * 0.01f;
     float R = 1.f / wangle;
-
-    sincos(wangle, sw, cw);
-    float3x3 windRotationMatrix = float3x3(float3(cw, -sw, 0), float3(sw, cw, 0), float3(0, 0, 1));
-    
     [unroll]
     for (uint face = 0; face < 6; ++face)
     {
@@ -86,8 +78,10 @@ void gs_main(triangle GS_INPUT input[3], inout TriangleStream<GS_OUT> outputStre
                 float3 pos = input[vertex].vertex_pos;
                 pos = mul(pos, rotate_y);
 
-                if (pos.y > 0)
                 {
+                    sincos(wangle * pos.y, sw, cw);
+                    float3x3 windRotationMatrix = float3x3(float3(cw, -sw, 0), float3(sw, cw, 0), float3(0, 0, 1));
+                
                     pos = mul(pos, windMatr);
                 
                     pos.x -= R;

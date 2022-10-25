@@ -21,7 +21,7 @@ namespace engine::windows
 		RenderTargetView m_albedoRTV;
 		RenderTargetView m_rmfRTV;
 		RenderTargetView m_emissionRTV;
-		RenderTargetView m_meshIDRTV;
+		RenderTargetView m_modelIDRTV;
 
 		Shader m_pl_deferredShadingShader;
 		Shader m_dl_deferredShadingShader;
@@ -43,7 +43,7 @@ namespace engine::windows
 		Texture m_emissionTexture;
 		Texture m_depthTexture;
 		Texture m_copyNormalsTexture;
-		Texture m_meshIDTexture;
+		Texture m_modelIDTexture;
 
 		ID3D11RenderTargetView* m_GBuffer[5];
 

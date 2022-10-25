@@ -82,7 +82,7 @@ namespace engine::windows
 		m_albedoRTV.InitUnorm8RTV(8, 8, sampleCount);
 		m_rmfRTV.InitUnorm8RTV(8, 8, sampleCount);
 		m_emissionRTV.InitFloat16RTV(8, 8, sampleCount);
-		m_meshIDRTV.InitR16UintRTV(8, 8, sampleCount);
+		m_modelIDRTV.InitR16UintRTV(8, 8, sampleCount);
 
 		need_to_resize_RTV = true;
 	}
@@ -130,19 +130,19 @@ namespace engine::windows
 		m_albedoRTV.Resize(width, height);
 		m_rmfRTV.Resize(width, height);
 		m_emissionRTV.Resize(width, height);
-		m_meshIDRTV.Resize(width, height);
+		m_modelIDRTV.Resize(width, height);
 
 		m_GBuffer[0] = m_normalsRTV.GetRTV().ptr();
 		m_GBuffer[1] = m_albedoRTV.GetRTV().ptr();
 		m_GBuffer[2] = m_rmfRTV.GetRTV().ptr();
 		m_GBuffer[3] = m_emissionRTV.GetRTV().ptr();
-		m_GBuffer[4] = m_meshIDRTV.GetRTV().ptr();
+		m_GBuffer[4] = m_modelIDRTV.GetRTV().ptr();
 
 		m_normalsTexture.PointToResource(m_normalsRTV.GetResource(), m_normalsRTV.GetResourceDesc());
 		m_albedoTexture.PointToResource(m_albedoRTV.GetResource(), m_albedoRTV.GetResourceDesc());
 		m_rmfTexture.PointToResource(m_rmfRTV.GetResource(), m_rmfRTV.GetResourceDesc());
 		m_emissionTexture.PointToResource(m_emissionRTV.GetResource(), m_emissionRTV.GetResourceDesc());
-		m_meshIDTexture.PointToResource(m_meshIDRTV.GetResource(), m_meshIDRTV.GetResourceDesc());
+		m_modelIDTexture.PointToResource(m_modelIDRTV.GetResource(), m_modelIDRTV.GetResourceDesc());
 
 		m_depthTexture.CreateCopy(m_depthStencil.GetResourceDesc());
 		m_copyNormalsTexture.CreateCopy(m_normalsTexture.GetResourceDesc());
@@ -173,7 +173,7 @@ namespace engine::windows
 		m_albedoRTV.Clear();
 		m_rmfRTV.Clear();
 		m_emissionRTV.Clear();
-		m_meshIDRTV.Clear();
+		m_modelIDRTV.Clear();
 		engine::s_deviceContext->OMSetRenderTargets(5, m_GBuffer, m_depthStencil.GetDepthStencilView().ptr());
 		m_sky.BindEnvironment();
 
@@ -187,7 +187,7 @@ namespace engine::windows
 		engine::s_deviceContext->OMSetRenderTargets(4, m_GBuffer, m_depthStencil.GetDepthStencilView().ptr());
 		m_copyNormalsTexture.Copy(m_normalsTexture.GetResource());
 		m_copyNormalsTexture.Bind(1);
-		m_meshIDTexture.Bind(2);
+		m_modelIDTexture.Bind(2);
 		m_depthTexture.Copy(m_depthStencil.GetDepthStencilResource());
 		m_depthTexture.Bind(3);
 		engine::DecalSystem::instance().render();
@@ -207,7 +207,7 @@ namespace engine::windows
 
 		m_depthTexture.Copy(m_depthStencil.GetDepthStencilResource());
 		m_depthTexture.Bind(4);
-		m_meshIDTexture.Bind(5);
+		m_modelIDTexture.Bind(5);
 
 		engine::s_deviceContext->OMSetBlendState(m_additiveBlendState.ptr(), blendFactor, sampleMask);
 		

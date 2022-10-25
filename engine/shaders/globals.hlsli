@@ -6,7 +6,7 @@ static const float M_PI = 3.14159265358979323846f;
 static const float M_2PI = 2.f * M_PI;
 static const uint MAX_POINT_LIGHTS = 5;
 static const uint MAX_DIRECTIONAL_LIGHTS = 2;
-static const float TRANSLUCENCY_POWER = 50;
+static const float TRANSLUCENCY_POWER = 40;
 cbuffer PerFrameBuffer : register(b0)
 {
     float4x4 g_viewProj;
