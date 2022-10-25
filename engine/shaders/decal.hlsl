@@ -97,7 +97,7 @@ PS_OUTPUT ps_main(PS_INPUT input)
     
     float4 map_normal = g_decalNormalMap.Sample(g_samplerState, tex_coord);
     
-    if (map_normal.a < 0.9f)
+    if (map_normal.a < 0.55f)
     {
         discard;
         return output;
