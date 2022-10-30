@@ -39,6 +39,9 @@ namespace engine
 		depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_EQUAL;
 		depthStencilDesc.BackFace = depthStencilDesc.FrontFace;
 		CreateDepthStencilState(depthStencilDesc, "disDepthStencilRead");
+		
+		depthStencilDesc.DepthEnable = TRUE;
+		CreateDepthStencilState(depthStencilDesc, "defDepthStencilRead");
 	}
 
 	void DepthStencilManager::init()

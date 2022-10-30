@@ -10,9 +10,9 @@ class Transform
     Vec3 scale;
 
 public:
-    const Vec3& right() 	const { return Vec3(transform[0]).normalized();}
-    const Vec3& top() 		const { return Vec3(transform[1]).normalized();}
-    const Vec3& forward() 	const { return Vec3(transform[2]).normalized();}
+    Vec3 right() 	const { return Vec3(transform[0]).normalized();}
+    Vec3 top() 		const { return Vec3(transform[1]).normalized();}
+    Vec3 forward() 	const { return Vec3(transform[2]).normalized();}
     const Matr<4>& getTransformMatrix() const { return transform; }
     const Matr<4>& getTransformInvMatrix() const { return transformInv; }
     const Vec3& getPosition() const { return position; }
@@ -108,7 +108,7 @@ public:
         rotation.normalize();
         UpdateMatrices();
     }
-    void Rotate(const Angles& angles, const Vec3 _right, const Vec3 _top, const Vec3 _forward)
+    void Rotate(const Angles& angles, const Vec3 &_right, const Vec3 &_top, const Vec3 &_forward)
     {
         rotation *= Quaternion(angles.roll, _forward);
         rotation *= Quaternion(angles.pitch, _right);

@@ -39,7 +39,7 @@ public:
     inline Vec3 operator*(float t) const { return Vec3(t * e[0], t * e[1], t * e[2]);}
     inline Vec3 operator/(float t) const {return Vec3(e[0] / t, e[1] / t, e[2] / t);}
 
-    inline const Vec3& normalized() const { return *this / length(); }
+    inline Vec3 normalized() const { return *this / length(); }
     inline Vec3& normalize() { return *this /= length(); }
 
     inline float length() const { return sqrtf(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]); }

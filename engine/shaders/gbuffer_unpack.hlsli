@@ -40,4 +40,6 @@ void UnpackGbuffer(in float2 screenXY, out float3 world_pos, out Surface surface
     surface.emission = g_emission.Load(sample_location).xyz;
 }
 
+
+
 #endif

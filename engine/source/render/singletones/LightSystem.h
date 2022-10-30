@@ -3,6 +3,7 @@
 #include "../Light.h"
 #include <vector>
 #include "../../math/camera.h"
+#include "../Model.h"
 
 namespace engine
 {
@@ -25,9 +26,16 @@ namespace engine
 		Vec3 cameraCenter;
 		float R;
 		float texelSize;
+		
+
+		struct PointLightVertexBuffer
+		{
+			Vec3 position;
+		};
 
 		struct PointLightInstanceBuffer
 		{
+			uint32_t pl_index;
 			Matr<4> viewProj[6];
 			PointLightInstanceBuffer(){}
 		};
@@ -46,6 +54,7 @@ namespace engine
 		void updateDirectionalLightInstanceBuffer();
 
 	public:
+		std::shared_ptr<Model> m_pointLightClipSphere;
 		static const uint32_t MAX_POINT_LIGHTS = 5;
 		static const uint32_t MAX_DIRECTIONAL_LIGHTS = 2;
 
@@ -65,14 +74,20 @@ namespace engine
 			updateDirectionalLightInstanceBuffer();
 		}
 		
-		void bindPointLightInstanceBuffer()
+		void bindPointLightClipSphere(UINT inputSlot)
 		{
-			m_pointLightInstanceBuffer.Bind();
+			m_pointLightClipSphere->m_indexBuffer.Bind();
+			m_pointLightClipSphere->m_vertexBuffer.Bind(inputSlot);
 		}
 
-		void bindDirectionalLightInstanceBuffer()
+		void bindPointLightInstanceBuffer(UINT inputSlot)
 		{
-			m_directionalLightInstanceBuffer.Bind();
+			m_pointLightInstanceBuffer.Bind(inputSlot);
+		}
+
+		void bindDirectionalLightInstanceBuffer(UINT inputSlot)
+		{
+			m_directionalLightInstanceBuffer.Bind(inputSlot);
 		}
 	
 		void setDirectionalLightFrustum(const Camera& camera);

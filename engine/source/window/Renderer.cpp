@@ -5,6 +5,7 @@
 #include "../render/singletones/VegetationSystem.h"
 #include "../render/singletones/DepthStencilManager.h"
 #include "../render/singletones/DecalSystem.h"
+#include "../render/singletones/RasteriserStateManager.h"
 
 static float blendFactor[4] = { 0.f,0.f,0.f,0.f };
 static UINT sampleMask = 0xffffffff;
@@ -15,41 +16,44 @@ namespace engine::windows
 
 	void Renderer::Init(UINT sampleCount)
 	{
-		D3D11_INPUT_ELEMENT_DESC input_pl[24] =
+		D3D11_INPUT_ELEMENT_DESC input_pl[] =
 		{
-			{"VIEWPROJ_RX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_RY", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_RZ", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_RW", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VERTEX_POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 
-			{"VIEWPROJ_LX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_LY", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_LZ", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_LW", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"PL_INDEX", 0, DXGI_FORMAT_R32_UINT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_RX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_RY", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_RZ", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_RW", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 
-			{"VIEWPROJ_UX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_UY", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_UZ", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_UW", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_LX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_LY", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_LZ", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_LW", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 
-			{"VIEWPROJ_DX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_DY", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_DZ", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_DW", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_UX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_UY", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_UZ", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_UW", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 
-			{"VIEWPROJ_FX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_FY", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_FZ", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_FW", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_DX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_DY", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_DZ", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_DW", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 
-			{"VIEWPROJ_BX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_BY", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_BZ", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"VIEWPROJ_BW", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1}
+			{"VIEWPROJ_FX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_FY", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_FZ", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_FW", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+
+			{"VIEWPROJ_BX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_BY", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_BZ", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"VIEWPROJ_BW", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1}
 		};
 
-		m_pl_deferredShadingShader.Init(L"engine/shaders/deferred_pl_shading.hlsl", input_pl, 24, ShaderEnabling(true, false));
-		m_pl_grass_deferredShadingShader.Init(L"engine/shaders/deferred_pl_grass_shading.hlsl", input_pl, 24, ShaderEnabling(true, false));
+		m_pl_deferredShadingShader.Init(L"engine/shaders/deferred_pl_shading.hlsl", input_pl, 26, ShaderEnabling(true, false));
+		m_pl_grass_deferredShadingShader.Init(L"engine/shaders/deferred_pl_grass_shading.hlsl", input_pl, 26, ShaderEnabling(true, false));
 
 		D3D11_INPUT_ELEMENT_DESC input_dl[] =
 		{
@@ -68,9 +72,11 @@ namespace engine::windows
 		m_defDepthStencilState = DepthStencilManager::instance().GetDepthStencilState("default");
 		m_defDepthStencilWriteState = DepthStencilManager::instance().GetDepthStencilState("defDepthStencilWrite");
 		m_disDepthStencilReadState = DepthStencilManager::instance().GetDepthStencilState("disDepthStencilRead");
+		m_defDepthStencilReadState = DepthStencilManager::instance().GetDepthStencilState("defDepthStencilRead");
 		m_disableDSS = DepthStencilManager::instance().GetDepthStencilState("disable");
 
 		m_additiveBlendState = BlendStateManager::instance().GetBlendState("additive");
+		m_plRasterizerState = RasteriserStateManager::instance().GetRasteriserState("point_light");
 
 		m_sampleCount = sampleCount;
 		m_textureRegisterIndex = sampleCount == 1 ? 0 : 1;
@@ -215,14 +221,20 @@ namespace engine::windows
 		{
 			engine::s_deviceContext->OMSetDepthStencilState(m_disDepthStencilReadState.ptr(), 1);
 
+			s_deviceContext->RSSetState(m_plRasterizerState.ptr());
 			m_pl_deferredShadingShader.Bind();
-			LightSystem::instance().bindPointLightInstanceBuffer();
+			LightSystem::instance().bindPointLightClipSphere(0);
+			LightSystem::instance().bindPointLightInstanceBuffer(1);
 			ShadowManager::instance().m_pointLightDSResolutionBuffer.BindPS(8);
 			s_deviceContext->PSSetShaderResources(8, 1, &ShadowManager::instance().m_srvPointLightShadow.ptr());
-			engine::s_deviceContext->DrawInstanced(3, LightSystem::instance().getPointLights().size(), 0, 0);
+			engine::s_deviceContext->DrawIndexedInstanced(LightSystem::instance().m_pointLightClipSphere->m_vertexBuffer.Size(),
+				LightSystem::instance().getPointLights().size(), 0, 0, 0);
+			//engine::s_deviceContext->DrawInstanced(3, LightSystem::instance().getPointLights().size(), 0, 0);
+			s_deviceContext->RSSetState(nullptr);
 
+			
 			m_dl_deferredShadingShader.Bind();
-			LightSystem::instance().bindDirectionalLightInstanceBuffer();
+			LightSystem::instance().bindDirectionalLightInstanceBuffer(0);
 			s_deviceContext->PSSetShaderResources(9, 1, &ShadowManager::instance().m_srvDirectionalLightShadow.ptr());
 			engine::s_deviceContext->DrawInstanced(3, LightSystem::instance().getDirectionalLights().size(), 0, 0);
 
@@ -236,14 +248,22 @@ namespace engine::windows
 			{
 				engine::s_deviceContext->OMSetDepthStencilState(m_disDepthStencilReadState.ptr(), 2);
 
+				s_deviceContext->RSSetState(m_plRasterizerState.ptr());
 				m_pl_grass_deferredShadingShader.Bind();
-				LightSystem::instance().bindPointLightInstanceBuffer();
+				LightSystem::instance().bindPointLightClipSphere(0);
+				LightSystem::instance().bindPointLightInstanceBuffer(1);
 				ShadowManager::instance().m_pointLightDSResolutionBuffer.BindPS(8);
 				s_deviceContext->PSSetShaderResources(8, 1, &ShadowManager::instance().m_srvPointLightShadow.ptr());
-				engine::s_deviceContext->DrawInstanced(3, LightSystem::instance().getPointLights().size(), 0, 0);
+				//engine::s_deviceContext->DrawInstanced(3, LightSystem::instance().getPointLights().size(), 0, 0);
+				engine::s_deviceContext->DrawIndexedInstanced(LightSystem::instance().m_pointLightClipSphere->m_vertexBuffer.Size(),
+					LightSystem::instance().getPointLights().size(), 0, 0, 0);
+				s_deviceContext->RSSetState(nullptr);
+
+
+				
 
 				m_dl_grass_deferredShadingShader.Bind();
-				LightSystem::instance().bindDirectionalLightInstanceBuffer();
+				LightSystem::instance().bindDirectionalLightInstanceBuffer(0);
 				s_deviceContext->PSSetShaderResources(9, 1, &ShadowManager::instance().m_srvDirectionalLightShadow.ptr());
 				engine::s_deviceContext->DrawInstanced(3, LightSystem::instance().getDirectionalLights().size(), 0, 0);
 

@@ -24,7 +24,7 @@ namespace engine
 		void Clear();
 		bool Is_Unused() const { return m_depthStencilView.ptr() == nullptr; }
 		const D3D11_TEXTURE2D_DESC& GetResourceDesc() const { return m_resourceDesc; }
-		DxResPtr<ID3D11DepthStencilView> GetDepthStencilView() { return m_depthStencilView; }
+		DxResPtr<ID3D11DepthStencilView>& GetDepthStencilView() { return m_depthStencilView; }
 		DxResPtr<ID3D11Texture2D>& GetDepthStencilResource() { return m_depthStencilBuffer; }
 	};
 }

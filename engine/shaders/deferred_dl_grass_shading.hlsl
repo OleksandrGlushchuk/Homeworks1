@@ -52,7 +52,7 @@ float4 ps_main(PS_INPUT input) : SV_Target
     View view;
     fillViewStructure(view, surface.map_normal, world_pos.xyz);
     
-    float3 transmittanceRGB = surface.emission;
+    float3 transmittanceRGB = surface.emission; //TRANSMITTANCE_RGB;
     float NdotL = dot(g_directionalLight[input.dl_index].direction, surface.map_normal);
     float3 transmission = NdotL < 0 ? g_directionalLight[input.dl_index].radiance * transmittanceRGB * pow(-NdotL, TRANSLUCENCY_POWER) : 0;
     

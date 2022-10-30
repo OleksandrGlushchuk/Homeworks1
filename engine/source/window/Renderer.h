@@ -35,7 +35,10 @@ namespace engine::windows
 		DxResPtr<ID3D11DepthStencilState> m_defDepthStencilState;
 		DxResPtr<ID3D11DepthStencilState> m_defDepthStencilWriteState;
 		DxResPtr<ID3D11DepthStencilState> m_disDepthStencilReadState;
+		DxResPtr<ID3D11DepthStencilState> m_defDepthStencilReadState;
 		DxResPtr<ID3D11DepthStencilState> m_disableDSS;
+
+		DxResPtr<ID3D11RasterizerState> m_plRasterizerState;
 
 		Texture m_normalsTexture;
 		Texture m_albedoTexture;

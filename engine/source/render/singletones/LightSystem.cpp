@@ -10,6 +10,7 @@ namespace engine
 	{
 		ALWAYS_ASSERT(s_instance == nullptr);
 		s_instance = new LightSystem;
+		s_instance->m_pointLightClipSphere = ModelManager::instance().GetUnitSphereModel();
 		math::setPerspective(fovy, 1.f, p_near, p_far, s_instance->m_pointLightProj);
 	}
 
@@ -51,6 +52,7 @@ namespace engine
 		PointLightInstanceBuffer* dst = (PointLightInstanceBuffer*)mapping.pData;
 		for (uint32_t i = 0; i < size; ++i)
 		{
+			dst[i].pl_index = i;
 			std::copy(m_viewProjPointLight.begin() + i * 6, m_viewProjPointLight.begin() + (i + 1) * 6, dst[i].viewProj);
 		}
 		m_pointLightInstanceBuffer.Unmap();
@@ -173,6 +175,7 @@ namespace engine
 			m_viewProjDirectionalLight[i] = m_viewDirectionalLight[i] * m_directionalLightProj;
 		}
 	}
+
 	void LightSystem::setDirectionalLightFrustum(const Camera& camera)
 	{
 		const Vec3 cameraPos = camera.position();
