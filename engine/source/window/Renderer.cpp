@@ -20,7 +20,6 @@ namespace engine::windows
 		{
 			{"VERTEX_POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 
-			{"PL_INDEX", 0, DXGI_FORMAT_R32_UINT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 			{"VIEWPROJ_RX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 			{"VIEWPROJ_RY", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 			{"VIEWPROJ_RZ", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
@@ -52,8 +51,8 @@ namespace engine::windows
 			{"VIEWPROJ_BW", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1}
 		};
 
-		m_pl_deferredShadingShader.Init(L"engine/shaders/deferred_pl_shading.hlsl", input_pl, 26, ShaderEnabling(true, false));
-		m_pl_grass_deferredShadingShader.Init(L"engine/shaders/deferred_pl_grass_shading.hlsl", input_pl, 26, ShaderEnabling(true, false));
+		m_pl_deferredShadingShader.Init(L"engine/shaders/deferred_pl_shading.hlsl", input_pl, 25, ShaderEnabling(true, false));
+		m_pl_grass_deferredShadingShader.Init(L"engine/shaders/deferred_pl_grass_shading.hlsl", input_pl, 25, ShaderEnabling(true, false));
 
 		D3D11_INPUT_ELEMENT_DESC input_dl[] =
 		{

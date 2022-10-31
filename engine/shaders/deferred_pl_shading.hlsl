@@ -7,7 +7,6 @@ struct VS_INPUT
 {
     float3 vertex_pos : VERTEX_POS;
     
-    uint pl_index : PL_INDEX;
     float4 viewProj_rx : VIEWPROJ_RX;
     float4 viewProj_ry : VIEWPROJ_RY;
     float4 viewProj_rz : VIEWPROJ_RZ;
@@ -47,20 +46,17 @@ struct PS_INPUT
     nointerpolation float4x4 viewProjPointLightMatrices[6] : PL_MATRICES;
 };
 
-PS_INPUT vs_main(VS_INPUT input)
+PS_INPUT vs_main(VS_INPUT input, uint instanceID : SV_InstanceID)
 {
     PS_INPUT output;
-    
-    float maxLightPart = max(g_pointLight[input.pl_index].radiance.r,
-    max(g_pointLight[input.pl_index].radiance.g, g_pointLight[input.pl_index].radiance.b));
-    
+    float maxLightPart = max(g_pointLight[instanceID].radiance.r,
+    max(g_pointLight[instanceID].radiance.g, g_pointLight[instanceID].radiance.b));
     float sphereRadius = sqrt(maxLightPart / MIN_LIGHT_RADIANCE);
     
-    output.position = float4(input.vertex_pos * sphereRadius + g_pointLight[input.pl_index].position, 1);
-    output.world_pos = output.position.xyz;
+    output.position = float4(input.vertex_pos * sphereRadius + g_pointLight[instanceID].position, 1);
     output.position = mul(output.position, g_viewProj);
     
-    output.pl_index = input.pl_index;
+    output.pl_index = instanceID;
 
     output.viewProjPointLightMatrices[0] = float4x4(input.viewProj_rx, input.viewProj_ry, input.viewProj_rz, input.viewProj_rw);
     output.viewProjPointLightMatrices[1] = float4x4(input.viewProj_lx, input.viewProj_ly, input.viewProj_lz, input.viewProj_lw);

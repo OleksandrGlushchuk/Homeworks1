@@ -35,7 +35,6 @@ namespace engine
 
 		struct PointLightInstanceBuffer
 		{
-			uint32_t pl_index;
 			Matr<4> viewProj[6];
 			PointLightInstanceBuffer(){}
 		};

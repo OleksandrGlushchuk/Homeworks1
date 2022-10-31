@@ -52,7 +52,6 @@ namespace engine
 		PointLightInstanceBuffer* dst = (PointLightInstanceBuffer*)mapping.pData;
 		for (uint32_t i = 0; i < size; ++i)
 		{
-			dst[i].pl_index = i;
 			std::copy(m_viewProjPointLight.begin() + i * 6, m_viewProjPointLight.begin() + (i + 1) * 6, dst[i].viewProj);
 		}
 		m_pointLightInstanceBuffer.Unmap();
