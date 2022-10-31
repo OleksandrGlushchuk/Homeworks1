@@ -5,23 +5,6 @@ static const float HEMISPHERE_SOLID_ANGLE = 2.f * M_PI;
 static const float INSULATOR_F0 = 0.01f;
 static const float DIRECTIONAL_LIGHT_SOLID_ANGLE = M_PI;
 
-struct Surface
-{
-    float3 map_normal;
-    float3 geometry_normal;
-    float3 albedo;
-    float3 F0;
-    float metalness;
-    float roughness;
-};
-
-struct View
-{
-    float NdotV;
-    float3 reflectionDir;
-    float3 PointToCameraNormalized;
-};
-
 inline float3 approximateClosestSphereDir(inout bool intersects, const float3 reflectionDir, float sphereCos,
 	const float3 sphereRelPos, const float3 sphereDir, float sphereDist, float sphereRadius)
 {

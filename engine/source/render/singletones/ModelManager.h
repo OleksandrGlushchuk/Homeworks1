@@ -22,6 +22,7 @@ namespace engine
 		bool m_UnitQuadModelIsInited = false;
 		bool m_UnitCubeModelIsInited = false;
 		bool m_UnitSphereModelIsInited = false;
+		bool m_GrassModelIsInited = false;
 		void InitUnitQuadModel();
 		void InitUnitCubeModel();
 		void initUnitSphereModel();
@@ -30,10 +31,12 @@ namespace engine
 		static void init();
 		static void deinit();
 		static ModelManager& instance();
+		void InitGrassModel(uint32_t numSegments);
 		const std::shared_ptr<Model>& LoadModel(const std::string& path);
 		const std::shared_ptr<Model>& GetModel(const std::string& path);
-		const std::shared_ptr<Model>& GetUnitQuadModel() { return m_defaultModel["Quad"]; }
-		const std::shared_ptr<Model>& GetUnitCubeModel() { return m_defaultModel["Cube"]; }
-		const std::shared_ptr<Model>& GetUnitSphereModel() { return m_defaultModel["Sphere"]; }
+		const std::shared_ptr<Model>& GetGrassModel() { ALWAYS_ASSERT(m_GrassModelIsInited); return m_defaultModel["Grass"]; }
+		const std::shared_ptr<Model>& GetUnitQuadModel() { ALWAYS_ASSERT(m_UnitQuadModelIsInited); return m_defaultModel["Quad"]; }
+		const std::shared_ptr<Model>& GetUnitCubeModel() { ALWAYS_ASSERT(m_UnitCubeModelIsInited); return m_defaultModel["Cube"]; }
+		const std::shared_ptr<Model>& GetUnitSphereModel() { ALWAYS_ASSERT(m_UnitSphereModelIsInited); return m_defaultModel["Sphere"]; }
 	};
 }

@@ -1,6 +1,10 @@
 #include "globals.hlsli"
-#include "pbr_helpers.hlsli"
-#include "environment.hlsli"
+#include "gbuffer.hlsli"
+Texture2D g_colorMap : register(t0);
+Texture2D<float3> g_normalMap : register(t1);
+Texture2D<float> g_roughnessMap : register(t2);
+Texture2D<float> g_metalnessMap : register(t3);
+Texture2D<float> g_dissolubleMap : register(t4);
 
 cbuffer MeshToModel : register(b1)
 {
@@ -76,48 +80,26 @@ cbuffer PointLightDSResolutionBuffer : register(b3)
     float3 paddingPLDSRB;
 }
 
-Texture2D g_colorMap : register(t0);
-Texture2D<float3> g_normalMap : register(t1);
-Texture2D<float> g_roughnessMap : register(t2);
-Texture2D<float> g_metalnessMap : register(t3);
 #include "opaque_helpers.hlsli"
 
-Texture2D<float> g_dissolubleMap : register(t4);
-
-float4 ps_main(PS_INPUT input) : SV_TARGET
+PS_OUTPUT ps_main(PS_INPUT input)
 {
     float dissolutionValue = g_dissolubleMap.Sample(g_samplerState, input.tex_coord);
-    float currentLifeDuration = (g_timeSinceEpoch - input.creationTime) / input.lifeTime;
+    float currentLifeDuration = (g_time - input.creationTime) / input.lifeTime;
+    float3 emission = 0;
     if (currentLifeDuration < dissolutionValue)
     {
-        //discard;
-        return float4(0.1f, 0.5f, 1.f, 0.3f);
+        PS_OUTPUT output;
+        discard;
+        return output;
     }
     else if (abs(currentLifeDuration - dissolutionValue) <= 0.05f)
     {
-        
-        return float4(0.1f, 0.5f, 10.f, 0.7f);
+        emission = float3(0.1f, 0.0f, 2.f);
     }
         
-    
-    
     Surface surface;
-    View view;
-    fillSurfaceStructure(surface, input.tex_coord, input.normal, input.tangent, input.bitangent);
-    fillViewStructure(view, surface.map_normal, input.world_pos.xyz);
-
-    float3 hdrColor = float3(0, 0, 0);
-    for (uint i = 0; i < g_pointLightNum; ++i)
-    {
-        hdrColor += CalculatePointLight(g_pointLight[i], g_pointLight[i].position - input.world_pos.xyz, view, surface);
-    }
+    fillSurfaceStructure(surface, input.tex_coord, input.normal, input.tangent, input.bitangent, emission, true);
     
-    for (uint j = 0; j < g_directionalLightNum; ++j)
-    {
-        hdrColor += CalculateDirectionalLight(g_directionalLight[j], view, surface);
-    }
-    hdrColor += addEnvironmentReflection(view, surface);
-    
-    float4 result = float4(hdrColor, 1.f);
-    return result;
+    return GBuffer(surface, 0);
 }

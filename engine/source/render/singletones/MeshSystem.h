@@ -9,7 +9,7 @@ namespace engine
 	class MeshSystem
 	{
 		OpaqueInstances opaqueInstances;
-		EmissiveInstances emissiveInstances;
+		
 
 		static MeshSystem* s_instance;
 		MeshSystem() {}
@@ -22,6 +22,7 @@ namespace engine
 			auto& model = emissiveInstances.m_modelInstances[ID.model_index];
 			out_instance_index = model.meshIDs[ID.meshesBlock_index + mesh_index];
 		}
+		uint16_t m_modelIDsCounter = 1; //START ID = 1; 0 for unused
 	public:
 		DissolubleInstances dissolubleInstances;
 
@@ -29,6 +30,7 @@ namespace engine
 		static void deinit();
 		static MeshSystem& instance();
 		bool findIntersection(const ray& _ray, engine::MeshIntersection& out_intersection, uint32_t& out_transformID);
+		bool findIntersectionOpaque(const ray& _ray, engine::MeshIntersection& out_intersection, uint32_t& out_transformID, uint16_t& out_modelID);
 		void addInstance(const std::shared_ptr<Model>& model, const std::vector<OpaqueInstances::Material>& material, const OpaqueInstances::Instance &_instance);
 		void addInstance(const std::shared_ptr<Model>& model, const EmissiveInstances::Instance &_instance);
 		void addInstance(const std::shared_ptr<Model>& model, const std::vector<OpaqueInstances::Material>& material, const DissolubleInstances::Instance& _instance);
@@ -60,18 +62,23 @@ namespace engine
 		void renderSceneDepthToCubemaps()
 		{
 			opaqueInstances.renderSceneDepthToCubemaps();
+			dissolubleInstances.renderSceneDepthToCubemaps();
 		}
 
 		void renderSceneDepthForDirectionalLights()
 		{
 			opaqueInstances.renderSceneDepthForDirectionalLights();
+			dissolubleInstances.renderSceneDepthForDirectionalLights();
 		}
 
 		void render()
 		{
 			dissolubleInstances.render();
-			emissiveInstances.render();
 			opaqueInstances.render();
+
+			//emissiveInstances.render();
+			
 		}
+		EmissiveInstances emissiveInstances;
 	};
 }

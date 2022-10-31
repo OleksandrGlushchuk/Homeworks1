@@ -72,12 +72,14 @@ namespace engine::windows
 		void OnKeyDown(WPARAM key);
 		void OnKeyUp(WPARAM key);
 
+		void OnMouseMove(WORD x, WORD y);
+
 		void OnLMouseDown(WORD x, WORD y);
-		void OnLMouseMove(WORD x, WORD y);
+		void OnLMouseMove();
 		void OnLMouseUp(WORD x, WORD y);
 
 		void OnRMouseDown(WORD x, WORD y);
-		void OnRMouseMove(WORD x, WORD y);
+		void OnRMouseMove();
 		void OnRMouseUp(WORD x, WORD y);
 
 		void OnEnterSizeMove();

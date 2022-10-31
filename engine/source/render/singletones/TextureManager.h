@@ -7,8 +7,7 @@ namespace engine
 {
 	class TextureManager
 	{
-		engine::DxResPtr<ID3D11Resource> m_resource;
-		std::unordered_map<std::wstring, engine::DxResPtr<ID3D11ShaderResourceView> > m_shaderResourceView;
+		std::unordered_map<std::wstring, std::pair<engine::DxResPtr<ID3D11ShaderResourceView>, DxResPtr<ID3D11Resource> >> m_SRVandResource;
 		static TextureManager *s_instance;
 		TextureManager() {}
 		TextureManager(const TextureManager& other) = delete;
@@ -19,8 +18,7 @@ namespace engine
 		static void init();
 		static void deinit();
 		static TextureManager& instance();
-		const engine::DxResPtr<ID3D11ShaderResourceView>& LoadTexture(const std::wstring& fileName, bool need_to_force_sRGB = false);
-
-		const engine::DxResPtr<ID3D11ShaderResourceView>& GetTexture(const std::wstring& fileName);
+		const engine::DxResPtr<ID3D11ShaderResourceView>& LoadTexture(const std::wstring& fileName, 
+			DxResPtr<ID3D11Texture2D>& out_resource, bool need_to_force_sRGB = false);
 	};
 }

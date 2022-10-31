@@ -7,6 +7,7 @@
 #include "../render/singletones/ShadowManager.h"
 #include "../render/singletones/ParticleSystem.h"
 #include "../render/singletones/VegetationSystem.h"
+#include "../render/singletones/DecalSystem.h"
 
 const float p_near = 0.01f, p_far = 100.f, fovy = M_PI / 3.f;
 
@@ -37,16 +38,16 @@ namespace engine::windows
 	void Application::Init()
 	{
 		m_currentTime = std::chrono::steady_clock::now();
-		renderer.Init(4u);
+		renderer.Init(1u);
 		m_postProcess.Init(1.5f);
 		ShadowManager::instance().SetDirectionalLightDSResolution(2048.f);
-		ShadowManager::instance().SetDirectionalLightShadowDistance(60.f);
+		ShadowManager::instance().SetDirectionalLightShadowDistance(40.f);
 		ShadowManager::instance().SetPointLightDSResolution(1024.f);
 
-		ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(-0.5f, 0, 0.f), Vec3(0.5f, 0.1f, 5.f), 
-			1.f, 2.5f, 0.015f, 0.05f, 0.5f, 1.01f, 0.2f, 8, 8));
+		ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(-0.5f, 0, 0.f), Vec3(0.2f, 0.1f, 1.f), 
+			1.f, 2.5f, 0.015f, 0.15f, 0.5f, 1.01f, 0.2f, 8, 8));
 		ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(0.995f, 0.8f, 0.6f), Vec3(0.01f, 0.01f, 0.01f),
-			0.5f, 3.5f, 0.005f, 0.05f, 0.15f, 1.005f, 0.01f, 8, 8));
+			0.5f, 3.f, 0.005f, 0.05f, 0.15f, 1.005f, 0.01f, 8, 8));
 
 
 		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
@@ -54,8 +55,10 @@ namespace engine::windows
 		LightSystem::instance().setDirectionalLightFrustum(camera);
 		camera.setWorldOffset(Vec3(0, 0, -2));
 
-		VegetationSystem::instance().AddGrassArea(3, 3, 0.4f, { -7,-2,-2 });
-		VegetationSystem::instance().AddGrassArea(2, 2, 0.4f, { -10, -2,-2 });
+		VegetationSystem::instance().AddGrassArea(4, 4, 0.6f, { -7,-2.55f,-2 });
+		//VegetationSystem::instance().AddGrassArea(2, 6, 0.7f, { -10, -2,-2.5f });
+
+		DecalSystem::instance().SetDecalSize(0.4f);
 
 		//LIGHTS
 		{
@@ -79,6 +82,7 @@ namespace engine::windows
 				L"engine/assets/Sky/night_street_reflectance.dds", 
 				L"engine/assets/Sky/night_street_reflection.dds");
 		}
+
 		//KNIGHTS
 		{
 			const auto& KnightModel = engine::ModelManager::instance().LoadModel("engine/assets/Knight/Knight.fbx");
@@ -265,8 +269,8 @@ namespace engine::windows
 			transform.SetPosition({ 1.f, 3.4f, 0.f });
 			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
 
-			transform.SetPosition({ 5,0,0 });
-			transform.SetScale({ 1.f,100.f,100.f });
+			transform.SetPosition({ 0,-3,0 });
+			transform.SetScale({ 50.f,1.f,50.f });
 			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
 		}
 	}
@@ -550,77 +554,115 @@ namespace engine::windows
 			}
 		}
 		
-		if (input_state['N'])
+		//CREATING DISSOLUBLE INSTANCES
 		{
-			const auto& SamuraiModel = engine::ModelManager::instance().LoadModel("engine/assets/Samurai/Samurai.fbx");
-			Transform transform = Transform::Identity();
-			Vec3 cameraPos = camera.position();
-			Vec3 cameraForward = camera.forward();
-			transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
-			MeshSystem::instance().addInstance(SamuraiModel, m_dissolubleSamuraiMaterial, DissolubleInstances::Instance(transform,
-				std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
-				3.f));
-			input_state['N'] = false;
-		}
-		if (input_state['M'])
-		{
+			if (input_state['N'])
+			{
+				const auto& SamuraiModel = engine::ModelManager::instance().LoadModel("engine/assets/Samurai/Samurai.fbx");
+				Transform transform = Transform::Identity();
+				Vec3 cameraPos = camera.position();
+				Vec3 cameraForward = camera.forward();
+				transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
+				MeshSystem::instance().addInstance(SamuraiModel, m_dissolubleSamuraiMaterial, DissolubleInstances::Instance(transform,
+					std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
+					3.f));
+				input_state['N'] = false;
+			}
+			if (input_state['M'])
+			{
 
-			const auto& SamuraiModel = engine::ModelManager::instance().LoadModel("engine/assets/Samurai/Samurai.fbx");
-			Transform transform = Transform::Identity();
-			Vec3 cameraPos = camera.position();
-			Vec3 cameraForward = camera.forward();
-			transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
-			MeshSystem::instance().addInstance(SamuraiModel, m_dissolubleSamuraiMaterial1, DissolubleInstances::Instance(transform,
-				std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
-				3.f));
-			input_state['M'] = false;
+				const auto& SamuraiModel = engine::ModelManager::instance().LoadModel("engine/assets/Samurai/Samurai.fbx");
+				Transform transform = Transform::Identity();
+				Vec3 cameraPos = camera.position();
+				Vec3 cameraForward = camera.forward();
+				transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
+				MeshSystem::instance().addInstance(SamuraiModel, m_dissolubleSamuraiMaterial1, DissolubleInstances::Instance(transform,
+					std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
+					3.f));
+				input_state['M'] = false;
+			}
+			if (input_state['K'])
+			{
+				const auto& KnightModel = engine::ModelManager::instance().LoadModel("engine/assets/Knight/Knight.fbx");
+				Transform transform = Transform::Identity();
+				Vec3 cameraPos = camera.position();
+				Vec3 cameraForward = camera.forward();
+				transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
+				MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial, DissolubleInstances::Instance(transform,
+					std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
+					3.f));
+				input_state['K'] = false;
+			}
+			if (input_state['J'])
+			{
+				const auto& KnightModel = engine::ModelManager::instance().LoadModel("engine/assets/Knight/Knight.fbx");
+				Transform transform = Transform::Identity();
+				Vec3 cameraPos = camera.position();
+				Vec3 cameraForward = camera.forward();
+				transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
+				MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial1, DissolubleInstances::Instance(transform,
+					std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
+					3.f));
+				input_state['J'] = false;
+			}
+			if (input_state['H'])
+			{
+				const auto& KnightModel = engine::ModelManager::instance().LoadModel("engine/assets/Knight/Knight.fbx");
+				Transform transform = Transform::Identity();
+				Vec3 cameraPos = camera.position();
+				Vec3 cameraForward = camera.forward();
+				transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
+				MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial2, DissolubleInstances::Instance(transform,
+					std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
+					3.f));
+				input_state['H'] = false;
+			}
 		}
-		if (input_state['K'])
+
+		//SPAWNING DECALS
 		{
-			const auto& KnightModel = engine::ModelManager::instance().LoadModel("engine/assets/Knight/Knight.fbx");
-			Transform transform = Transform::Identity();
-			Vec3 cameraPos = camera.position();
-			Vec3 cameraForward = camera.forward();
-			transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
-			MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial, DissolubleInstances::Instance(transform,
-				std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
-				3.f));
-			input_state['K'] = false;
-		}
-		if (input_state['J'])
-		{
-			const auto& KnightModel = engine::ModelManager::instance().LoadModel("engine/assets/Knight/Knight.fbx");
-			Transform transform = Transform::Identity();
-			Vec3 cameraPos = camera.position();
-			Vec3 cameraForward = camera.forward();
-			transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
-			MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial1, DissolubleInstances::Instance(transform,
-				std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
-				3.f));
-			input_state['J'] = false;
-		}
-		if (input_state['H'])
-		{
-			const auto& KnightModel = engine::ModelManager::instance().LoadModel("engine/assets/Knight/Knight.fbx");
-			Transform transform = Transform::Identity();
-			Vec3 cameraPos = camera.position();
-			Vec3 cameraForward = camera.forward();
-			transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
-			MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial2, DissolubleInstances::Instance(transform,
-				std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
-				3.f));
-			input_state['H'] = false;
+			if (input_state['F'])
+			{
+				Vec3 cameraForward = camera.forward();
+				ray r;
+				MeshIntersection outIntersection;
+				outIntersection.reset(1);
+
+				float xx = (mouse_x + 0.5f) / ((wnd.screen.right) / 2.f) - 1.f;
+				float yy = (mouse_y + 0.5f) / ((wnd.screen.bottom) / (-2.f)) + 1.f;
+				r.origin = Vec3(xx, yy, 1);
+
+				float w;
+				r.origin.mult(camera.m_viewProjInv, 1, &w);
+				r.origin /= w;
+
+				r.direction = r.origin - camera.position();
+				r.direction.normalize();
+
+
+				uint32_t outTransformId;
+				uint16_t outModelID;
+
+				if (MeshSystem::instance().findIntersectionOpaque(r, outIntersection, outTransformId, outModelID))
+				{
+					Vec3 cameraRight = camera.right();
+					Vec3 cameraUp = camera.top();
+					DecalSystem::instance().AddDecalInstance(cameraRight, cameraUp, cameraForward, outIntersection.pos, outIntersection.normal, outTransformId, outModelID);
+				}
+				input_state['F'] = false;
+			}
+			
 		}
 
 		if (need_to_rotate_camera)
 			RotateCamera();
 		if (need_to_move_camera)
 		{
-			MoveCamera(delta_time * offset);
+			MoveCamera(offset * delta_time);
 			need_to_move_camera = false;
 		}
 		if (need_to_move_object)
-			OnRMouseMove(mouse_x, mouse_y);
+			OnRMouseMove();
 	}
 
 	void Application::OnKeyDown(WPARAM key)
@@ -631,6 +673,12 @@ namespace engine::windows
 	void Application::OnKeyUp(WPARAM key)
 	{
 		input_state[key] = false;
+	}
+
+	void Application::OnMouseMove(WORD x, WORD y)
+	{
+		mouse_x = x;
+		mouse_y = y;
 	}
 
 	void Application::MoveCamera(const Vec3& offset)
@@ -649,12 +697,10 @@ namespace engine::windows
 		dir_rotation = Vec3(0, 0, 1);
 	}
 
-	void Application::OnLMouseMove(WORD x, WORD y)
+	void Application::OnLMouseMove()
 	{
-		mouse_x = x;
-		mouse_y = y;
-		end_rotation.e[0] = x;
-		end_rotation.e[1] = y;
+		end_rotation.e[0] = mouse_x;
+		end_rotation.e[1] = mouse_y;
 		dir_rotation = delta_time * (start_rotation - end_rotation) * M_PI / wnd.screen.right;
 	}
 
@@ -692,14 +738,12 @@ namespace engine::windows
 		}
 	}
 
-	void Application::OnRMouseMove(WORD x, WORD y)
+	void Application::OnRMouseMove()
 	{
 		if (need_to_move_object)
 		{
-			mouse_x = x;
-			mouse_y = y;
-			float xx = (x + 0.5f) / ((wnd.screen.right) / 2.f) - 1.f;
-			float yy = (y + 0.5f) / ((wnd.screen.bottom) / (-2.f)) + 1.f;
+			float xx = (mouse_x + 0.5f) / ((wnd.screen.right) / 2.f) - 1.f;
+			float yy = (mouse_y + 0.5f) / ((wnd.screen.bottom) / (-2.f)) + 1.f;
 
 			ray_clicked_to_object.origin = Vec3(xx, yy, 1);
 

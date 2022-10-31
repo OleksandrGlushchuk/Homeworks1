@@ -89,7 +89,7 @@ namespace engine
 		std::vector<ModelID> m_modelIDs;
 		ConstantBuffer<MaterialConstantBuffer> m_materialConstantBuffer;
 		Texture m_dissolubleMap;
-		DxResPtr<ID3D11BlendState> m_alphaToCoverageBlendState;
+		DxResPtr<ID3D11BlendState> m_blendState;
 	public:
 		DissolubleInstances() {}
 
@@ -99,8 +99,8 @@ namespace engine
 
 		void render();
 
-		/*void renderSceneDepthToCubemaps();
+		void renderSceneDepthToCubemaps();
 
-		void renderSceneDepthForDirectionalLights();*/
+		void renderSceneDepthForDirectionalLights();
 	};
 }

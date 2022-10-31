@@ -23,6 +23,64 @@ namespace engine
 		ALWAYS_ASSERT(s_instance); return *s_instance;
 	}
 
+	void ModelManager::InitGrassModel(uint32_t numSegments)
+	{
+		if (m_GrassModelIsInited)
+			return;
+		std::shared_ptr<Model> grass_model(new Model);
+		auto& model = *grass_model;
+		model.name = "Grass";
+		model.box = Box::unit();
+
+		model.m_meshes.resize(1);
+
+		auto& mesh = model.m_meshes[0];
+		mesh.box = Box::unit();
+		mesh.meshToModelMatrix = Matr<4>::identity();
+		mesh.name = "Grass";
+		mesh.vertices.resize(numSegments * 2 + 2);
+		mesh.triangles.resize(numSegments * 2);
+		mesh.indexNum = 6 * numSegments;
+		mesh.indexOffset = 0;
+		mesh.vertexOffset = 0;
+		mesh.vertexNum = mesh.vertices.size();
+		Vec3 tangent, bitangent, normal;
+		tangent = { 1, 0, 0 };
+		bitangent = { 0, -1, 0 };
+		normal = { 0,0,-1 };
+
+		uint32_t numRibs = numSegments + 1;
+		float yStep = 1.f / numSegments;
+		float vStep = yStep;
+
+		for (uint32_t i = 0, j = 0; i < mesh.vertexNum; i+=2, j+= 1)
+		{
+			mesh.vertices[i].position = Vec3(-0.5f, 0.f + yStep*j, 0.f);
+			mesh.vertices[i].textureCoords = Vec2(0, std::max(0.f,1.f - vStep*j));
+			mesh.vertices[i].normal = normal;
+			mesh.vertices[i].tangent = tangent;
+			mesh.vertices[i].bitangent = bitangent;
+
+			mesh.vertices[i+1].position = Vec3(0.5f, 0.f + yStep*j, 0.f);
+			mesh.vertices[i+1].textureCoords = Vec2(1, std::max(0.f, 1.f - vStep * j));
+			mesh.vertices[i+1].normal = normal;
+			mesh.vertices[i+1].tangent = tangent;
+			mesh.vertices[i+1].bitangent = bitangent;
+		}
+
+		for (uint32_t i = 2; i < mesh.vertexNum; i += 2)
+		{
+			mesh.triangles[i - 2] = TriangleIndices(i-2, i, i+1);
+			mesh.triangles[i - 1] = TriangleIndices(i+1, i-1, i-2);
+		}
+		model.m_indexBuffer.Init(mesh.triangles);
+		model.m_vertexBuffer.Init(mesh.vertices);
+
+
+		m_defaultModel[grass_model->name] = grass_model;
+		m_GrassModelIsInited = true;
+	}
+
 	void ModelManager::InitUnitQuadModel()
 	{
 		if (m_UnitQuadModelIsInited)
@@ -400,9 +458,9 @@ namespace engine
 					setPos(side, vertex[2], quad[2]);
 
 					{
-						Vec3 AB = vertex[1].position - vertex[0].position;
-						Vec3 AC = vertex[2].position - vertex[0].position;
-						vertex[0].normal = vertex[1].normal = vertex[2].normal = Vec3::cross(AC,AB).normalized();
+						vertex[0].normal = vertex[0].position;
+						vertex[1].normal = vertex[1].position;
+						vertex[2].normal = vertex[2].position;
 					}
 
 					triangle[0] = TriangleIndices(vertex - mesh.vertices.data() + 2, vertex - mesh.vertices.data() + 1, vertex - mesh.vertices.data());
@@ -416,9 +474,9 @@ namespace engine
 					setPos(side, vertex[2], quad[2]);
 
 					{
-						Vec3 AB = vertex[1].position - vertex[0].position;
-						Vec3 AC = vertex[2].position - vertex[0].position;
-						vertex[0].normal = vertex[1].normal = vertex[2].normal = Vec3::cross(AC, AB).normalized();
+						vertex[0].normal = vertex[0].position;
+						vertex[1].normal = vertex[1].position;
+						vertex[2].normal = vertex[2].position;
 					}
 
 					triangle[0] = TriangleIndices(vertex - mesh.vertices.data()+2, vertex - mesh.vertices.data() + 1, vertex - mesh.vertices.data());

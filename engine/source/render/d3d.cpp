@@ -13,6 +13,7 @@
 #include "singletones/BlendStateManager.h"
 #include "singletones/RasteriserStateManager.h"
 #include "singletones/ParticleSystem.h"
+#include "singletones/DecalSystem.h"
 
 
 namespace engine
@@ -39,9 +40,11 @@ namespace engine
 		ParticleSystem::init();
 		MeshSystem::init();
 		VegetationSystem::init();
+		DecalSystem::init();
 	}
 	void deinit()
 	{
+		DecalSystem::deinit();
 		VegetationSystem::deinit();
 		MeshSystem::deinit();
 		ParticleSystem::deinit();

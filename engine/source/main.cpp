@@ -15,7 +15,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 {
 	engine::init();
 
-	window = engine::windows::Window(L"homework-9", hinstance, WndProc);
+	window = engine::windows::Window(L"homework-10", hinstance, WndProc);
 	application.Init();
 	window.Show();
 
@@ -40,7 +40,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 		{
 			delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count();
 			application.Draw();
-			application.delta_time = std::max(std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count() - delta_time, FRAME_DURATION);
+			application.delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count() - delta_time + FRAME_DURATION;
 		}
 		
 		
@@ -81,11 +81,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		break;
 
 	case WM_MOUSEMOVE:
+	{
+		WORD mx = LOWORD(lparam), my = HIWORD(lparam);
+		application.OnMouseMove(mx, my);
 		if (wparam == MK_LBUTTON || wparam == (MK_LBUTTON | MK_RBUTTON) || wparam == (MK_LBUTTON | MK_SHIFT) || wparam == (MK_LBUTTON | MK_SHIFT | MK_RBUTTON))
-			application.OnLMouseMove(LOWORD(lparam), HIWORD(lparam));
+			application.OnLMouseMove();
 		if (wparam == MK_RBUTTON || wparam == (MK_RBUTTON | MK_LBUTTON) || wparam == (MK_RBUTTON | MK_SHIFT) || wparam == (MK_RBUTTON | MK_SHIFT | MK_LBUTTON))
-			application.OnRMouseMove(LOWORD(lparam), HIWORD(lparam));
+			application.OnRMouseMove();
 		break;
+	}
 	case WM_LBUTTONUP:
 		application.OnLMouseUp(LOWORD(lparam), HIWORD(lparam));
 		break;

@@ -1,8 +1,5 @@
 #include "SmokeEmitter.h"
 #include <algorithm>
-#define _USE_MATH_DEFINES
-#include <math.h>
-const float FRAME_DURATION = 1.f / 60.f;
 
 namespace engine
 {
@@ -36,7 +33,7 @@ namespace engine
 		float currentLifeDuration;
 		for (auto& particle : m_particles)
 		{
-			particle.position += Vec3(0, m_particleSpeed * deltaTime / FRAME_DURATION, 0);
+			particle.position += Vec3(0, m_particleSpeed * deltaTime/FRAME_DURATION, 0);
 			particle.size *= m_scalingFactor * deltaTime / FRAME_DURATION;
 			currentLifeDuration = now - particle.creationTime;
 			if (currentLifeDuration <= m_particleSaturateTime)
@@ -49,7 +46,7 @@ namespace engine
 				particle.tint.e[3] -= deltaTime / m_particleFadingTime;
 				if (particle.tint.e[3] < 0.f) particle.tint.e[3] = 0.f;
 			}
-			particle.thickness = 0.0008f;
+			particle.thickness = particle.size.e[0]/1.2f;
 		}
 	}
 }

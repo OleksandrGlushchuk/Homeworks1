@@ -3,6 +3,9 @@
 #include "../math/Timer.h"
 #include <vector>
 #include <random>
+#define _USE_MATH_DEFINES
+#include <math.h>
+static const float FRAME_DURATION = 1.f / 60.f;
 
 namespace engine
 {

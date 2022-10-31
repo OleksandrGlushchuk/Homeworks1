@@ -85,14 +85,14 @@ namespace engine
 		engine::s_deviceContext->PSSetSamplers(1, 1, &SamplerManager::instance().GetSamplerState("ss_mmlmp_clamp").ptr());
 		engine::s_deviceContext->PSSetSamplers(2, 1, &SamplerManager::instance().GetSamplerState("ss_mmmp").ptr());
 		engine::s_deviceContext->PSSetSamplers(3, 1, &SamplerManager::instance().GetSamplerState("ss_cmmlmp").ptr());
+		engine::s_deviceContext->PSSetSamplers(4, 1, &SamplerManager::instance().GetSamplerState("ss_masked").ptr());
 	}
 
-	void Globals::UpdatePerFrameBuffer(const Camera& camera, const std::chrono::steady_clock::time_point& currentTime, uint32_t sampleCount)
+	void Globals::UpdatePerFrameBuffer(const Camera& camera, const std::chrono::steady_clock::time_point& currentTime, 
+		uint32_t sampleCount, uint32_t _screenWidth, uint32_t _screenHeight)
 	{
-		LightSystem::instance().updatePointLightMatrices();
-		LightSystem::instance().updateDirectionalLightMatrices(camera);
-		m_perFrameBuffer.Update(PerFrameBuffer(camera, engine::LightSystem::instance().getPointLights(),
-			engine::LightSystem::instance().getDirectionalLights(), currentTime, sampleCount));
+		m_perFrameBuffer.Update(PerFrameBuffer(camera, currentTime, LightSystem::instance().getPointLights(),
+			LightSystem::instance().getDirectionalLights(), sampleCount, _screenWidth, _screenHeight));
 	}
 
 	Globals::~Globals()
