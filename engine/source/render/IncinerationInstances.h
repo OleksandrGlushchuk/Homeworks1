@@ -14,7 +14,7 @@
 
 namespace engine
 {
-	class DissolubleInstances
+	class IncinerationInstances
 	{
 	public:
 		struct Instance
@@ -22,24 +22,32 @@ namespace engine
 			uint32_t transform_id;
 			float creationTime;
 			float lifeTime;
+			Vec3 spherePos;
+			float sphereMaxSize;
 			Instance() {}
-			explicit Instance(const Transform& transform, float _creationTime, float _lifeTime) : creationTime(_creationTime), lifeTime(_lifeTime),
-				transform_id(engine::TransformSystem::instance().m_transforms.insert(transform))
+			explicit Instance(const Transform& transform, float _creationTime, float _lifeTime, const Vec3& sphere_pos, float sphere_max_size) : creationTime(_creationTime), lifeTime(_lifeTime),
+				transform_id(engine::TransformSystem::instance().m_transforms.insert(transform)),
+				spherePos(sphere_pos), sphereMaxSize(sphere_max_size)
 			{}
 
-			explicit Instance(uint32_t copyTransform_ID, float _creationTime, float _lifeTime) : 
-				creationTime(_creationTime), lifeTime(_lifeTime), transform_id(copyTransform_ID) {}
+			explicit Instance(uint32_t copyTransform_ID, float _creationTime, float _lifeTime, const Vec3& sphere_pos, float sphere_max_size) :
+				creationTime(_creationTime), lifeTime(_lifeTime), transform_id(copyTransform_ID),
+				spherePos(sphere_pos), sphereMaxSize(sphere_max_size)
+			{}
 		};
 
 		struct GpuInstance
 		{
 			Matr<4> transformMatrix;
+			Vec3 spherePos;
+			float sphereMaxSize;
 			float creationTime;
 			float lifeTime;
 
-			GpuInstance(){}
+			GpuInstance() {}
 			GpuInstance(const Instance& instance) : creationTime(instance.creationTime), lifeTime(instance.lifeTime),
-				transformMatrix(engine::TransformSystem::instance().m_transforms[instance.transform_id].getTransformMatrix())
+				transformMatrix(engine::TransformSystem::instance().m_transforms[instance.transform_id].getTransformMatrix()),
+				spherePos(instance.spherePos), sphereMaxSize(instance.sphereMaxSize)
 			{}
 		};
 
@@ -93,7 +101,7 @@ namespace engine
 		Texture m_dissolubleMap;
 		DxResPtr<ID3D11BlendState> m_blendState;
 	public:
-		DissolubleInstances() {}
+		IncinerationInstances() {}
 
 		void Init();
 

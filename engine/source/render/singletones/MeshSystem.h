@@ -3,6 +3,7 @@
 #include "../OpaqueInstances.h"
 #include "../EmissiveInstances.h"
 #include "../DissolubleInstances.h"
+#include "../IncinerationInstances.h"
 
 namespace engine
 {
@@ -23,8 +24,13 @@ namespace engine
 				out_material_index = &model.meshIDs[ID.meshesBlock_index + (mesh_index * 2)];
 				out_instance_index = &model.meshIDs[ID.meshesBlock_index + (mesh_index * 2 + 1)];
 			}
+			else if constexpr (std::is_same<InstanceType, IncinerationInstances>::value)
+			{
+				auto& model = incinerationInstances.m_modelInstances[ID.model_index];
+				out_material_index = &model.meshIDs[ID.meshesBlock_index + (mesh_index * 2)];
+				out_instance_index = &model.meshIDs[ID.meshesBlock_index + (mesh_index * 2 + 1)];
+			}
 		}
-
 
 		static MeshSystem* s_instance;
 		MeshSystem() {}
@@ -41,6 +47,9 @@ namespace engine
 	public:
 		DissolubleInstances dissolubleInstances;
 		OpaqueInstances opaqueInstances;
+		EmissiveInstances emissiveInstances;
+		IncinerationInstances incinerationInstances;
+
 		static void init();
 		static void deinit();
 		static MeshSystem& instance();
@@ -51,7 +60,8 @@ namespace engine
 		void addInstance(const std::shared_ptr<Model>& model, const std::vector<OpaqueInstances::Material>& material, const OpaqueInstances::Instance &_instance);
 		void addInstance(const std::shared_ptr<Model>& model, const EmissiveInstances::Instance &_instance);
 		void addInstance(const std::shared_ptr<Model>& model, const std::vector<OpaqueInstances::Material>& material, const DissolubleInstances::Instance& _instance);
-		
+		void addInstance(const std::shared_ptr<Model>& model, const std::vector<OpaqueInstances::Material>& material, const IncinerationInstances::Instance& _instance);
+
 		template<typename InstanceType>
 		void deleteInstances(const ModelID& del_objectID, bool need_to_delete_transform);
 
@@ -70,6 +80,12 @@ namespace engine
 				out_material_index = model.meshIDs[ID.meshesBlock_index + (mesh_index * 2)];
 				out_instance_index = model.meshIDs[ID.meshesBlock_index + (mesh_index * 2 + 1)];
 			}
+			else if constexpr (std::is_same<InstanceType, IncinerationInstances>::value)
+			{
+				auto& model = incinerationInstances.m_modelInstances[ID.model_index];
+				out_material_index = model.meshIDs[ID.meshesBlock_index + (mesh_index * 2)];
+				out_instance_index = model.meshIDs[ID.meshesBlock_index + (mesh_index * 2 + 1)];
+			}
 		}
 
 		void updateInstances()
@@ -77,6 +93,7 @@ namespace engine
 			emissiveInstances.updateInstanceBuffers();
 			opaqueInstances.updateInstanceBuffers();
 			dissolubleInstances.updateInstanceBuffers();
+			incinerationInstances.updateInstanceBuffers();
 		}
 
 		void renderSceneDepthToCubemaps()
@@ -95,11 +112,8 @@ namespace engine
 		{
 			dissolubleInstances.render();
 			opaqueInstances.render();
-
-			//emissiveInstances.render();
-			
+			incinerationInstances.render();
 		}
-		EmissiveInstances emissiveInstances;
 	};
 
 
@@ -115,6 +129,11 @@ namespace engine
 		{
 			p_instancesType = &dissolubleInstances;
 		}
+		else if constexpr (std::is_same<InstanceType, IncinerationInstances>::value)
+		{
+			p_instancesType = &incinerationInstances;
+		}
+
 		auto& instancesType = *p_instancesType;
 
 		bool need_to_reduce_material_instances = false, need_to_reduce_model_instances = false;
@@ -126,8 +145,8 @@ namespace engine
 		for (uint32_t i = 0; i < del_meshInstancesNum; ++i)
 		{
 			GetMaterialAndInstanceIndex<InstanceType>(del_objectID, i, del_materialIndex, del_instanceIndex);
-			auto& del_meshInstance = del_modelInstance.meshInstances.at(i - deletedMeshNum);
-			auto& del_materialInstance = del_meshInstance.materialInstances.at(del_materialIndex);
+			auto& del_meshInstance = del_modelInstance.meshInstances[i - deletedMeshNum];
+			auto& del_materialInstance = del_meshInstance.materialInstances[del_materialIndex];
 
 			transformID = del_materialInstance.instances[del_instanceIndex].transform_id;
 			del_materialInstance.instances.erase(del_materialInstance.instances.begin() + del_instanceIndex);

@@ -575,6 +575,9 @@
     <ClInclude Include="engine\source\render\singletones\DecalSystem.h">
       <Filter>engine\source\render\singletones</Filter>
     </ClInclude>
+    <ClInclude Include="engine\source\render\IncinerationInstances.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine\source\render\singletones\DepthStencilManager.cpp">
@@ -672,6 +675,9 @@
     </ClCompile>
     <ClCompile Include="engine\source\render\singletones\DecalSystem.cpp">
       <Filter>engine\source\render\singletones</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\source\render\IncinerationInstances.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

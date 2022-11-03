@@ -218,6 +218,7 @@
     <ClInclude Include="engine\source\render\DxRes.hpp" />
     <ClInclude Include="engine\source\render\EmissiveInstances.h" />
     <ClInclude Include="engine\source\render\GrassField.h" />
+    <ClInclude Include="engine\source\render\IncinerationInstances.h" />
     <ClInclude Include="engine\source\render\IndexBuffer.h" />
     <ClInclude Include="engine\source\render\Light.h" />
     <ClInclude Include="engine\source\render\MaterialConstantBuffer.h" />
@@ -268,6 +269,7 @@
     <ClCompile Include="engine\source\render\DissolubleInstances.cpp" />
     <ClCompile Include="engine\source\render\EmissiveInstances.cpp" />
     <ClCompile Include="engine\source\render\GrassField.cpp" />
+    <ClCompile Include="engine\source\render\IncinerationInstances.cpp" />
     <ClCompile Include="engine\source\render\OpaqueInstances.cpp" />
     <ClCompile Include="engine\source\render\PerFrameBuffer.cpp" />
     <ClCompile Include="engine\source\render\singletones\BlendStateManager.cpp" />

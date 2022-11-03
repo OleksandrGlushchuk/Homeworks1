@@ -66,6 +66,7 @@ namespace engine::windows
 		void MoveCamera(const Vec3& offset);
 		void ProcessInput();
 		void CheckDissolutionObjects();
+		void CheckIncinerationObjects();
 		void UpdateCurrentTime();
 	public:
 		float delta_time = 0;

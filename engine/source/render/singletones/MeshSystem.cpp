@@ -11,6 +11,7 @@ namespace engine
 		s_instance->opaqueInstances.Init();
 		s_instance->emissiveInstances.Init();
 		s_instance->dissolubleInstances.Init();
+		s_instance->incinerationInstances.Init();
 	}
 
 	void MeshSystem::deinit()
@@ -350,88 +351,59 @@ namespace engine
 		dissolubleInstances.updateInstanceBuffers();
 	}
 
-	/*void MeshSystem::deleteOpaqueInstances(const ModelID& del_objectID)
+	void MeshSystem::addInstance(const std::shared_ptr<Model>& model, const std::vector<OpaqueInstances::Material>& material, const IncinerationInstances::Instance& _instance)
 	{
-		bool need_to_reduce_material_instances = false, need_to_reduce_model_instances = false;
-		uint32_t del_materialIndex, del_instanceIndex;
-		auto& del_modelInstance = opaqueInstances.m_modelInstances[del_objectID.model_index];
-		uint32_t del_meshInstancesNum = del_modelInstance.meshInstances.size();
-		uint32_t deletedMeshNum = 0;
-		for (uint32_t i = 0; i < del_meshInstancesNum; ++i)
+		IncinerationInstances::ModelInstance* modelPtr = nullptr;
+		incinerationInstances.m_modelIDs.emplace_back();
+		auto& modelID = incinerationInstances.m_modelIDs.back();
+
+		for (uint32_t i = 0; i < incinerationInstances.m_modelInstances.size(); ++i)
 		{
-			GetMaterialAndInstanceIndex<OpaqueInstances>(del_objectID, i, del_materialIndex, del_instanceIndex);
-			auto& del_meshInstance = del_modelInstance.meshInstances.at(i - deletedMeshNum);
-			auto& del_materialInstance = del_meshInstance.materialInstances.at(del_materialIndex);
-
-			del_materialInstance.instances.erase(del_materialInstance.instances.begin() + del_instanceIndex);
-
-			if (del_materialInstance.instances.empty())
+			if (incinerationInstances.m_modelInstances[i].model->name == model->name)
 			{
-				del_meshInstance.materialInstances.erase(del_meshInstance.materialInstances.begin() + del_materialIndex);
-				need_to_reduce_material_instances = true;
-
-				if (del_meshInstance.materialInstances.empty())
-				{
-					del_modelInstance.meshInstances.erase(del_modelInstance.meshInstances.begin() + (i - deletedMeshNum));
-					++deletedMeshNum;
-				}
+				modelPtr = &incinerationInstances.m_modelInstances[i];
+				modelID.model_index = i;
+				break;
 			}
 		}
-		if (del_modelInstance.meshInstances.empty())
+		if (modelPtr == nullptr)
 		{
-			opaqueInstances.m_modelInstances.erase(opaqueInstances.m_modelInstances.begin() + del_objectID.model_index);
-			need_to_reduce_model_instances = true;
+			incinerationInstances.m_modelInstances.push_back(IncinerationInstances::ModelInstance(model, material, _instance));
+			modelID.model_index = incinerationInstances.m_modelInstances.size() - 1;
+			auto& newModel = incinerationInstances.m_modelInstances.back();
+			newModel.meshIDs.resize(newModel.model->m_meshes.size() * 2, 0);
+			modelID.meshesBlock_index = 0;
 		}
-
-		uint32_t *p_materialIndex, *p_instanceIndex;
-		uint32_t del_objectID_Index;
-
-		for (uint32_t i = 0; i < opaqueInstances.m_modelIDs.size(); ++i)
+		else
 		{
-			auto& ID = opaqueInstances.m_modelIDs[i];
+			modelID.meshesBlock_index = modelPtr->meshIDs.size();
+			modelPtr->meshIDs.resize(modelPtr->meshIDs.size() + modelPtr->model->m_meshes.size() * 2);
 
-			if (ID.model_index == del_objectID.model_index)
+			for (uint32_t i = 0; i < modelPtr->meshInstances.size(); ++i)
 			{
-				if (ID.meshesBlock_index != del_objectID.meshesBlock_index)
+				uint32_t material_size = modelPtr->meshInstances[i].materialInstances.size();
+				bool need_to_add_material_instance = true;
+				for (uint32_t j = 0; j < material_size; ++j)
 				{
-					for (uint32_t k = 0; k < del_meshInstancesNum; ++k)
+					if (modelPtr->meshInstances[i].materialInstances[j].material == material[i])
 					{
-						GetMaterialAndInstanceIndex<OpaqueInstances>(del_objectID, k, del_materialIndex, del_instanceIndex);
-						GetMaterialAndInstancePointerToIndex<OpaqueInstances>(ID, k, p_materialIndex, p_instanceIndex);
-
-						if ((*p_materialIndex) == del_materialIndex)
-						{
-							if ((*p_instanceIndex) > del_instanceIndex)
-								(*p_instanceIndex) -= 1;
-						}
-						else if ((*p_materialIndex) > del_materialIndex)
-						{
-							if (need_to_reduce_material_instances)
-								(*p_materialIndex) -= 1;
-						}
+						modelPtr->meshInstances[i].materialInstances[j].instances.push_back(_instance);
+						modelPtr->meshIDs[modelID.meshesBlock_index + (i * 2)] = j; //MATERIAL_INDEX
+						modelPtr->meshIDs[modelID.meshesBlock_index + (i * 2 + 1)] = modelPtr->meshInstances[i].materialInstances[j].instances.size() - 1; //INSTANCE_INDEX
+						need_to_add_material_instance = false;
+						break;
 					}
 				}
-				else
-					del_objectID_Index = i;
+				if (need_to_add_material_instance)
+				{
+					modelPtr->meshInstances[i].materialInstances.push_back(
+						IncinerationInstances::MaterialInstance(material[i], _instance));
 
-				if(ID.meshesBlock_index > del_objectID.meshesBlock_index)
-					ID.meshesBlock_index -= 2 * del_meshInstancesNum;
-			}
-			else if (ID.model_index > del_objectID.model_index)
-			{
-				if (need_to_reduce_model_instances)
-					ID.model_index -= 1;
+					modelPtr->meshIDs[modelID.meshesBlock_index + (i * 2)] = modelPtr->meshInstances[i].materialInstances.size() - 1; //MATERIAL_INDEX
+					modelPtr->meshIDs[modelID.meshesBlock_index + (i * 2 + 1)] = 0; //INSTANCE_INDEX
+				}
 			}
 		}
-
-		opaqueInstances.m_modelIDs.erase(opaqueInstances.m_modelIDs.begin() + del_objectID_Index);
-
-		if(!need_to_reduce_model_instances)
-			if (!opaqueInstances.m_modelInstances.empty())
-			{
-				del_modelInstance.meshIDs.erase(
-					del_modelInstance.meshIDs.begin() + del_objectID.meshesBlock_index, 
-					del_modelInstance.meshIDs.begin() + (del_objectID.meshesBlock_index + 2 * del_meshInstancesNum));
-			}
-	}*/
+		incinerationInstances.updateInstanceBuffers();
+	}
 }

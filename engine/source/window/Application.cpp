@@ -18,6 +18,7 @@ namespace engine::windows
 	{
 		ProcessInput();
 		CheckDissolutionObjects();
+		CheckIncinerationObjects();
 		UpdateCurrentTime();
 		wnd.BeginFrame();
 		renderer.Render(wnd.m_renderTargetView, camera, m_postProcess, m_currentTime, delta_time);
@@ -287,16 +288,16 @@ namespace engine::windows
 		float now = std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count();
 		for (uint32_t id = 0; id < dissolutionInstances.m_modelIDs.size(); ++id)
 		{
-			auto modelID = dissolutionInstances.m_modelIDs.at(id);
+			auto modelID = dissolutionInstances.m_modelIDs[id];
 			auto& modelInstance = dissolutionInstances.m_modelInstances[modelID.model_index];
 			uint32_t meshSize = modelInstance.meshInstances.size();
 			std::vector<OpaqueInstances::Material> meshMaterials(meshSize);
 			for (uint32_t i = 0; i < meshSize; ++i)
 			{
 				MeshSystem::instance().GetMaterialAndInstanceIndex<DissolubleInstances>(modelID, i, out_materialIndex, out_instanceIndex);
-				auto& meshInstance = modelInstance.meshInstances.at(i);
-				auto& material = meshInstance.materialInstances.at(out_materialIndex).material;
-				auto& instance = meshInstance.materialInstances.at(out_materialIndex).instances.at(out_instanceIndex);
+				auto& meshInstance = modelInstance.meshInstances[i];
+				auto& material = meshInstance.materialInstances[out_materialIndex].material;
+				auto& instance = meshInstance.materialInstances[out_materialIndex].instances[out_instanceIndex];
 				if (now - instance.creationTime > instance.lifeTime)
 				{
 					meshMaterials[i] = material;
@@ -307,6 +308,41 @@ namespace engine::windows
 			{
 				MeshSystem::instance().addInstance(modelInstance.model, meshMaterials, OpaqueInstances::Instance(transformID));
 				MeshSystem::instance().deleteInstances<DissolubleInstances>(modelID, false);
+				transformID = -1;
+			}
+		}
+	}
+
+	void Application::CheckIncinerationObjects()
+	{
+		if (time_stopped) return;
+
+		auto& incinerationInstances = MeshSystem::instance().incinerationInstances;
+		if (incinerationInstances.m_modelIDs.empty())
+			return;
+
+		uint32_t out_materialIndex, out_instanceIndex;
+		int transformID = -1;
+		float now = std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count();
+		for (uint32_t id = 0; id < incinerationInstances.m_modelIDs.size(); ++id)
+		{
+			auto modelID = incinerationInstances.m_modelIDs[id];
+			auto& modelInstance = incinerationInstances.m_modelInstances[modelID.model_index];
+			uint32_t meshSize = modelInstance.meshInstances.size();
+			for (uint32_t i = 0; i < meshSize; ++i)
+			{
+				MeshSystem::instance().GetMaterialAndInstanceIndex<IncinerationInstances>(modelID, i, out_materialIndex, out_instanceIndex);
+				auto& meshInstance = modelInstance.meshInstances[i];
+				auto& material = meshInstance.materialInstances[out_materialIndex].material;
+				auto& instance = meshInstance.materialInstances[out_materialIndex].instances[out_instanceIndex];
+				if (now - instance.creationTime > instance.lifeTime)
+				{
+					transformID = instance.transform_id;
+				}
+			}
+			if (transformID != -1)
+			{
+				MeshSystem::instance().deleteInstances<IncinerationInstances>(modelID, true);
 				transformID = -1;
 			}
 		}
@@ -558,7 +594,7 @@ namespace engine::windows
 				ModelID outObjectID;
 				if (MeshSystem::instance().findIntersectionOpaqueEx(r, outIntersection, outTransformId, outModelID, outObjectID))
 				{
-					/*model = MeshSystem::instance().opaqueInstances.m_modelInstances[outObjectID.model_index].model;
+					model = MeshSystem::instance().opaqueInstances.m_modelInstances[outObjectID.model_index].model;
 					auto& meshInstances = MeshSystem::instance().opaqueInstances.m_modelInstances[outObjectID.model_index].meshInstances;
 
 					uint32_t outMaterialIndex, outInstanceIndex;
@@ -568,12 +604,13 @@ namespace engine::windows
 						material.emplace_back(meshInstances[i].materialInstances[outMaterialIndex].material);
 					}
 
-					MeshSystem::instance().addInstance(model, material, DissolubleInstances::Instance(outTransformId,
-						std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(), 5.f));*/
+					MeshSystem::instance().deleteInstances<OpaqueInstances>(outObjectID, false);
 
-					MeshSystem::instance().deleteInstances<OpaqueInstances>(outObjectID, true);
+					const Vec3& scale = TransformSystem::instance().m_transforms[outTransformId].getScale();
 
-
+					MeshSystem::instance().addInstance(model, material, IncinerationInstances::Instance(outTransformId,
+						std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(), 5.f, 
+						outIntersection.pos, ((model->box.max - model->box.min)*scale).length()));
 				}
 
 				input_state['O'] = false;

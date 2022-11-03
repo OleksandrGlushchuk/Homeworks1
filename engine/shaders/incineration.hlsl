@@ -23,14 +23,6 @@ cbuffer MaterialConstantBuffer : register(b2)
     float2 paddingMCB;
 }
 
-cbuffer IncinerationSphere : register(b3)
-{
-    float g_spherePos;
-    float g_sphereMaxRadius;
-    float2 paddingIS;
-}
-
-
 struct VS_INPUT
 {
     float3 position : POSITION;
@@ -43,6 +35,8 @@ struct VS_INPUT
     float4 transform_y : TRANSFORM_Y;
     float4 transform_z : TRANSFORM_Z;
     float4 transform_w : TRANSFORM_W;
+    float3 spherePos : SPHERE_POS;
+    float sphereMaxRadius : SPHERE_MAX_RADIUS;
     float creationTime : CREATION_TIME;
     float lifeTime : LIFE_TIME;
 };
@@ -57,6 +51,8 @@ struct PS_INPUT
     float4 world_pos : WORLD_POS;
     nointerpolation float creationTime : CREATION_TIME;
     nointerpolation float lifeTime : LIFE_TIME;
+    nointerpolation float3 spherePos : SPHERE_POS;
+    nointerpolation float sphereMaxRadius : SPHERE_MAX_RADIUS;
 };
 
 PS_INPUT vs_main(VS_INPUT input)
@@ -78,7 +74,8 @@ PS_INPUT vs_main(VS_INPUT input)
     
     output.creationTime = input.creationTime;
     output.lifeTime = input.lifeTime;
-   
+    output.sphereMaxRadius = input.sphereMaxRadius;
+    output.spherePos = input.spherePos;
     return output;
 }
 
@@ -88,9 +85,9 @@ PS_OUTPUT ps_main(PS_INPUT input)
 {
     float dissolutionValue = g_dissolubleMap.Sample(g_samplerState, input.tex_coord);
     float currentLifeDuration = (g_time - input.creationTime) / input.lifeTime;
-    float sphereRadius = g_sphereMaxRadius * currentLifeDuration;
+    float sphereRadius = input.sphereMaxRadius * currentLifeDuration;
     float3 emission = 0;
-    if (length(input.world_pos - g_spherePos) < sphereRadius)
+    if (length(input.world_pos.xyz - input.spherePos) < sphereRadius)
     {
         PS_OUTPUT output;
         discard;

@@ -522,7 +522,8 @@ namespace engine
 		std::shared_ptr<Model> model(new Model);
 		Model& model_ref = *model;
 		model_ref.name = path;
-		model_ref.box = {};
+		model_ref.box.min = reinterpret_cast<Vec3&>(assimpScene->mMeshes[0]->mAABB.mMin);
+		model_ref.box.max = reinterpret_cast<Vec3&>(assimpScene->mMeshes[0]->mAABB.mMax);
 		model_ref.m_meshes.resize(numMeshes);
 
 		GetMatrices(assimpScene->mRootNode, model_ref);
@@ -543,7 +544,16 @@ namespace engine
 			dstMesh.vertices.resize(srcMesh->mNumVertices);
 			dstMesh.triangles.resize(srcMesh->mNumFaces);
 			dstMesh.box.min = reinterpret_cast<Vec3&>(srcMesh->mAABB.mMin);
+			model_ref.box.min.e[0] = model_ref.box.min.e[0] > dstMesh.box.min.e[0] ? dstMesh.box.min.e[0] : model_ref.box.min.e[0];
+			model_ref.box.min.e[1] = model_ref.box.min.e[1] > dstMesh.box.min.e[1] ? dstMesh.box.min.e[1] : model_ref.box.min.e[1];
+			model_ref.box.min.e[2] = model_ref.box.min.e[2] > dstMesh.box.min.e[2] ? dstMesh.box.min.e[2] : model_ref.box.min.e[2];
+
 			dstMesh.box.max = reinterpret_cast<Vec3&>(srcMesh->mAABB.mMax);
+
+			model_ref.box.max.e[0] = model_ref.box.max.e[0] < dstMesh.box.max.e[0] ? dstMesh.box.max.e[0] : model_ref.box.max.e[0];
+			model_ref.box.max.e[1] = model_ref.box.max.e[1] < dstMesh.box.max.e[1] ? dstMesh.box.max.e[1] : model_ref.box.max.e[1];
+			model_ref.box.max.e[2] = model_ref.box.max.e[2] < dstMesh.box.max.e[2] ? dstMesh.box.max.e[2] : model_ref.box.max.e[2];
+			
 			dstMesh.vertexNum = srcMesh->mNumVertices;
 			dstMesh.indexNum = srcMesh->mNumFaces * 3;
 

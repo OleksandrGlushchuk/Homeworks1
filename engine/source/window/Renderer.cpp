@@ -228,7 +228,6 @@ namespace engine::windows
 			s_deviceContext->PSSetShaderResources(8, 1, &ShadowManager::instance().m_srvPointLightShadow.ptr());
 			engine::s_deviceContext->DrawIndexedInstanced(LightSystem::instance().m_pointLightClipSphere->m_vertexBuffer.Size(),
 				LightSystem::instance().getPointLights().size(), 0, 0, 0);
-			//engine::s_deviceContext->DrawInstanced(3, LightSystem::instance().getPointLights().size(), 0, 0);
 			s_deviceContext->RSSetState(nullptr);
 
 			
@@ -253,7 +252,6 @@ namespace engine::windows
 				LightSystem::instance().bindPointLightInstanceBuffer(1);
 				ShadowManager::instance().m_pointLightDSResolutionBuffer.BindPS(8);
 				s_deviceContext->PSSetShaderResources(8, 1, &ShadowManager::instance().m_srvPointLightShadow.ptr());
-				//engine::s_deviceContext->DrawInstanced(3, LightSystem::instance().getPointLights().size(), 0, 0);
 				engine::s_deviceContext->DrawIndexedInstanced(LightSystem::instance().m_pointLightClipSphere->m_vertexBuffer.Size(),
 					LightSystem::instance().getPointLights().size(), 0, 0, 0);
 				s_deviceContext->RSSetState(nullptr);

@@ -16,6 +16,8 @@ public:
     const Matr<4>& getTransformMatrix() const { return transform; }
     const Matr<4>& getTransformInvMatrix() const { return transformInv; }
     const Vec3& getPosition() const { return position; }
+    const Vec3 getScale() const { return scale; }
+
     Transform(){}
 
     static Transform Identity()
