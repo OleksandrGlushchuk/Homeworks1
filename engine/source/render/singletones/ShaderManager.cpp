@@ -64,6 +64,29 @@ namespace engine
 		}
 	}
 
+	void ShaderManager::InitCompute(const std::wstring& path, UINT Flags1)
+	{
+		std::unordered_map<std::wstring, DxResPtr<ID3D11ComputeShader> >::iterator it;
+		if ((it = m_computeShader.find(path)) != m_computeShader.end())
+			return;
+
+		engine::DxResPtr<ID3DBlob> error;
+		DxResPtr<ID3D10Blob> blob;
+
+		HRESULT result = D3DCompileFromFile(path.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "cs_main", "cs_5_0", Flags1, 0, blob.reset(), error.reset());
+		ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
+
+		result = s_device->CreateComputeShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, m_computeShader[path].reset());
+	}
+
+	void ShaderManager::GetCompute(const std::wstring& path, DxResPtr<ID3D11ComputeShader>& computeShader)
+	{
+		std::unordered_map<std::wstring, DxResPtr<ID3D11ComputeShader> >::iterator result;
+		ALWAYS_ASSERT((result = m_computeShader.find(path)) != m_computeShader.end() && "Bad path");
+
+		computeShader = m_computeShader[path];
+	}
+
 	void ShaderManager::GetShaders(const std::wstring& shaderKey, DxResPtr<ID3D11VertexShader>& vertexShader,
 		DxResPtr<ID3D11PixelShader>& pixelShader, DxResPtr<ID3D11GeometryShader>& geomytryShader)
 	{

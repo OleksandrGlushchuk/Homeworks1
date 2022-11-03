@@ -9,10 +9,10 @@ class Camera
 	bool need_to_update_basis = true;
 	bool need_to_roll = false;
 public:
-	const Vec3& right() 	const { return m_viewInv[0]; }
-	const Vec3& top() 		const { return m_viewInv[1]; }
-	const Vec3& forward() 	const { return m_viewInv[2]; }
-	const Vec3& position()	const { return m_viewInv[3]; }
+	const Vec3 right() 	const { return m_viewInv[0]; }
+	const Vec3 top() 		const { return m_viewInv[1]; }
+	const Vec3 forward() 	const { return m_viewInv[2]; }
+	const Vec3 position()	const { return m_viewInv[3]; }
 
 	Matr<4> m_proj = Matr<4>::identity(),		m_projInv = Matr<4>::identity(),
 			m_view = Matr<4>::identity(),		m_viewInv = Matr<4>::identity(),

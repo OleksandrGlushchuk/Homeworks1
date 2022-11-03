@@ -115,7 +115,6 @@ namespace engine
 	bool MeshSystem::findIntersectionOpaque(const ray& _ray, engine::MeshIntersection& out_intersection, uint32_t& out_transformID, uint16_t &out_modelID)
 	{
 		uint32_t out_materialIndex, out_instanceIndex, transformID;
-		uint16_t o_modelID;
 		bool result = false;
 		const Matr<4>* transform = nullptr;
 		const Matr<4>* mesh_to_model = nullptr;
@@ -128,8 +127,6 @@ namespace engine
 				auto& meshInstance = model.meshInstances[i];
 
 				transformID = meshInstance.materialInstances[out_materialIndex].instances[out_instanceIndex].transform_id;
-				o_modelID = meshInstance.materialInstances[out_materialIndex].instances[out_instanceIndex].modelID;
-
 				const Matr<4>& transformInv = engine::TransformSystem::instance().m_transforms[transformID].getTransformInvMatrix();
 				Matr<4> InvMatr = transformInv * model.model->m_meshes[i].meshToModelMatrix.invert();
 
@@ -140,7 +137,7 @@ namespace engine
 				if (model.model->m_meshes[i].triangleOctree.intersect(model_ray, out_intersection))
 				{
 					out_transformID = transformID;
-					out_modelID = o_modelID;
+					out_modelID = meshInstance.materialInstances[out_materialIndex].instances[out_instanceIndex].modelID;
 					transform = &engine::TransformSystem::instance().m_transforms[transformID].getTransformMatrix();
 					mesh_to_model = &model.model->m_meshes[i].meshToModelMatrix;
 					result = true;
@@ -149,6 +146,48 @@ namespace engine
 		}
 		if (transform && mesh_to_model)
 			out_intersection.pos.mult((*mesh_to_model) * (*transform));
+		return result;
+	}
+
+	bool MeshSystem::findIntersectionOpaqueEx(const ray& _ray, engine::MeshIntersection& out_intersection, uint32_t& out_transformID, uint16_t& out_modelID, ModelID& outObjectID)
+	{
+		uint32_t out_materialIndex, out_instanceIndex, transformID;
+		bool result = false;
+		const Matr<4>* transform = nullptr;
+		const Matr<4>* mesh_to_model = nullptr;
+
+		for (ModelID& modelID : opaqueInstances.m_modelIDs)
+		{
+			auto& model = opaqueInstances.m_modelInstances[modelID.model_index];
+			for (uint32_t i = 0; i < model.meshInstances.size(); ++i)
+			{
+				GetMaterialAndInstanceIndex<OpaqueInstances>(modelID, i, out_materialIndex, out_instanceIndex);
+				auto& meshInstance = model.meshInstances[i];
+
+				transformID = meshInstance.materialInstances[out_materialIndex].instances[out_instanceIndex].transform_id;
+				const Matr<4>& transformInv = engine::TransformSystem::instance().m_transforms[transformID].getTransformInvMatrix();
+				Matr<4> InvMatr = transformInv * model.model->m_meshes[i].meshToModelMatrix.invert();
+
+				ray model_ray = _ray;
+				model_ray.origin.mult(InvMatr);
+				model_ray.direction.mult(InvMatr, 0);
+
+				if (model.model->m_meshes[i].triangleOctree.intersect(model_ray, out_intersection))
+				{
+					out_transformID = transformID;
+					out_modelID = meshInstance.materialInstances[out_materialIndex].instances[out_instanceIndex].modelID;;
+
+					transform = &engine::TransformSystem::instance().m_transforms[transformID].getTransformMatrix();
+					mesh_to_model = &model.model->m_meshes[i].meshToModelMatrix;
+					result = true;
+					outObjectID = modelID;
+				}
+			}
+		}
+		if (transform && mesh_to_model)
+		{
+			out_intersection.pos.mult((*mesh_to_model) * (*transform));
+		}
 		return result;
 	}
 
@@ -310,4 +349,89 @@ namespace engine
 		}
 		dissolubleInstances.updateInstanceBuffers();
 	}
+
+	/*void MeshSystem::deleteOpaqueInstances(const ModelID& del_objectID)
+	{
+		bool need_to_reduce_material_instances = false, need_to_reduce_model_instances = false;
+		uint32_t del_materialIndex, del_instanceIndex;
+		auto& del_modelInstance = opaqueInstances.m_modelInstances[del_objectID.model_index];
+		uint32_t del_meshInstancesNum = del_modelInstance.meshInstances.size();
+		uint32_t deletedMeshNum = 0;
+		for (uint32_t i = 0; i < del_meshInstancesNum; ++i)
+		{
+			GetMaterialAndInstanceIndex<OpaqueInstances>(del_objectID, i, del_materialIndex, del_instanceIndex);
+			auto& del_meshInstance = del_modelInstance.meshInstances.at(i - deletedMeshNum);
+			auto& del_materialInstance = del_meshInstance.materialInstances.at(del_materialIndex);
+
+			del_materialInstance.instances.erase(del_materialInstance.instances.begin() + del_instanceIndex);
+
+			if (del_materialInstance.instances.empty())
+			{
+				del_meshInstance.materialInstances.erase(del_meshInstance.materialInstances.begin() + del_materialIndex);
+				need_to_reduce_material_instances = true;
+
+				if (del_meshInstance.materialInstances.empty())
+				{
+					del_modelInstance.meshInstances.erase(del_modelInstance.meshInstances.begin() + (i - deletedMeshNum));
+					++deletedMeshNum;
+				}
+			}
+		}
+		if (del_modelInstance.meshInstances.empty())
+		{
+			opaqueInstances.m_modelInstances.erase(opaqueInstances.m_modelInstances.begin() + del_objectID.model_index);
+			need_to_reduce_model_instances = true;
+		}
+
+		uint32_t *p_materialIndex, *p_instanceIndex;
+		uint32_t del_objectID_Index;
+
+		for (uint32_t i = 0; i < opaqueInstances.m_modelIDs.size(); ++i)
+		{
+			auto& ID = opaqueInstances.m_modelIDs[i];
+
+			if (ID.model_index == del_objectID.model_index)
+			{
+				if (ID.meshesBlock_index != del_objectID.meshesBlock_index)
+				{
+					for (uint32_t k = 0; k < del_meshInstancesNum; ++k)
+					{
+						GetMaterialAndInstanceIndex<OpaqueInstances>(del_objectID, k, del_materialIndex, del_instanceIndex);
+						GetMaterialAndInstancePointerToIndex<OpaqueInstances>(ID, k, p_materialIndex, p_instanceIndex);
+
+						if ((*p_materialIndex) == del_materialIndex)
+						{
+							if ((*p_instanceIndex) > del_instanceIndex)
+								(*p_instanceIndex) -= 1;
+						}
+						else if ((*p_materialIndex) > del_materialIndex)
+						{
+							if (need_to_reduce_material_instances)
+								(*p_materialIndex) -= 1;
+						}
+					}
+				}
+				else
+					del_objectID_Index = i;
+
+				if(ID.meshesBlock_index > del_objectID.meshesBlock_index)
+					ID.meshesBlock_index -= 2 * del_meshInstancesNum;
+			}
+			else if (ID.model_index > del_objectID.model_index)
+			{
+				if (need_to_reduce_model_instances)
+					ID.model_index -= 1;
+			}
+		}
+
+		opaqueInstances.m_modelIDs.erase(opaqueInstances.m_modelIDs.begin() + del_objectID_Index);
+
+		if(!need_to_reduce_model_instances)
+			if (!opaqueInstances.m_modelInstances.empty())
+			{
+				del_modelInstance.meshIDs.erase(
+					del_modelInstance.meshIDs.begin() + del_objectID.meshesBlock_index, 
+					del_modelInstance.meshIDs.begin() + (del_objectID.meshesBlock_index + 2 * del_meshInstancesNum));
+			}
+	}*/
 }

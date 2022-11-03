@@ -203,7 +203,6 @@ namespace engine::windows
 			m_dissolubleSamuraiMaterial = m_samuraiMaterial;
 			m_dissolubleSamuraiMaterial1 = m_samuraiMaterial;
 			m_dissolubleSamuraiMaterial1[7].m_colorMap.Load(L"engine/assets/Stone/Stone_COLOR.dds");
-			
 
 			Transform transform = Transform::Identity();
 			transform.Translate(Vec3(3.5f, -1.f, -1.f));
@@ -283,8 +282,7 @@ namespace engine::windows
 		if (dissolutionInstances.m_modelIDs.empty())
 			return;
 
-		bool need_to_reduce_material_instances = false, need_to_reduce_model_instances = false;
-		uint32_t out_materialIndex, out_instanceIndex, meshMaterialWriteOffset = 0;
+		uint32_t out_materialIndex, out_instanceIndex;
 		int transformID = -1;
 		float now = std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count();
 		for (uint32_t id = 0; id < dissolutionInstances.m_modelIDs.size(); ++id)
@@ -301,99 +299,14 @@ namespace engine::windows
 				auto& instance = meshInstance.materialInstances.at(out_materialIndex).instances.at(out_instanceIndex);
 				if (now - instance.creationTime > instance.lifeTime)
 				{
-					meshMaterials[i + meshMaterialWriteOffset] = material;
+					meshMaterials[i] = material;
 					transformID = instance.transform_id;
-
-					auto instance_iterator = meshInstance.materialInstances.at(out_materialIndex).instances.begin();
-					std::advance(instance_iterator, out_instanceIndex);
-					meshInstance.materialInstances.at(out_materialIndex).instances.erase(instance_iterator);
-
-					if (meshInstance.materialInstances.at(out_materialIndex).instances.empty())
-					{
-						auto material_instance_iterator = meshInstance.materialInstances.begin();
-						std::advance(material_instance_iterator, out_materialIndex);
-						meshInstance.materialInstances.erase(material_instance_iterator);
-
-						need_to_reduce_material_instances = true;
-
-						if (meshInstance.materialInstances.empty())
-						{
-							auto mesh_instance_iterator = modelInstance.meshInstances.begin();
-							std::advance(mesh_instance_iterator, out_materialIndex);
-							modelInstance.meshInstances.erase(mesh_instance_iterator);
-							--i;
-							++meshMaterialWriteOffset;
-							meshSize = modelInstance.meshInstances.size();
-						}
-					}
 				}
 			}
-			meshMaterialWriteOffset = 0;
 			if (transformID != -1)
 			{
 				MeshSystem::instance().addInstance(modelInstance.model, meshMaterials, OpaqueInstances::Instance(transformID));
-				if (modelInstance.meshInstances.empty())
-				{
-					auto model_instance_iterator = dissolutionInstances.m_modelInstances.begin();
-					std::advance(model_instance_iterator, modelID.model_index);
-					dissolutionInstances.m_modelInstances.erase(model_instance_iterator);
-
-					need_to_reduce_model_instances = true;
-				}
-
-				for (uint32_t i = 1; i < dissolutionInstances.m_modelIDs.size(); ++i)
-				{
-					auto& ID = dissolutionInstances.m_modelIDs[i];
-
-					if (ID.model_index == modelID.model_index)
-					{
-						auto& model = dissolutionInstances.m_modelInstances[ID.model_index];
-						for (uint32_t k = 0; k < model.meshInstances.size(); ++k)
-						{
-							uint32_t& instance_index = model.meshIDs[ID.meshesBlock_index + (k * 2 + 1)];
-							uint32_t& material_index = model.meshIDs[ID.meshesBlock_index + (k * 2)];
-							if (material_index == model.meshIDs[0 + k * 2] && instance_index != 0)
-							{
-								instance_index -= 1;
-							}
-							if (need_to_reduce_material_instances && material_index != 0)
-							{
-								material_index -= 1;
-							}
-						}
-					}
-				}
-				need_to_reduce_material_instances = false;
-
-				auto id_iterator = dissolutionInstances.m_modelIDs.begin();
-				std::advance(id_iterator, id);
-				dissolutionInstances.m_modelIDs.erase(id_iterator);
-
-				if (need_to_reduce_model_instances)
-				{
-					for (uint32_t i = 0; i < dissolutionInstances.m_modelIDs.size(); i++)
-					{
-						if (dissolutionInstances.m_modelIDs[i].model_index != 0)
-							dissolutionInstances.m_modelIDs[i].model_index -= 1;
-					}
-					need_to_reduce_model_instances = false;
-				}
-				else
-				{
-					if (!dissolutionInstances.m_modelInstances.empty())
-					{
-						auto meshIDs_iterator = dissolutionInstances.m_modelInstances[modelID.model_index].meshIDs.begin();
-						std::advance(meshIDs_iterator, 2 * dissolutionInstances.m_modelInstances[modelID.model_index].meshInstances.size());
-						dissolutionInstances.m_modelInstances[modelID.model_index].meshIDs.erase(
-							dissolutionInstances.m_modelInstances[modelID.model_index].meshIDs.begin(), meshIDs_iterator);
-					}
-					for (uint32_t i = 0; i < dissolutionInstances.m_modelIDs.size(); i++)
-					{
-						if (dissolutionInstances.m_modelIDs[i].model_index == modelID.model_index)
-							dissolutionInstances.m_modelIDs[i].meshesBlock_index -= 2 * dissolutionInstances.m_modelInstances[modelID.model_index].meshInstances.size();
-					}
-				}
-				--id;
+				MeshSystem::instance().deleteInstances<DissolubleInstances>(modelID, false);
 				transformID = -1;
 			}
 		}
@@ -619,11 +532,10 @@ namespace engine::windows
 			}
 		}
 
-		//SPAWNING DECALS
+		//INCINERATION
 		{
-			if (input_state['F'])
+			if (input_state['O'])
 			{
-				Vec3 cameraForward = camera.forward();
 				ray r;
 				MeshIntersection outIntersection;
 				outIntersection.reset(1);
@@ -639,16 +551,60 @@ namespace engine::windows
 				r.direction = r.origin - camera.position();
 				r.direction.normalize();
 
+				uint32_t outTransformId;
+				uint16_t outModelID;
+				std::shared_ptr<Model> model;
+				std::vector<OpaqueInstances::Material> material;
+				ModelID outObjectID;
+				if (MeshSystem::instance().findIntersectionOpaqueEx(r, outIntersection, outTransformId, outModelID, outObjectID))
+				{
+					/*model = MeshSystem::instance().opaqueInstances.m_modelInstances[outObjectID.model_index].model;
+					auto& meshInstances = MeshSystem::instance().opaqueInstances.m_modelInstances[outObjectID.model_index].meshInstances;
+
+					uint32_t outMaterialIndex, outInstanceIndex;
+					for (uint32_t i = 0; i < meshInstances.size(); ++i)
+					{
+						MeshSystem::instance().GetMaterialAndInstanceIndex<OpaqueInstances>(outObjectID, i, outMaterialIndex, outInstanceIndex);
+						material.emplace_back(meshInstances[i].materialInstances[outMaterialIndex].material);
+					}
+
+					MeshSystem::instance().addInstance(model, material, DissolubleInstances::Instance(outTransformId,
+						std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(), 5.f));*/
+
+					MeshSystem::instance().deleteInstances<OpaqueInstances>(outObjectID, true);
+
+
+				}
+
+				input_state['O'] = false;
+			}
+		}
+
+		//SPAWNING DECALS
+		{
+			if (input_state['F'])
+			{
+				ray r;
+				MeshIntersection outIntersection;
+				outIntersection.reset(1);
+
+				float xx = (mouse_x + 0.5f) / ((wnd.screen.right) / 2.f) - 1.f;
+				float yy = (mouse_y + 0.5f) / ((wnd.screen.bottom) / (-2.f)) + 1.f;
+				r.origin = Vec3(xx, yy, 1);
+
+				float w;
+				r.origin.mult(camera.m_viewProjInv, 1, &w);
+				r.origin /= w;
+
+				r.direction = r.origin - camera.position();
+				r.direction.normalize();
 
 				uint32_t outTransformId;
 				uint16_t outModelID;
 
 				if (MeshSystem::instance().findIntersectionOpaque(r, outIntersection, outTransformId, outModelID))
-				{
-					Vec3 cameraRight = camera.right();
-					Vec3 cameraUp = camera.top();
-					DecalSystem::instance().AddDecalInstance(cameraRight, cameraUp, cameraForward, outIntersection.pos, outIntersection.normal, outTransformId, outModelID);
-				}
+					DecalSystem::instance().AddDecalInstance(camera.right(), camera.top(), camera.forward(), outIntersection.pos, outIntersection.normal, outTransformId, outModelID);
+
 				input_state['F'] = false;
 			}
 			

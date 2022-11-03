@@ -27,6 +27,9 @@ namespace engine
 			explicit Instance(const Transform& transform, float _creationTime, float _lifeTime) : creationTime(_creationTime), lifeTime(_lifeTime),
 				transform_id(engine::TransformSystem::instance().m_transforms.insert(transform))
 			{}
+
+			explicit Instance(uint32_t copyTransform_ID, float _creationTime, float _lifeTime) : 
+				creationTime(_creationTime), lifeTime(_lifeTime), transform_id(copyTransform_ID) {}
 		};
 
 		struct GpuInstance

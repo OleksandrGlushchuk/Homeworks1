@@ -32,6 +32,8 @@ namespace engine::windows
 		std::vector<OpaqueInstances::Material> m_dissolubleKnightMaterial = std::vector<OpaqueInstances::Material>(9);
 		std::vector<OpaqueInstances::Material> m_dissolubleKnightMaterial1 = std::vector<OpaqueInstances::Material>(9);
 		std::vector<OpaqueInstances::Material> m_dissolubleKnightMaterial2 = std::vector<OpaqueInstances::Material>(9);
+
+
 		bool need_to_move_camera = false;
 		WORD mouse_x = 0, mouse_y = 0;
 		InputState input_state;

@@ -8,6 +8,7 @@ namespace engine
 		DxResPtr<ID3D11VertexShader> m_vertexShader;
 		DxResPtr<ID3D11PixelShader> m_pixelShader;
 		DxResPtr<ID3D11GeometryShader> m_geometryShader;
+		DxResPtr<ID3D11ComputeShader> m_computeShader;
 		DxResPtr<ID3DBlob> m_vertexShaderBlob;
 		DxResPtr<ID3DBlob> m_pixelShaderBlob;
 		DxResPtr<ID3DBlob> m_geometryShaderBlob;
@@ -26,6 +27,18 @@ namespace engine
 				ALWAYS_ASSERT(result >= 0 && "CreateInputLayout");
 			}
 		}
+
+		void InitCompute(const std::wstring& path)
+		{
+			ShaderManager::instance().InitCompute(path);
+			ShaderManager::instance().GetCompute(path, m_computeShader);
+		}
+
+		void BindCompute()
+		{
+			s_deviceContext->CSSetShader(m_computeShader.ptr(), nullptr, 0);
+		}
+
 		void Bind()
 		{
 			s_deviceContext->IASetInputLayout(m_inputLayout.ptr());

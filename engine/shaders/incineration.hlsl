@@ -11,6 +11,26 @@ cbuffer MeshToModel : register(b1)
     float4x4 g_meshToModelMatrix;
 }
 
+cbuffer MaterialConstantBuffer : register(b2)
+{
+    float g_metalnessValue;
+    float g_roughnessValue;
+    bool g_hasMetalnessMap;
+    bool g_hasRoughnessMap;
+    
+    bool g_hasNormalMap;
+    bool g_reversedNormalTextureY;
+    float2 paddingMCB;
+}
+
+cbuffer IncinerationSphere : register(b3)
+{
+    float g_spherePos;
+    float g_sphereMaxRadius;
+    float2 paddingIS;
+}
+
+
 struct VS_INPUT
 {
     float3 position : POSITION;
@@ -62,34 +82,19 @@ PS_INPUT vs_main(VS_INPUT input)
     return output;
 }
 
-cbuffer MaterialConstantBuffer : register(b2)
-{
-    float g_metalnessValue;
-    float g_roughnessValue;
-    bool g_hasMetalnessMap;
-    bool g_hasRoughnessMap;
-    
-    bool g_hasNormalMap;
-    bool g_reversedNormalTextureY;
-    float2 paddingMCB;
-}
-
 #include "opaque_helpers.hlsli"
 
 PS_OUTPUT ps_main(PS_INPUT input)
 {
     float dissolutionValue = g_dissolubleMap.Sample(g_samplerState, input.tex_coord);
     float currentLifeDuration = (g_time - input.creationTime) / input.lifeTime;
+    float sphereRadius = g_sphereMaxRadius * currentLifeDuration;
     float3 emission = 0;
-    if (currentLifeDuration < dissolutionValue)
+    if (length(input.world_pos - g_spherePos) < sphereRadius)
     {
         PS_OUTPUT output;
         discard;
         return output;
-    }
-    else if (abs(currentLifeDuration - dissolutionValue) <= 0.05f)
-    {
-        emission = float3(0.1f, 0.0f, 2.f);
     }
         
     Surface surface;

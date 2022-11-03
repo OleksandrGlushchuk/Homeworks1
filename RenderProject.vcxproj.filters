@@ -375,6 +375,9 @@
     <FxCompile Include="engine\shaders\deferred_pl_grass_shading.hlsl">
       <Filter>engine\shaders</Filter>
     </FxCompile>
+    <FxCompile Include="engine\shaders\incineration.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\source\include\win.hpp">

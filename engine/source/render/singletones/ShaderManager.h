@@ -20,6 +20,8 @@ namespace engine
 		std::unordered_map<std::wstring, std::tuple<DxResPtr<ID3D11VertexShader>, 
 			DxResPtr<ID3D11PixelShader>, DxResPtr<ID3D11GeometryShader>> > m_shader;
 
+		std::unordered_map<std::wstring, DxResPtr<ID3D11ComputeShader> > m_computeShader;
+
 		static ShaderManager *s_instance;
 		ShaderManager() {}
 		ShaderManager(const ShaderManager& other) = delete;
@@ -33,6 +35,10 @@ namespace engine
 
 		void InitShaders(const std::wstring& path, const ShaderEnabling& shaderEnabling, UINT Flags1 = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR);
 
+		void InitCompute(const std::wstring& path, UINT Flags1 = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR);
+		
+		void GetCompute(const std::wstring& path, DxResPtr<ID3D11ComputeShader>& computeShader);
+		
 		void GetShaders(const std::wstring& shaderKey, DxResPtr<ID3D11VertexShader> &vertexShader, 
 			DxResPtr<ID3D11PixelShader> &pixelShader, DxResPtr<ID3D11GeometryShader> &geomytryShader);
 
