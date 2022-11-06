@@ -43,12 +43,34 @@ namespace engine
 
 		std::vector<SmokeEmitter> m_smokeEmitters;
 		uint32_t m_depthTextureRegisterIndex;
+
+		struct ParticleData
+		{
+			Vec3 position;
+			float spawnTime;
+			Vec3 velocity;
+			float padding;
+		};
+
+		DxResPtr<ID3D11Buffer> m_particlesData;
+		DxResPtr<ID3D11UnorderedAccessView> m_particlesDataUAV;
+		DxResPtr<ID3D11Buffer> m_particlesRange;
+		DxResPtr<ID3D11UnorderedAccessView> m_particlesRangeUAV;
+
+		Shader m_sparks_spawning_shader;
+		Shader m_sparks_updation_shader;
+		Shader m_sparks_range_updation_shader;
+
 	public:
 		static void init();
 		static void deinit();
 		static ParticleSystem& instance();
 		
 		void render();
+
+		void spawnSparks();
+		void updateSparks();
+		void renderSparks();
 
 		void CreateCopyDepthTexture(const D3D11_TEXTURE2D_DESC& desc)
 		{

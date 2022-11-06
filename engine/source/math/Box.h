@@ -12,6 +12,7 @@ namespace engine
 		static constexpr float Inf = std::numeric_limits<float>::infinity();
 		static const Box empty() { return  { { Inf, Inf, Inf }, { -Inf, -Inf, -Inf } }; }
 		static const Box unit() { return  { { -1.f, -1.f, -1.f }, { 1.f, 1.f, 1.f } }; }
+		static const Box unit_2() { return  { { -0.5f, -0.5f, -0.5f }, { 0.5f, 0.5f, 0.5f } }; }
 
 		Vec3 size() const { return max - min; } 
 		Vec3 center() const { return (min + max) / 2.f; }

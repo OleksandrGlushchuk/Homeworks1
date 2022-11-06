@@ -88,10 +88,10 @@ namespace engine
 		engine::s_deviceContext->PSSetSamplers(4, 1, &SamplerManager::instance().GetSamplerState("ss_masked").ptr());
 	}
 
-	void Globals::UpdatePerFrameBuffer(const Camera& camera, const std::chrono::steady_clock::time_point& currentTime, 
+	void Globals::UpdatePerFrameBuffer(const Camera& camera, const std::chrono::steady_clock::time_point& currentTime, float delta_time,
 		uint32_t sampleCount, uint32_t _screenWidth, uint32_t _screenHeight)
 	{
-		m_perFrameBuffer.Update(PerFrameBuffer(camera, currentTime, LightSystem::instance().getPointLights(),
+		m_perFrameBuffer.Update(PerFrameBuffer(camera, currentTime, delta_time, LightSystem::instance().getPointLights(),
 			LightSystem::instance().getDirectionalLights(), sampleCount, _screenWidth, _screenHeight));
 	}
 

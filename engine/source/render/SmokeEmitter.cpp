@@ -14,9 +14,10 @@ namespace engine
 					> particle.lifeTime;
 			});
 		m_particles.erase(it, m_particles.end());
-
+		
 		if (m_timer.TimeElapsed(m_spawnPeriod))
 		{
+			m_timer.RestartTimer();
 			uint32_t numNewInstances = std::max<uint32_t>(deltaTime / m_spawnPeriod, 1);
 
 			for (uint32_t i = 0; i < numNewInstances; ++i)
@@ -33,8 +34,8 @@ namespace engine
 		float currentLifeDuration;
 		for (auto& particle : m_particles)
 		{
-			particle.position += Vec3(0, m_particleSpeed * deltaTime/FRAME_DURATION, 0);
-			particle.size *= m_scalingFactor * deltaTime / FRAME_DURATION;
+			particle.position += Vec3(0, m_particleSpeed * deltaTime , 0);
+			particle.size += m_scalingFactor * deltaTime;
 			currentLifeDuration = now - particle.creationTime;
 			if (currentLifeDuration <= m_particleSaturateTime)
 			{

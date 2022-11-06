@@ -103,10 +103,11 @@ namespace engine::windows
 		UINT width = windowRenderTarget.GetWidth();
 		UINT height = windowRenderTarget.GetHeight();
 
-		engine::Globals::instance().UpdatePerFrameBuffer(camera, currentTime, m_sampleCount, width, height);
+		engine::Globals::instance().UpdatePerFrameBuffer(camera, currentTime, deltaTime, m_sampleCount, width, height);
 		MeshSystem::instance().updateInstances();
 		LightSystem::instance().update(camera);
 		DecalSystem::instance().update();
+		ParticleSystem::instance().UpdateSmokeEmitters(camera, currentTime, deltaTime);
 
 		engine::Globals::instance().Bind();
 
@@ -119,7 +120,7 @@ namespace engine::windows
 
 		DeferredShading();
 
-		ForwardShading(camera, currentTime, deltaTime);
+		ForwardShading();
 
 		Resolve(windowRenderTarget, postProcess);
 	}
@@ -277,7 +278,7 @@ namespace engine::windows
 		s_deviceContext->PSSetShaderResources(9, 1, SRVnullptr);
 	}
 
-	void Renderer::ForwardShading(const Camera& camera,	const std::chrono::steady_clock::time_point& currentTime, float deltaTime)
+	void Renderer::ForwardShading()
 	{
 		engine::s_deviceContext->OMSetDepthStencilState(m_defDepthStencilState.ptr(), 1);
 		engine::s_deviceContext->OMSetRenderTargets(1, m_hdrRenderTarget.GetRTVPtrToPrt(), m_depthStencil.GetDepthStencilView().ptr());
@@ -286,7 +287,7 @@ namespace engine::windows
 
 
 		ParticleSystem::instance().CopyDepthTexture(m_depthStencil.GetDepthStencilResource());
-		ParticleSystem::instance().UpdateSmokeEmitters(camera, currentTime, deltaTime);
+
 		ParticleSystem::instance().render();
 	}
 

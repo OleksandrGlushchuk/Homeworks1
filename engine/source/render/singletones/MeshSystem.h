@@ -53,6 +53,7 @@ namespace engine
 		static void init();
 		static void deinit();
 		static MeshSystem& instance();
+
 		bool findIntersection(const ray& _ray, engine::MeshIntersection& out_intersection, uint32_t& out_transformID);
 		bool findIntersectionOpaque(const ray& _ray, engine::MeshIntersection& out_intersection, uint32_t& out_transformID, uint16_t& out_modelID);
 		bool findIntersectionOpaqueEx(const ray& _ray, engine::MeshIntersection& out_intersection, uint32_t& out_transformID, uint16_t& out_modelID, ModelID& outObjectID);

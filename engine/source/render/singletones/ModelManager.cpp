@@ -88,12 +88,12 @@ namespace engine
 		std::shared_ptr<Model> quad_model(new Model);
 		auto& model = *quad_model;
 		model.name = "Quad";
-		model.box = Box::unit();
+		model.box = Box::unit_2();
 
 		model.m_meshes.resize(1);
 
 		auto& mesh = model.m_meshes[0];
-		mesh.box = Box::unit();
+		mesh.box = Box::unit_2();
 		mesh.meshToModelMatrix = Matr<4>::identity();
 		mesh.name = "Quad";
 		mesh.vertices.resize(4);
@@ -150,12 +150,13 @@ namespace engine
 		std::shared_ptr<Model> cube_model(new Model);
 		auto& model = *cube_model;
 		model.name = "Cube";
-		model.box = Box::unit();
+		model.box = Box::unit_2();
 
 		model.m_meshes.resize(1);
 
 		auto& mesh = model.m_meshes[0];
-		mesh.box = Box::unit();
+		mesh.box = model.box;
+
 		mesh.meshToModelMatrix = Matr<4>::identity();
 		mesh.name = "Cube";
 		mesh.vertices.resize(24);

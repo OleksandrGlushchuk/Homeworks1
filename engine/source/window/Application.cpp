@@ -38,6 +38,14 @@ namespace engine::windows
 
 	void Application::Init()
 	{
+		/*DxResPtr<ID3D11Buffer> structuredBuffer;
+		auto structuredBufferDesc = CD3D11_BUFFER_DESC(sizeof(GpuParticle), D3D11_BIND_UNORDERED_ACCESS, D3D11_USAGE_DEFAULT, 0, D3D11_RESOURCE_MISC_FLAG::D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS);
+					HRESULT result = engine::s_device->CreateBuffer(&structuredBufferDesc, nullptr, m_structuredBuffer.reset());
+					ALWAYS_ASSERT(result >= 0 && "CreateBuffer");
+
+*/
+
+
 		m_currentTime = std::chrono::steady_clock::now();
 		renderer.Init(1u);
 		m_postProcess.Init(1.5f);
@@ -46,9 +54,9 @@ namespace engine::windows
 		ShadowManager::instance().SetPointLightDSResolution(1024.f);
 
 		ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(-0.5f, 0, 0.f), Vec3(0.2f, 0.1f, 1.f), 
-			1.f, 2.5f, 0.015f, 0.15f, 0.5f, 1.01f, 0.2f, 8, 8));
+			1.f, 2.5f, 1.f, 0.15f, 0.3f, 0.7f, 0.2f, 8, 8));
 		ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(0.995f, 0.8f, 0.6f), Vec3(0.01f, 0.01f, 0.01f),
-			0.5f, 3.f, 0.005f, 0.05f, 0.15f, 1.005f, 0.01f, 8, 8));
+			0.5f, 3.f, 0.3f, 0.05f, 0.15f, 0.1f, 0.01f, 8, 8));
 
 
 		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
@@ -514,7 +522,7 @@ namespace engine::windows
 				transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
 				MeshSystem::instance().addInstance(SamuraiModel, m_dissolubleSamuraiMaterial, DissolubleInstances::Instance(transform,
 					std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
-					3.f));
+					5.f));
 				input_state['N'] = false;
 			}
 			if (input_state['M'])
@@ -527,7 +535,7 @@ namespace engine::windows
 				transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
 				MeshSystem::instance().addInstance(SamuraiModel, m_dissolubleSamuraiMaterial1, DissolubleInstances::Instance(transform,
 					std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
-					3.f));
+					5.f));
 				input_state['M'] = false;
 			}
 			if (input_state['K'])
@@ -539,7 +547,7 @@ namespace engine::windows
 				transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
 				MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial, DissolubleInstances::Instance(transform,
 					std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
-					3.f));
+					5.f));
 				input_state['K'] = false;
 			}
 			if (input_state['J'])
@@ -551,7 +559,7 @@ namespace engine::windows
 				transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
 				MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial1, DissolubleInstances::Instance(transform,
 					std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
-					3.f));
+					5.f));
 				input_state['J'] = false;
 			}
 			if (input_state['H'])
@@ -563,7 +571,7 @@ namespace engine::windows
 				transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
 				MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial2, DissolubleInstances::Instance(transform,
 					std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
-					3.f));
+					5.f));
 				input_state['H'] = false;
 			}
 		}
@@ -608,9 +616,14 @@ namespace engine::windows
 
 					const Vec3& scale = TransformSystem::instance().m_transforms[outTransformId].getScale();
 
+					float sphere_max_radius = ((model->box.max - model->box.min) * scale).length();
+					float incirenationTime = 7.f;
+					float sphere_velocity = sphere_max_radius / incirenationTime;
+
+
 					MeshSystem::instance().addInstance(model, material, IncinerationInstances::Instance(outTransformId,
-						std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(), 5.f, 
-						outIntersection.pos, ((model->box.max - model->box.min)*scale).length()));
+						std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(), incirenationTime,
+						outIntersection.pos, sphere_velocity));
 				}
 
 				input_state['O'] = false;

@@ -51,7 +51,7 @@ namespace engine::windows
 		ID3D11RenderTargetView* m_GBuffer[5];
 
 		void DeferredShading();
-		void ForwardShading(const Camera& camera, const std::chrono::steady_clock::time_point& currentTime, float deltaTime);
+		void ForwardShading();
 		void Resolve(RenderTargetView& windowRenderTarget, PostProcess& postProcess);
 		void RenderToGBuffer();
 		void RenderShadows();

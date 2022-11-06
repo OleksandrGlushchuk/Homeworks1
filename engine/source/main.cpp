@@ -10,19 +10,18 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 engine::windows::Window window;
 engine::windows::Renderer renderer;
 engine::windows::Application application(window, renderer);
+Timer timer;
 
 int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPWSTR cmdline, _In_ int cmdshow)
 {
 	engine::init();
 
-	window = engine::windows::Window(L"homework-10", hinstance, WndProc);
+	window = engine::windows::Window(L"homework-11", hinstance, WndProc);
 	application.Init();
 	window.Show();
 
 	MSG msg;
-	Timer timer;
-	timer.StartTimer();
-	float delta_time = 0;
+	timer.RestartTimer();
 	while (true)
 	{
 		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -38,11 +37,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE hprev, _In_ LPW
 		
 		if (timer.TimeElapsed(FRAME_DURATION))
 		{
-			delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count();
 			application.Draw();
-			application.delta_time = std::chrono::duration_cast<std::chrono::duration<float>>(timer.start.time_since_epoch()).count() - delta_time + FRAME_DURATION;
+			application.delta_time = timer.GetDeltaTime();
+			timer.RestartTimer();
 		}
-		
 		
 		std::this_thread::yield();
 	}
@@ -61,6 +59,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	case WM_EXITSIZEMOVE:
 		application.OnExitSizeMove();
+		timer.RestartTimer();
 		break;
 
 	case WM_SIZE:

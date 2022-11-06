@@ -92,8 +92,8 @@ PS_OUTPUT ps_main(PS_INPUT input)
         return output;
     }
     float2 tex_coord;
-    tex_coord.x = (pos_in_decal_space.x + 1) / 2;
-    tex_coord.y = (pos_in_decal_space.y - 1) / (-2);
+    tex_coord.x = (pos_in_decal_space.x + 1) * 0.5f;
+    tex_coord.y = (pos_in_decal_space.y - 1) / (-0.5f);
     
     float4 map_normal = g_decalNormalMap.Sample(g_samplerState, tex_coord);
     

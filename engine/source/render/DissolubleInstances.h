@@ -91,6 +91,7 @@ namespace engine
 		std::vector<ModelID> m_modelIDs;
 		ConstantBuffer<MaterialConstantBuffer> m_materialConstantBuffer;
 		Texture m_dissolubleMap;
+		Texture m_dissolubleMap1;
 		DxResPtr<ID3D11BlendState> m_blendState;
 	public:
 		DissolubleInstances() {}

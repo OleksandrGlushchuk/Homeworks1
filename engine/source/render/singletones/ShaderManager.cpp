@@ -34,7 +34,13 @@ namespace engine
 		auto& vertexShaderBlob = m_shaderBlob[path][0];
 
 		result = D3DCompileFromFile(path.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "vs_main", "vs_5_0", Flags1, 0, vertexShaderBlob.reset(), error.reset());
-		ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
+		//ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
+		if (result < 0)
+		{
+			OutputDebugStringA(LPCSTR(error->GetBufferPointer()));
+			__debugbreak();
+			abort();
+		}
 
 		result = engine::s_device->CreateVertexShader(vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize(), nullptr, vertexShader.reset());
 		ALWAYS_ASSERT(result >= 0 && "CreateVertexShader");
@@ -45,7 +51,13 @@ namespace engine
 			auto& pixelShaderBlob = m_shaderBlob[path][1];
 
 			result = D3DCompileFromFile(path.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "ps_main", "ps_5_0", Flags1, 0, pixelShaderBlob.reset(), error.reset());
-			ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
+			//ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
+			if (result < 0)
+			{
+				OutputDebugStringA(LPCSTR(error->GetBufferPointer()));
+				__debugbreak();
+				abort();
+			}
 
 			result = engine::s_device->CreatePixelShader(pixelShaderBlob->GetBufferPointer(), pixelShaderBlob->GetBufferSize(), nullptr, pixelShader.reset());
 			ALWAYS_ASSERT(result >= 0 && "CreatePixelShader");
@@ -57,7 +69,13 @@ namespace engine
 			auto& geometryShaderBlob = m_shaderBlob[path][2];
 
 			result = D3DCompileFromFile(path.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "gs_main", "gs_5_0", Flags1, 0, geometryShaderBlob.reset(), error.reset());
-			ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
+			//ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
+			if (result < 0)
+			{
+				OutputDebugStringA(LPCSTR(error->GetBufferPointer()));
+				__debugbreak();
+				abort();
+			}
 
 			result = engine::s_device->CreateGeometryShader(geometryShaderBlob->GetBufferPointer(), geometryShaderBlob->GetBufferSize(), nullptr, geometryShader.reset());
 			ALWAYS_ASSERT(result >= 0 && "CreateGeometryShader");
@@ -74,7 +92,13 @@ namespace engine
 		DxResPtr<ID3D10Blob> blob;
 
 		HRESULT result = D3DCompileFromFile(path.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "cs_main", "cs_5_0", Flags1, 0, blob.reset(), error.reset());
-		ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
+		//ALWAYS_ASSERT(result >= 0 && "D3DCompileFromFile");
+		if (result < 0)
+		{
+			OutputDebugStringA(LPCSTR(error->GetBufferPointer()));
+			__debugbreak();
+			abort();
+		}
 
 		result = s_device->CreateComputeShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, m_computeShader[path].reset());
 	}

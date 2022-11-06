@@ -1,14 +1,15 @@
 #ifndef _GLOBALS_HLSLI_
 #define _GLOBALS_HLSLI_
 #include "pbr_structs.hlsli"
-
+static const float FRAME_DURATION = 1.f / 60.f;
 static const float M_PI = 3.14159265358979323846f; 
 static const float M_2PI = 2.f * M_PI;
 static const uint MAX_POINT_LIGHTS = 5;
 static const uint MAX_DIRECTIONAL_LIGHTS = 2;
 static const float TRANSLUCENCY_POWER = 40;
 static const float3 TRANSMITTANCE_RGB = float3(0.1f, 0.1f, 0.1f);
-static const float MIN_LIGHT_RADIANCE = 0.3f;
+static const float MIN_LIGHT_RADIANCE = 1.f;
+static const float G_ACCELERATION = 9.8f;
 
 cbuffer PerFrameBuffer : register(b0)
 {
@@ -30,7 +31,8 @@ cbuffer PerFrameBuffer : register(b0)
     
     uint g_pointLightNum;
     uint g_directionalLightNum;
-    float2 padPFM1;
+    float g_deltaTime;
+    float padPFM1;
     
     PointLight g_pointLight[MAX_POINT_LIGHTS];
     DirectionalLight g_directionalLight[MAX_DIRECTIONAL_LIGHTS];

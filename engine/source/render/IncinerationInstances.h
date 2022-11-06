@@ -23,16 +23,16 @@ namespace engine
 			float creationTime;
 			float lifeTime;
 			Vec3 spherePos;
-			float sphereMaxSize;
+			float sphereVelocity;
 			Instance() {}
-			explicit Instance(const Transform& transform, float _creationTime, float _lifeTime, const Vec3& sphere_pos, float sphere_max_size) : creationTime(_creationTime), lifeTime(_lifeTime),
+			explicit Instance(const Transform& transform, float _creationTime, float _lifeTime, const Vec3& sphere_pos, float sphere_velocity) : creationTime(_creationTime), lifeTime(_lifeTime),
 				transform_id(engine::TransformSystem::instance().m_transforms.insert(transform)),
-				spherePos(sphere_pos), sphereMaxSize(sphere_max_size)
+				spherePos(sphere_pos), sphereVelocity(sphere_velocity)
 			{}
 
-			explicit Instance(uint32_t copyTransform_ID, float _creationTime, float _lifeTime, const Vec3& sphere_pos, float sphere_max_size) :
+			explicit Instance(uint32_t copyTransform_ID, float _creationTime, float _lifeTime, const Vec3& sphere_pos, float sphere_velocity) :
 				creationTime(_creationTime), lifeTime(_lifeTime), transform_id(copyTransform_ID),
-				spherePos(sphere_pos), sphereMaxSize(sphere_max_size)
+				spherePos(sphere_pos), sphereVelocity(sphere_velocity)
 			{}
 		};
 
@@ -40,14 +40,13 @@ namespace engine
 		{
 			Matr<4> transformMatrix;
 			Vec3 spherePos;
-			float sphereMaxSize;
+			float sphereVelocity;
 			float creationTime;
-			float lifeTime;
 
 			GpuInstance() {}
-			GpuInstance(const Instance& instance) : creationTime(instance.creationTime), lifeTime(instance.lifeTime),
+			GpuInstance(const Instance& instance) : creationTime(instance.creationTime),
 				transformMatrix(engine::TransformSystem::instance().m_transforms[instance.transform_id].getTransformMatrix()),
-				spherePos(instance.spherePos), sphereMaxSize(instance.sphereMaxSize)
+				spherePos(instance.spherePos), sphereVelocity(instance.sphereVelocity)
 			{}
 		};
 
@@ -100,6 +99,7 @@ namespace engine
 		ConstantBuffer<MaterialConstantBuffer> m_materialConstantBuffer;
 		Texture m_dissolubleMap;
 		DxResPtr<ID3D11BlendState> m_blendState;
+		D3D11_INPUT_ELEMENT_DESC m_inputDesc[12];
 	public:
 		IncinerationInstances() {}
 

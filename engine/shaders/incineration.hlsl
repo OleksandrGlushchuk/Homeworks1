@@ -5,6 +5,7 @@ Texture2D<float3> g_normalMap : register(t1);
 Texture2D<float> g_roughnessMap : register(t2);
 Texture2D<float> g_metalnessMap : register(t3);
 Texture2D<float> g_dissolubleMap : register(t4);
+static const float THICKNESS = 0.07f;
 
 cbuffer MeshToModel : register(b1)
 {
@@ -36,9 +37,8 @@ struct VS_INPUT
     float4 transform_z : TRANSFORM_Z;
     float4 transform_w : TRANSFORM_W;
     float3 spherePos : SPHERE_POS;
-    float sphereMaxRadius : SPHERE_MAX_RADIUS;
+    float sphereVelocity : SPHERE_VELOCITY;
     float creationTime : CREATION_TIME;
-    float lifeTime : LIFE_TIME;
 };
 
 struct PS_INPUT
@@ -50,9 +50,8 @@ struct PS_INPUT
     float3 bitangent : BITANGENT;
     float4 world_pos : WORLD_POS;
     nointerpolation float creationTime : CREATION_TIME;
-    nointerpolation float lifeTime : LIFE_TIME;
     nointerpolation float3 spherePos : SPHERE_POS;
-    nointerpolation float sphereMaxRadius : SPHERE_MAX_RADIUS;
+    nointerpolation float sphereVelocity : SPHERE_VELOCITY;
 };
 
 PS_INPUT vs_main(VS_INPUT input)
@@ -73,8 +72,7 @@ PS_INPUT vs_main(VS_INPUT input)
     output.bitangent = mul(float4(input.bitangent, 0), WorldMatrix).xyz;
     
     output.creationTime = input.creationTime;
-    output.lifeTime = input.lifeTime;
-    output.sphereMaxRadius = input.sphereMaxRadius;
+    output.sphereVelocity = input.sphereVelocity;
     output.spherePos = input.spherePos;
     return output;
 }
@@ -84,14 +82,19 @@ PS_INPUT vs_main(VS_INPUT input)
 PS_OUTPUT ps_main(PS_INPUT input)
 {
     float dissolutionValue = g_dissolubleMap.Sample(g_samplerState, input.tex_coord);
-    float currentLifeDuration = (g_time - input.creationTime) / input.lifeTime;
-    float sphereRadius = input.sphereMaxRadius * currentLifeDuration;
+    float currentLifeDuration = (g_time - input.creationTime);
+    float sphereRadius = input.sphereVelocity * (currentLifeDuration + g_deltaTime - FRAME_DURATION);
     float3 emission = 0;
-    if (length(input.world_pos.xyz - input.spherePos) < sphereRadius)
+    float l = length(input.world_pos.xyz - input.spherePos);
+    if (l < sphereRadius)
     {
         PS_OUTPUT output;
         discard;
         return output;
+    }
+    else if (l < sphereRadius + THICKNESS)
+    {
+        emission = lerp(float3(0, 0, 0), float3(5, 1.4f, 0.1f), (l - sphereRadius) / (THICKNESS)) * dissolutionValue;
     }
         
     Surface surface;

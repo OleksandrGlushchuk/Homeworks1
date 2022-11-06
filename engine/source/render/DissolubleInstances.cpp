@@ -33,7 +33,8 @@ namespace engine
 
 		m_constantBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 		m_materialConstantBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
-		m_dissolubleMap.Load(L"engine/assets/DISSOLUBLE.dds");
+		m_dissolubleMap.Load(L"engine/assets/Dissoluble/DISSOLUBLE.dds");
+		m_dissolubleMap1.Load(L"engine/assets/Dissoluble/DISSOLUBLE1.dds");
 		m_blendState = BlendStateManager::instance().GetBlendState("alphaToCoverage");
 	}
 
@@ -88,6 +89,7 @@ namespace engine
 		m_constantBuffer.BindVS(1);
 		m_materialConstantBuffer.BindPS(2);
 		m_dissolubleMap.Bind(4);
+		m_dissolubleMap1.Bind(5);
 
 		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		uint32_t renderedInstances = 0;

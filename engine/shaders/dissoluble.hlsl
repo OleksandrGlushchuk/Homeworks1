@@ -5,6 +5,8 @@ Texture2D<float3> g_normalMap : register(t1);
 Texture2D<float> g_roughnessMap : register(t2);
 Texture2D<float> g_metalnessMap : register(t3);
 Texture2D<float> g_dissolubleMap : register(t4);
+Texture2D<float> g_dissolubleMap1 : register(t5);
+static const float THICKNESS = 0.07f;
 
 cbuffer MeshToModel : register(b1)
 {
@@ -87,9 +89,9 @@ PS_OUTPUT ps_main(PS_INPUT input)
         discard;
         return output;
     }
-    else if (abs(currentLifeDuration - dissolutionValue) <= 0.05f)
+    else if (abs(currentLifeDuration - dissolutionValue) <= THICKNESS)
     {
-        emission = float3(0.1f, 0.0f, 2.f);
+        emission = float3(0.1f, 0.0f, 2.f) * g_dissolubleMap1.Sample(g_samplerState, input.tex_coord);
     }
         
     Surface surface;

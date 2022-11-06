@@ -37,8 +37,8 @@ namespace engine
 		DepthStencilManager::init();
 		BlendStateManager::init();
 		RasteriserStateManager::init();
-		ParticleSystem::init();
 		MeshSystem::init();
+		ParticleSystem::init();
 		VegetationSystem::init();
 		DecalSystem::init();
 	}
@@ -46,8 +46,8 @@ namespace engine
 	{
 		DecalSystem::deinit();
 		VegetationSystem::deinit();
-		MeshSystem::deinit();
 		ParticleSystem::deinit();
+		MeshSystem::deinit();
 		RasteriserStateManager::deinit();
 		BlendStateManager::deinit();
 		DepthStencilManager::deinit();

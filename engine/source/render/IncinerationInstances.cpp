@@ -23,11 +23,11 @@ namespace engine
 			{"TRANSFORM_Z", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 			{"TRANSFORM_W", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 			{"SPHERE_POS", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"SPHERE_MAX_RADIUS", 0, DXGI_FORMAT::DXGI_FORMAT_R32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"CREATION_TIME", 0, DXGI_FORMAT::DXGI_FORMAT_R32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"LIFE_TIME", 0, DXGI_FORMAT::DXGI_FORMAT_R32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1}
+			{"SPHERE_VELOCITY", 0, DXGI_FORMAT::DXGI_FORMAT_R32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"CREATION_TIME", 0, DXGI_FORMAT::DXGI_FORMAT_R32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1}
 		};
-		m_shader.Init(L"engine/shaders/incineration.hlsl", inputLayout, 13, ShaderEnabling(true, false));
+		m_shader.Init(L"engine/shaders/incineration.hlsl", inputLayout, 12, ShaderEnabling(true, false));
+		std::copy(inputLayout, inputLayout + 12, m_inputDesc);
 		/*ShadowManager::instance().m_pointLightDissolubleShadowShader.Init(L"engine/shaders/dissoluble_pl_shadow.hlsl",
 			inputLayout, 11, ShaderEnabling(true, true));
 		ShadowManager::instance().m_directionalLightDissolubleShadowShader.Init(L"engine/shaders/dissoluble_dl_shadow.hlsl",
@@ -35,7 +35,7 @@ namespace engine
 
 		m_constantBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 		m_materialConstantBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
-		m_dissolubleMap.Load(L"engine/assets/DISSOLUBLE.dds");
+		m_dissolubleMap.Load(L"engine/assets/Dissoluble/DISSOLUBLE.dds");
 		m_blendState = BlendStateManager::instance().GetBlendState("alphaToCoverage");
 	}
 
