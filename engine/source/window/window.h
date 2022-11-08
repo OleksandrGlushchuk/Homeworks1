@@ -28,7 +28,7 @@ namespace engine::windows
 			wndclass.hInstance = hinstance;
 			wndclass.lpfnWndProc = WndProc;
 			RegisterClass(&wndclass);
-			m_wndHandle = CreateWindow(wndclass.lpszClassName, name, WS_OVERLAPPEDWINDOW, 0, 0, 600, 600, 0, 0, wndclass.hInstance, 0);
+			m_wndHandle = CreateWindow(wndclass.lpszClassName, name, WS_OVERLAPPEDWINDOW, 0, 0, 300, 300, 0, 0, wndclass.hInstance, 0);
 			device_context = GetDC(m_wndHandle);
 
 			GetClientRect(m_wndHandle, &screen);

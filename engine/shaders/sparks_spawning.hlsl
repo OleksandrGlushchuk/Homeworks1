@@ -40,23 +40,60 @@ struct VS_INPUT
     float creationTime : CREATION_TIME;
 };
 
-void vs_main(VS_INPUT input)
+struct GS_INPUT
 {
-    float4x4 TransformMatrix = float4x4(input.transform_x, input.transform_y, input.transform_z, input.transform_w);
+    float3 position : POSITION;
+    float sphereVelocity : SPHERE_VELOCITY;
+    float3 normal : NORMAL;
+    float creationTime : CREATION_TIME;
+    float3 spherePos : SPHERE_POS;
+};
 
+
+GS_INPUT vs_main(VS_INPUT input)
+{
+    GS_INPUT output;
+    float4x4 TransformMatrix = float4x4(input.transform_x, input.transform_y, input.transform_z, input.transform_w);
     float4x4 WorldMatrix = mul(g_meshToModelMatrix, TransformMatrix);
-    float4 pos = mul(float4(input.position, 1.0f), WorldMatrix);
-    float3 normal = mul(float4(input.normal, 0), WorldMatrix).xyz;
+
+    output.position = mul(float4(input.position, 1.0f), WorldMatrix).xyz;
+    output.normal = mul(float4(input.normal, 0), WorldMatrix).xyz;
+    output.creationTime = input.creationTime;
+    output.spherePos = input.spherePos;
+    output.sphereVelocity = input.sphereVelocity;
+
+    return output;
+}
+
+float3 findCenter(float3 A, float3 B, float3 C)
+{
+    //float3 M1 = 0.5f * (C + A);
+    //float3 M2 = 0.5f * (C + B);
     
-    float spawnTime = input.creationTime + length(pos.xyz - input.spherePos) / input.sphereVelocity;
-    if(spawnTime > g_time - g_deltaTime && spawnTime < g_time)
+    //float3 AM = M2 - A;
+    //float3 BM = M1 - B;
+    
+    //return A + (B - A) / (AM - BM);
+    
+    return float3(A + B + C) / 3.f;
+}
+
+[maxvertexcount(1)]
+void gs_main(triangle GS_INPUT input[3])
+{
+    float3 pos;
+    pos = findCenter(input[0].position, input[1].position, input[2].position);
+ 
+    
+    float spawnTime = input[0].creationTime + length(pos.xyz - input[0].spherePos) / input[0].sphereVelocity;
+    if (spawnTime > g_time - g_deltaTime && spawnTime < g_time)
     {
         uint prevCount;
         InterlockedAdd(particlesRange[1], 1, prevCount);
         
         Particle newParticle;
         newParticle.spawnTime = spawnTime;
-        newParticle.velocity = normal * SPAWN_PARTICLE_SPEED;
+        newParticle.velocity = input[0].normal * SPAWN_PARTICLE_SPEED;
         newParticle.position = pos.xyz + newParticle.velocity;
         newParticle.padding = 0;
    

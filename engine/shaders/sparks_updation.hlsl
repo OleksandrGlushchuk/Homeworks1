@@ -36,7 +36,7 @@ void cs_main( uint3 DTid : SV_DispatchThreadID )
     }
     particlesData[index].velocity.y -= 0.005f;
     particlesData[index].position += particlesData[index].velocity;
-    o
+
     float4 clip_space_pos = mul(float4(particlesData[index].position, 1), g_viewProj);
     clip_space_pos /= clip_space_pos.w;
     
@@ -45,12 +45,18 @@ void cs_main( uint3 DTid : SV_DispatchThreadID )
     
     int3 sample_location = int3(texX * g_screenWidth, texY * g_screenHeight, 0);
     
-    float depth = g_depth.Load(sample_location);
-    if (clip_space_pos.z < depth)
+    float sceneDepth = g_depth.Load(sample_location);
+    clip_space_pos.z = sceneDepth;
+    float4 scenePos = mul(clip_space_pos, g_viewProjInv);
+    scenePos /= scenePos.w;
+    sceneDepth = length(scenePos.xyz - g_cameraPos);
+    float sparkDepth = length(particlesData[index].position - g_cameraPos);
+    
+    if (abs(sceneDepth - sparkDepth) < 0.07f)
     {
         float3 geometry_normal = unpackOctahedron(g_normals.Load(sample_location).zw);
-        particlesData[index].position += geometry_normal*0.01f;
-        particlesData[index].velocity = geometry_normal * particlesData[index].velocity / 2.f;
+        particlesData[index].position += geometry_normal*0.03f;
+        particlesData[index].velocity = normalize(geometry_normal + normalize(particlesData[index].velocity)) * particlesData[index].velocity * 0.4f;
         
     }
 }

@@ -51,7 +51,7 @@ namespace engine
 		s_instance->m_sparksIndirectArgsWritable.Init(1, &subresource);
 		s_instance->m_sparksBufferSize.Init(D3D11_USAGE_IMMUTABLE, 0, &bufferSize);
 
-		s_instance->m_sparks_spawning_shader.Init(L"engine/shaders/sparks_spawning.hlsl", MeshSystem::instance().incinerationInstances.m_inputDesc,12,ShaderEnabling(0,0));
+		s_instance->m_sparks_spawning_shader.Init(L"engine/shaders/sparks_spawning.hlsl", MeshSystem::instance().incinerationInstances.m_inputDesc,12,ShaderEnabling(false, true));
 		s_instance->m_sparks_updation_shader.InitCompute(L"engine/shaders/sparks_updation.hlsl");
 		s_instance->m_sparks_range_updation_shader.InitCompute(L"engine/shaders/sparks_range_updation.hlsl");
 		s_instance->m_sparks_drawing_shader.Init(L"engine/shaders/sparks_drawing.hlsl", nullptr, 0, ShaderEnabling(true, false));
@@ -165,6 +165,7 @@ namespace engine
 	{
 		m_sparksBufferSize.BindCS(2);
 		m_sparksBufferSize.BindVS(2);
+		m_sparksBufferSize.BindGS(2);
 		m_depthTexture.BindCS(0);
 
 		spawnSparks();
