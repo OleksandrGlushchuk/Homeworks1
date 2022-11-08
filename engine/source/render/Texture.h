@@ -47,6 +47,10 @@ namespace engine
 		{
 			engine::s_deviceContext->PSSetShaderResources(startSlot, 1, &m_textureViewer.ptr());
 		}
+		void BindCS(UINT startSlot = 0)
+		{
+			engine::s_deviceContext->CSSetShaderResources(startSlot, 1, &m_textureViewer.ptr());
+		}
 		bool operator==(const Texture& tex) const
 		{
 			return m_textureViewer == tex.m_textureViewer;

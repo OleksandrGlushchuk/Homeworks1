@@ -1,3 +1,9 @@
+cbuffer SparksBufferSize : register(b2)
+{
+    uint g_sparksBufferSize;
+    float3 paddingSBS;
+};
+
 struct DrawInstancedIndirectArgs
 {
     uint VertexCountPerInstance;
@@ -7,15 +13,12 @@ struct DrawInstancedIndirectArgs
 };
 
 RWStructuredBuffer<DrawInstancedIndirectArgs> g_args : register(u0);
-
-
 RWBuffer<uint> particlesRange : register(u1);
-static const uint BUFFER_SIZE = 128;
 
 [numthreads(1, 1, 1)]
 void cs_main( uint3 DTid : SV_DispatchThreadID )
 {
-    particlesRange[0] = (particlesRange[0] + particlesRange[2]) % BUFFER_SIZE;
+    particlesRange[0] = (particlesRange[0] + particlesRange[2]) % g_sparksBufferSize;
     particlesRange[1] -= particlesRange[2];
     particlesRange[2] = 0;
     

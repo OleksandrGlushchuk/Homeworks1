@@ -1,5 +1,11 @@
 #include "globals.hlsli"
 
+cbuffer SparksBufferSize : register(b2)
+{
+    uint g_sparksBufferSize;
+    float3 paddingSBS;
+};
+
 struct Particle
 {
     float3 position;
@@ -10,8 +16,7 @@ struct Particle
 
 RWStructuredBuffer<Particle> particlesData : register(u1);
 RWBuffer<uint> particlesRange : register(u2);
-static const uint BUFFER_SIZE = 128;
-static const float SPAWN_PARTICLE_SPEED = 0.05f;
+static const float SPAWN_PARTICLE_SPEED = 0.04f;
 
 cbuffer MeshToModel : register(b1)
 {
@@ -55,6 +60,6 @@ void vs_main(VS_INPUT input)
         newParticle.position = pos.xyz + newParticle.velocity;
         newParticle.padding = 0;
    
-        particlesData[(particlesRange[0] + prevCount) % BUFFER_SIZE] = newParticle;
+        particlesData[(particlesRange[0] + prevCount) % g_sparksBufferSize] = newParticle;
     }
 }

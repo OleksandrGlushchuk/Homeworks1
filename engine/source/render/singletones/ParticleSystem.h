@@ -7,6 +7,10 @@
 #include "../Model.h"
 #include "../ConstantBuffer.h"
 #include <memory>
+#include "../RWStructuredBuffer.h"
+#include "../RWBuffer.h"
+#include "../IndirectArgsBuffers.h"
+
 class Camera;
 namespace engine
 {
@@ -44,21 +48,28 @@ namespace engine
 		std::vector<SmokeEmitter> m_smokeEmitters;
 		uint32_t m_depthTextureRegisterIndex;
 
-		struct ParticleData
+		struct SparkData
 		{
 			Vec3 position;
 			float spawnTime;
 			Vec3 velocity;
 			float padding;
 		};
+		struct SparksBufferSize
+		{
+			uint32_t size;
+			float padding[3];
+			SparksBufferSize(){}
+			SparksBufferSize(uint32_t _size) : size(_size){}
+		};
+		static const uint32_t SPARKS_BUFFER_SIZE = 100'000;
+		static const uint32_t SPARKS_UPDATE_THREADX_NUM =  0.5f + float(SPARKS_BUFFER_SIZE) / 64.f;
+		RWStructuredBuffer<SparkData> m_sparksData;
+		RWBuffer<uint32_t> m_sparksRange;
+		RWStructuredBuffer<D3D11_DRAW_INSTANCED_INDIRECT_ARGS> m_sparksIndirectArgsWritable;
+		InstancedIndirectArgsBuffer m_sparksIndirectArgs;
 
-		DxResPtr<ID3D11Buffer> m_particlesData;
-		DxResPtr<ID3D11UnorderedAccessView> m_particlesDataUAV;
-		DxResPtr<ID3D11Buffer> m_particlesRange;
-		DxResPtr<ID3D11UnorderedAccessView> m_particlesRangeUAV;
-		DxResPtr<ID3D11Buffer> m_particlesIndirectArgs;
-		DxResPtr<ID3D11Buffer> m_particlesIndirectArgsWritable;
-		DxResPtr<ID3D11UnorderedAccessView> m_particlesIndirectArgsUAV;
+		ConstantBuffer<SparksBufferSize> m_sparksBufferSize;
 
 		Shader m_sparks_spawning_shader;
 		Shader m_sparks_updation_shader;

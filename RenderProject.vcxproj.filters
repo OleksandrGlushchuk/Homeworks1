@@ -602,6 +602,15 @@
     <ClInclude Include="engine\source\render\StructuredBuffer.h">
       <Filter>engine\source\render</Filter>
     </ClInclude>
+    <ClInclude Include="engine\source\render\RWStructuredBuffer.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\RWBuffer.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\source\render\IndirectArgsBuffers.h">
+      <Filter>engine\source\render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine\source\render\singletones\DepthStencilManager.cpp">

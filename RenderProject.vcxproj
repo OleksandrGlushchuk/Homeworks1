@@ -254,6 +254,7 @@
     <ClInclude Include="engine\source\render\GrassField.h" />
     <ClInclude Include="engine\source\render\IncinerationInstances.h" />
     <ClInclude Include="engine\source\render\IndexBuffer.h" />
+    <ClInclude Include="engine\source\render\IndirectArgsBuffers.h" />
     <ClInclude Include="engine\source\render\Light.h" />
     <ClInclude Include="engine\source\render\MaterialConstantBuffer.h" />
     <ClInclude Include="engine\source\render\Mesh.h" />
@@ -264,6 +265,8 @@
     <ClInclude Include="engine\source\render\PerFrameBuffer.h" />
     <ClInclude Include="engine\source\render\PostProcess.h" />
     <ClInclude Include="engine\source\render\RenderTargetView.h" />
+    <ClInclude Include="engine\source\render\RWBuffer.h" />
+    <ClInclude Include="engine\source\render\RWStructuredBuffer.h" />
     <ClInclude Include="engine\source\render\Shader.h" />
     <ClInclude Include="engine\source\render\singletones\BlendStateManager.h" />
     <ClInclude Include="engine\source\render\singletones\DecalSystem.h" />

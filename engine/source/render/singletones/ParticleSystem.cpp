@@ -41,101 +41,15 @@ namespace engine
 
 		s_instance->m_shader.Init(L"engine/shaders/particle.hlsl", inputElem, 8, ShaderEnabling(true, false));
 
-		{
-			D3D11_BUFFER_DESC bdesc;
-			bdesc.ByteWidth = sizeof(ParticleData) * 128;
-			bdesc.Usage = D3D11_USAGE_DEFAULT;
-			bdesc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_UNORDERED_ACCESS;
-			bdesc.CPUAccessFlags = 0;
-			bdesc.StructureByteStride = sizeof(ParticleData);
-			bdesc.MiscFlags = D3D11_RESOURCE_MISC_FLAG::D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-			HRESULT result = s_device->CreateBuffer(&bdesc, nullptr, s_instance->m_particlesData.reset());
-			ALWAYS_ASSERT(result >= 0 && "CreateBuffer");
-		}
 
-		{
-			D3D11_BUFFER_DESC bdesc;
-			bdesc.ByteWidth = sizeof(uint32_t) * 3;
-			bdesc.Usage = D3D11_USAGE_DEFAULT;
-			bdesc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_UNORDERED_ACCESS;
-			bdesc.CPUAccessFlags = 0;
-			bdesc.StructureByteStride = 0;
-			bdesc.MiscFlags = 0;
-
-			D3D11_SUBRESOURCE_DATA subresource = { 0 };
-			uint32_t data[3]{ 0,0,0 };
-			subresource.pSysMem = data;
-
-			HRESULT result = s_device->CreateBuffer(&bdesc, &subresource, s_instance->m_particlesRange.reset());
-			ALWAYS_ASSERT(result >= 0 && "CreateBuffer");
-		}
-		
-		{
-			D3D11_BUFFER_DESC bdesc;
-			bdesc.ByteWidth = sizeof(D3D11_DRAW_INSTANCED_INDIRECT_ARGS);
-			bdesc.Usage = D3D11_USAGE_DEFAULT;
-			bdesc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_UNORDERED_ACCESS;
-			bdesc.CPUAccessFlags = 0;
-			bdesc.StructureByteStride = sizeof(D3D11_DRAW_INSTANCED_INDIRECT_ARGS);
-			bdesc.MiscFlags = D3D11_RESOURCE_MISC_DRAWINDIRECT_ARGS;
-
-			D3D11_SUBRESOURCE_DATA subresource = { 0 };
-			D3D11_DRAW_INSTANCED_INDIRECT_ARGS data = { 0 };
-			subresource.pSysMem = &data;
-
-			HRESULT result = s_device->CreateBuffer(&bdesc, &subresource, s_instance->m_particlesIndirectArgs.reset());
-			ALWAYS_ASSERT(result >= 0 && "CreateBuffer");
-		}
-
-		{
-			D3D11_BUFFER_DESC bdesc;
-			bdesc.ByteWidth = sizeof(D3D11_DRAW_INSTANCED_INDIRECT_ARGS);
-			bdesc.Usage = D3D11_USAGE_DEFAULT;
-			bdesc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_UNORDERED_ACCESS;
-			bdesc.CPUAccessFlags = 0;
-			bdesc.StructureByteStride = sizeof(D3D11_DRAW_INSTANCED_INDIRECT_ARGS);
-			bdesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-
-			D3D11_SUBRESOURCE_DATA subresource = { 0 };
-			D3D11_DRAW_INSTANCED_INDIRECT_ARGS data = { 0 };
-			subresource.pSysMem = &data;
-
-			HRESULT result = s_device->CreateBuffer(&bdesc, &subresource, s_instance->m_particlesIndirectArgsWritable.reset());
-			ALWAYS_ASSERT(result >= 0 && "CreateBuffer");
-		}
-
-		{
-			D3D11_UNORDERED_ACCESS_VIEW_DESC udesc;
-			udesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
-			udesc.Format = DXGI_FORMAT::DXGI_FORMAT_UNKNOWN;
-			udesc.Buffer.FirstElement = 0;
-			udesc.Buffer.NumElements = 128;
-			udesc.Buffer.Flags = 0;//D3D11_BUFFER_UAV_FLAG::D3D11_BUFFER_UAV_FLAG_COUNTER;
-			HRESULT result = s_device->CreateUnorderedAccessView(s_instance->m_particlesData.ptr(), &udesc, s_instance->m_particlesDataUAV.reset());
-			ALWAYS_ASSERT(result >= 0 && "CreateUnorderedAccessView");
-		}
-
-		{
-			D3D11_UNORDERED_ACCESS_VIEW_DESC udesc;
-			udesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
-			udesc.Format = DXGI_FORMAT::DXGI_FORMAT_R32_UINT;
-			udesc.Buffer.FirstElement = 0;
-			udesc.Buffer.NumElements = 3;
-			udesc.Buffer.Flags = 0;
-			HRESULT result = s_device->CreateUnorderedAccessView(s_instance->m_particlesRange.ptr(), &udesc, s_instance->m_particlesRangeUAV.reset());
-			ALWAYS_ASSERT(result >= 0 && "CreateUnorderedAccessView");
-		}
-
-		{
-			D3D11_UNORDERED_ACCESS_VIEW_DESC udesc;
-			udesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_BUFFER;
-			udesc.Format = DXGI_FORMAT::DXGI_FORMAT_UNKNOWN;
-			udesc.Buffer.FirstElement = 0;
-			udesc.Buffer.NumElements = 1;
-			udesc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_COUNTER;
-			HRESULT result = s_device->CreateUnorderedAccessView(s_instance->m_particlesIndirectArgsWritable.ptr(), &udesc, s_instance->m_particlesIndirectArgsUAV.reset());
-			ALWAYS_ASSERT(result >= 0 && "CreateUnorderedAccessView");
-		}
+		uint32_t data[3]{ 0,0,0 };
+		D3D11_DRAW_INSTANCED_INDIRECT_ARGS subresource = { 0 };
+		SparksBufferSize bufferSize(SPARKS_BUFFER_SIZE);
+		s_instance->m_sparksData.Init(100'000, nullptr);
+		s_instance->m_sparksRange.Init(3, DXGI_FORMAT_R32_UINT, data);
+		s_instance->m_sparksIndirectArgs.Init();
+		s_instance->m_sparksIndirectArgsWritable.Init(1, &subresource);
+		s_instance->m_sparksBufferSize.Init(D3D11_USAGE_IMMUTABLE, 0, &bufferSize);
 
 		s_instance->m_sparks_spawning_shader.Init(L"engine/shaders/sparks_spawning.hlsl", MeshSystem::instance().incinerationInstances.m_inputDesc,12,ShaderEnabling(0,0));
 		s_instance->m_sparks_updation_shader.InitCompute(L"engine/shaders/sparks_updation.hlsl");
@@ -189,15 +103,15 @@ namespace engine
 
 	void ParticleSystem::render()
 	{
+		if (m_particleInstanceBuffer.Size() == 0)
+			return;
+
 		ID3D11ShaderResourceView* SRVnullptr[1] = { nullptr };
 		engine::s_deviceContext->OMSetBlendState(m_blendState.ptr(), blendFactor, sampleMask);
 		engine::s_deviceContext->OMSetDepthStencilState(m_readonlyDepthStencilState.ptr(), 1);
 
 		engine::s_deviceContext->PSSetShaderResources(1 - m_depthTextureRegisterIndex + 3, 1, SRVnullptr);
 		m_depthTexture.Bind(m_depthTextureRegisterIndex + 3);
-
-		if (m_particleInstanceBuffer.Size() == 0)
-			return;
 
 		m_smokeEMVA.Bind(0);
 		m_smokeRLT.Bind(1);
@@ -213,14 +127,7 @@ namespace engine
 
 		s_deviceContext->DrawIndexedInstanced(m_particleModel->m_meshes[0].indexNum, m_particleInstanceBuffer.Size(), 0, 0, 0);
 
-		
-
 		engine::s_deviceContext->PSSetShaderResources(m_depthTextureRegisterIndex + 3, 1, SRVnullptr);
-
-		spawnSparks();
-		updateSparks();
-		updateSparksRange();
-		renderSparks();
 		engine::s_deviceContext->OMSetBlendState(nullptr, nullptr, sampleMask);
 	}
 
@@ -228,7 +135,7 @@ namespace engine
 	void ParticleSystem::spawnSparks()
 	{
 		m_sparks_spawning_shader.Bind();
-		ID3D11UnorderedAccessView* uavs[2]{ m_particlesDataUAV.ptr(), m_particlesRangeUAV.ptr() };
+		ID3D11UnorderedAccessView* uavs[2]{ m_sparksData.m_uav.ptr(), m_sparksRange.m_uav.ptr() };
 		engine::s_deviceContext->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 1, 2, uavs, nullptr);
 
 		MeshSystem::instance().incinerationInstances.renderForParticleSystem();
@@ -238,39 +145,45 @@ namespace engine
 
 	void ParticleSystem::updateSparks()
 	{
-		ID3D11UnorderedAccessView* uavs[2]{ m_particlesDataUAV.ptr(), m_particlesRangeUAV.ptr() };
-		//engine::s_deviceContext->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 1, 2, uavs, nullptr);
+		ID3D11UnorderedAccessView* uavs[2]{ m_sparksData.m_uav.ptr(), m_sparksRange.m_uav.ptr() };
 		s_deviceContext->CSSetUnorderedAccessViews(0, 2, uavs, nullptr);
 		m_sparks_updation_shader.BindCompute();
-		s_deviceContext->Dispatch(2, 1, 1);
-
-		//engine::s_deviceContext->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 0, 0, nullptr, nullptr);
+		s_deviceContext->Dispatch(SPARKS_UPDATE_THREADX_NUM, 1, 1);
 	}
 
 	void ParticleSystem::updateSparksRange()
 	{
-		ID3D11UnorderedAccessView* uavs[2]{ m_particlesIndirectArgsUAV.ptr(), m_particlesRangeUAV.ptr() };
-		//engine::s_deviceContext->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 1, 2, uavs, nullptr);
+		ID3D11UnorderedAccessView* uavs[2]{ m_sparksIndirectArgsWritable.m_uav.ptr(),  m_sparksRange.m_uav.ptr() };
 		s_deviceContext->CSSetUnorderedAccessViews(0, 2, uavs, nullptr);
 		m_sparks_range_updation_shader.BindCompute();
 		s_deviceContext->Dispatch(1, 1, 1);
 		uavs[0] = uavs[1] = nullptr;
 		s_deviceContext->CSSetUnorderedAccessViews(0, 2, uavs, nullptr);
-		//engine::s_deviceContext->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 0, 0, nullptr, nullptr);
 	}
 
 	void ParticleSystem::renderSparks()
 	{
-		ID3D11UnorderedAccessView* uavs[2]{ m_particlesDataUAV.ptr(), m_particlesRangeUAV.ptr() };
+		m_sparksBufferSize.BindCS(2);
+		m_sparksBufferSize.BindVS(2);
+		m_depthTexture.BindCS(0);
+
+		spawnSparks();
+		updateSparks();
+		updateSparksRange();
+		engine::s_deviceContext->OMSetBlendState(m_blendState.ptr(), blendFactor, sampleMask);
+
+		ID3D11UnorderedAccessView* uavs[2]{ m_sparksData.m_uav.ptr(), m_sparksRange.m_uav.ptr() };
 		m_sparkColor.Bind(0);
 		m_sparks_drawing_shader.Bind();
 		engine::s_deviceContext->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 1, 2,
 			uavs, nullptr);
 
-		s_deviceContext->CopyResource(m_particlesIndirectArgs.ptr(), m_particlesIndirectArgsWritable.ptr());
-		s_deviceContext->DrawInstancedIndirect(m_particlesIndirectArgs.ptr(), 0);
+		s_deviceContext->CopyResource(m_sparksIndirectArgs.m_buffer.ptr(), m_sparksIndirectArgsWritable.m_buffer.ptr());
+		s_deviceContext->DrawInstancedIndirect(m_sparksIndirectArgs.m_buffer.ptr(), 0);
 
 		uavs[0] = uavs[1] = nullptr;
 		engine::s_deviceContext->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 1, 2, uavs, nullptr);
+		
+		engine::s_deviceContext->OMSetBlendState(nullptr, nullptr, sampleMask);
 	}
 }

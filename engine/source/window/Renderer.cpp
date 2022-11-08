@@ -287,8 +287,10 @@ namespace engine::windows
 
 
 		ParticleSystem::instance().CopyDepthTexture(m_depthStencil.GetDepthStencilResource());
+		m_copyNormalsTexture.BindCS(1);
 
 		ParticleSystem::instance().render();
+		ParticleSystem::instance().renderSparks();
 	}
 
 	void Renderer::Resolve(RenderTargetView& windowRenderTarget, PostProcess& postProcess)
