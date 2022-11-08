@@ -1,0 +1,91 @@
+info:  Game: RenderProject.exe
+info:  DXVK: v1.10.3
+info:  Built-in extension providers:
+info:    Win32 WSI
+info:    OpenVR
+info:    OpenXR
+info:  OpenVR: could not open registry key, status 2
+info:  OpenVR: Failed to locate module
+info:  Enabled instance extensions:
+info:    VK_KHR_get_surface_capabilities2
+info:    VK_KHR_surface
+info:    VK_KHR_win32_surface
+info:  NVIDIA GeForce MX110:
+info:    Driver: 526.47.0
+info:    Vulkan: 1.3.224
+info:    Memory Heap[0]: 
+info:      Size: 2008 MiB
+info:      Flags: 0x1
+info:      Memory Type[7]: Property Flags = 0x1
+info:      Memory Type[8]: Property Flags = 0x1
+info:    Memory Heap[1]: 
+info:      Size: 4036 MiB
+info:      Flags: 0x0
+info:      Memory Type[0]: Property Flags = 0x0
+info:      Memory Type[1]: Property Flags = 0x0
+info:      Memory Type[2]: Property Flags = 0x0
+info:      Memory Type[3]: Property Flags = 0x0
+info:      Memory Type[4]: Property Flags = 0x0
+info:      Memory Type[5]: Property Flags = 0x0
+info:      Memory Type[6]: Property Flags = 0x0
+info:      Memory Type[9]: Property Flags = 0x6
+info:      Memory Type[10]: Property Flags = 0xe
+info:    Memory Heap[2]: 
+info:      Size: 214 MiB
+info:      Flags: 0x1
+info:      Memory Type[11]: Property Flags = 0x7
+info:  Intel(R) UHD Graphics 620:
+info:    Driver: 108.537.0
+info:    Vulkan: 1.2.151
+info:    Memory Heap[0]: 
+info:      Size: 4164 MiB
+info:      Flags: 0x1
+info:      Memory Type[0]: Property Flags = 0x7
+info:      Memory Type[1]: Property Flags = 0xf
+info:      Memory Type[2]: Property Flags = 0x1
+info:  DXGI: NvAPI workaround enabled, reporting AMD GPU
+info:  Game: RenderProject.exe
+info:  DXVK: v1.10.3
+info:  Built-in extension providers:
+info:    Win32 WSI
+info:    OpenVR
+info:    OpenXR
+info:  OpenVR: could not open registry key, status 2
+info:  OpenVR: Failed to locate module
+info:  Enabled instance extensions:
+info:    VK_KHR_get_surface_capabilities2
+info:    VK_KHR_surface
+info:    VK_KHR_win32_surface
+info:  NVIDIA GeForce MX110:
+info:    Driver: 526.47.0
+info:    Vulkan: 1.3.224
+info:    Memory Heap[0]: 
+info:      Size: 2008 MiB
+info:      Flags: 0x1
+info:      Memory Type[7]: Property Flags = 0x1
+info:      Memory Type[8]: Property Flags = 0x1
+info:    Memory Heap[1]: 
+info:      Size: 4036 MiB
+info:      Flags: 0x0
+info:      Memory Type[0]: Property Flags = 0x0
+info:      Memory Type[1]: Property Flags = 0x0
+info:      Memory Type[2]: Property Flags = 0x0
+info:      Memory Type[3]: Property Flags = 0x0
+info:      Memory Type[4]: Property Flags = 0x0
+info:      Memory Type[5]: Property Flags = 0x0
+info:      Memory Type[6]: Property Flags = 0x0
+info:      Memory Type[9]: Property Flags = 0x6
+info:      Memory Type[10]: Property Flags = 0xe
+info:    Memory Heap[2]: 
+info:      Size: 214 MiB
+info:      Flags: 0x1
+info:      Memory Type[11]: Property Flags = 0x7
+info:  Intel(R) UHD Graphics 620:
+info:    Driver: 108.537.0
+info:    Vulkan: 1.2.151
+info:    Memory Heap[0]: 
+info:      Size: 4164 MiB
+info:      Flags: 0x1
+info:      Memory Type[0]: Property Flags = 0x7
+info:      Memory Type[1]: Property Flags = 0xf
+info:      Memory Type[2]: Property Flags = 0x1

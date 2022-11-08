@@ -13,7 +13,7 @@ RWBuffer<uint> particlesRange : register(u1);
 static const uint BUFFER_SIZE = 128;
 
 [numthreads(1, 1, 1)]
-void main( uint3 DTid : SV_DispatchThreadID )
+void cs_main( uint3 DTid : SV_DispatchThreadID )
 {
     particlesRange[0] = (particlesRange[0] + particlesRange[2]) % BUFFER_SIZE;
     particlesRange[1] -= particlesRange[2];

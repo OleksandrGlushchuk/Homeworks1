@@ -15,8 +15,8 @@ static const float MAX_PARTICLE_LIFETIME = 4.f;
 static const float SPAWN_PARTICLE_SPEED = 2.2f;
 
 #include "octahedron.hlsli"
-Texture2D<float> g_depth : register(t0);
-Texture2D<float4> g_normals : register(t1);
+//Texture2D<float> g_depth : register(t0);
+//Texture2D<float4> g_normals : register(t1);
 
 [numthreads(64, 1, 1)]
 void cs_main( uint3 DTid : SV_DispatchThreadID )
@@ -28,8 +28,8 @@ void cs_main( uint3 DTid : SV_DispatchThreadID )
         InterlockedAdd(particlesRange[2], 1);
         return;
     }
-    particlesData[index].velocity.y -= G_ACCELERATION * particlesData[index].velocity.y;
-    particlesData[index].position += particlesData[index].velocity;
+    particlesData[index].velocity.y -= 0.1f; //G_ACCELERATION * particlesData[index].velocity.y;
+    particlesData[index].position.y -= 0.1f; //particlesData[index].velocity;
     
     //float4 clip_space_pos = mul(float4(particlesData[index].position, 1), g_viewProj);
     //clip_space_pos /= clip_space_pos.w;

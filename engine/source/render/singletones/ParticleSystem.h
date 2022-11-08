@@ -56,10 +56,15 @@ namespace engine
 		DxResPtr<ID3D11UnorderedAccessView> m_particlesDataUAV;
 		DxResPtr<ID3D11Buffer> m_particlesRange;
 		DxResPtr<ID3D11UnorderedAccessView> m_particlesRangeUAV;
+		DxResPtr<ID3D11Buffer> m_particlesIndirectArgs;
+		DxResPtr<ID3D11UnorderedAccessView> m_particlesIndirectArgsUAV;
 
 		Shader m_sparks_spawning_shader;
 		Shader m_sparks_updation_shader;
 		Shader m_sparks_range_updation_shader;
+		Shader m_sparks_drawing_shader;
+
+		Texture m_sparkColor;
 
 	public:
 		static void init();
@@ -70,6 +75,7 @@ namespace engine
 
 		void spawnSparks();
 		void updateSparks();
+		void updateSparksRange();
 		void renderSparks();
 
 		void CreateCopyDepthTexture(const D3D11_TEXTURE2D_DESC& desc)

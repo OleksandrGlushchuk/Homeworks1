@@ -396,6 +396,9 @@
     <FxCompile Include="engine\shaders\sparks_range_updation.hlsl">
       <Filter>engine\shaders</Filter>
     </FxCompile>
+    <FxCompile Include="engine\shaders\sparks_drawing.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\source\include\win.hpp">

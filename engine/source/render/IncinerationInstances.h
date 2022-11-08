@@ -109,6 +109,8 @@ namespace engine
 
 		void render();
 
+		void renderForParticleSystem();
+
 		void renderSceneDepthToCubemaps();
 
 		void renderSceneDepthForDirectionalLights();

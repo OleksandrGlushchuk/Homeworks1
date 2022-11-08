@@ -3,11 +3,11 @@
 #include "SamplerManager.h"
 // Say NVidia or AMD driver to prefer a dedicated GPU instead of an integrated.
 // This has effect on laptops.
-extern "C"
-{
-	_declspec(dllexport) uint32_t NvOptimusEnablement = 1;
-	_declspec(dllexport) uint32_t AmdPowerXpressRequestHighPerformance = 1;
-}
+//extern "C"
+//{
+//	_declspec(dllexport) uint32_t NvOptimusEnablement = 1;
+//	_declspec(dllexport) uint32_t AmdPowerXpressRequestHighPerformance = 1;
+//}
 
 namespace engine
 {
@@ -39,26 +39,28 @@ namespace engine
 		result = m_factory->QueryInterface(__uuidof(IDXGIFactory5), (void**)m_factory5.reset());
 		ALWAYS_ASSERT(result >= 0 && "Query IDXGIFactory5");
 
-		{
+		
 			uint32_t index = 0;
-			IDXGIAdapter1* adapter;
-			while (m_factory5->EnumAdapters1(index++, &adapter) != DXGI_ERROR_NOT_FOUND)
+			
+			std::vector < DXGI_ADAPTER_DESC1> desc;
+			std::vector< IDXGIAdapter1*> adapter;
+			while (m_factory5->EnumAdapters1(index++, &adapter.emplace_back()) != DXGI_ERROR_NOT_FOUND)
 			{
-				DXGI_ADAPTER_DESC1 desc;
-				adapter->GetDesc1(&desc);
+			
+				adapter[index-1]->GetDesc1(&desc.emplace_back());
 
 				//LOG << "GPU #" << index << desc.Description;
 			}
-		}
+		
 
 		// Init D3D Device & Context
 
-		const D3D_FEATURE_LEVEL featureLevelRequested = D3D_FEATURE_LEVEL_11_0;
-		D3D_FEATURE_LEVEL featureLevelInitialized = D3D_FEATURE_LEVEL_11_0;
+		const D3D_FEATURE_LEVEL featureLevelRequested = D3D_FEATURE_LEVEL_11_1;
+		D3D_FEATURE_LEVEL featureLevelInitialized = D3D_FEATURE_LEVEL_11_1;
 		result = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_DEBUG,
 			&featureLevelRequested, 1, D3D11_SDK_VERSION, m_device.reset(), &featureLevelInitialized, m_devcon.reset());
 		ALWAYS_ASSERT(result >= 0 && "D3D11CreateDevice");
-		ALWAYS_ASSERT(featureLevelRequested == featureLevelInitialized && "D3D_FEATURE_LEVEL_11_0");
+		ALWAYS_ASSERT(featureLevelRequested == featureLevelInitialized && "D3D_FEATURE_LEVEL_11_1");
 
 		result = m_device->QueryInterface(__uuidof(ID3D11Device5), (void**)m_device5.reset());
 		ALWAYS_ASSERT(result >= 0 && "Query ID3D11Device5");
@@ -66,8 +68,8 @@ namespace engine
 		result = m_devcon->QueryInterface(__uuidof(ID3D11DeviceContext4), (void**)m_devcon4.reset());
 		ALWAYS_ASSERT(result >= 0 && "Query ID3D11DeviceContext4");
 
-		result = m_device->QueryInterface(__uuidof(ID3D11Debug), (void**)m_devdebug.reset());
-		ALWAYS_ASSERT(result >= 0 && "Query ID3D11Debug");
+		//result = m_device->QueryInterface(__uuidof(ID3D11Debug), (void**)m_devdebug.reset());
+		//ALWAYS_ASSERT(result >= 0 && "Query ID3D11Debug");
 
 		// Write global pointers
 

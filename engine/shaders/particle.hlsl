@@ -63,7 +63,6 @@ void GetTexCoordsInAtlas(float creationTime, float lifeTime, uint vertexID, out 
     {
         currentTexCoord = float2(colIndex * xStep, (1 + rowIndex) * yStep);
         nextTexCoord = float2(nextColIndex * xStep, (1 + nextRowIndex) * yStep);
-
     }
     else if(vertexID == 1)
     {

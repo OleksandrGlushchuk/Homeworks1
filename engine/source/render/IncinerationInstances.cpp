@@ -123,6 +123,41 @@ namespace engine
 		}
 	}
 
+	void IncinerationInstances::renderForParticleSystem()
+	{
+		if (m_instanceBuffer.Size() == 0)
+			return;
+
+		m_instanceBuffer.Bind(1);
+		m_constantBuffer.BindVS(1);
+
+		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		uint32_t renderedInstances = 0;
+		for (auto& modelInstances : m_modelInstances)
+		{
+			if (modelInstances.meshInstances.empty()) continue;
+
+			modelInstances.model->m_vertexBuffer.Bind(0);
+			modelInstances.model->m_indexBuffer.Bind();
+
+			for (uint32_t meshIndex = 0; meshIndex < modelInstances.meshInstances.size(); ++meshIndex)
+			{
+				Mesh& mesh = modelInstances.model->m_meshes[meshIndex];
+
+				m_constantBuffer.Update(mesh.meshToModelMatrix);
+
+				for (auto& materialInstances : modelInstances.meshInstances[meshIndex].materialInstances)
+				{
+					if (materialInstances.instances.empty()) continue;
+
+					uint32_t numInstances = uint32_t(materialInstances.instances.size());
+					engine::s_deviceContext->DrawIndexedInstanced(mesh.indexNum, numInstances, mesh.indexOffset, mesh.vertexOffset, renderedInstances);
+					renderedInstances += numInstances;
+				}
+			}
+		}
+	}
+
 	void IncinerationInstances::renderSceneDepthToCubemaps()
 	{
 		/*uint32_t pointLightNum = LightSystem::instance().getPointLights().size();
