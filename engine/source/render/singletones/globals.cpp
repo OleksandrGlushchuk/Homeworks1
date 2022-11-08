@@ -3,11 +3,11 @@
 #include "SamplerManager.h"
 // Say NVidia or AMD driver to prefer a dedicated GPU instead of an integrated.
 // This has effect on laptops.
-//extern "C"
-//{
-//	_declspec(dllexport) uint32_t NvOptimusEnablement = 1;
-//	_declspec(dllexport) uint32_t AmdPowerXpressRequestHighPerformance = 1;
-//}
+extern "C"
+{
+	_declspec(dllexport) uint32_t NvOptimusEnablement = 1;
+	_declspec(dllexport) uint32_t AmdPowerXpressRequestHighPerformance = 1;
+}
 
 namespace engine
 {
@@ -68,8 +68,8 @@ namespace engine
 		result = m_devcon->QueryInterface(__uuidof(ID3D11DeviceContext4), (void**)m_devcon4.reset());
 		ALWAYS_ASSERT(result >= 0 && "Query ID3D11DeviceContext4");
 
-		//result = m_device->QueryInterface(__uuidof(ID3D11Debug), (void**)m_devdebug.reset());
-		//ALWAYS_ASSERT(result >= 0 && "Query ID3D11Debug");
+		result = m_device->QueryInterface(__uuidof(ID3D11Debug), (void**)m_devdebug.reset());
+		ALWAYS_ASSERT(result >= 0 && "Query ID3D11Debug");
 
 		// Write global pointers
 
@@ -83,6 +83,7 @@ namespace engine
 		m_perFrameBuffer.BindVS(0);
 		m_perFrameBuffer.BindPS(0);
 		m_perFrameBuffer.BindGS(0);
+		m_perFrameBuffer.BindCS(0);
 		engine::s_deviceContext->PSSetSamplers(0, 1, &SamplerManager::instance().GetGlobalSamplerState().ptr());
 		engine::s_deviceContext->PSSetSamplers(1, 1, &SamplerManager::instance().GetSamplerState("ss_mmlmp_clamp").ptr());
 		engine::s_deviceContext->PSSetSamplers(2, 1, &SamplerManager::instance().GetSamplerState("ss_mmmp").ptr());

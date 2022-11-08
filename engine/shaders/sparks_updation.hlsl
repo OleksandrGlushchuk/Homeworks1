@@ -22,14 +22,16 @@ static const float SPAWN_PARTICLE_SPEED = 2.2f;
 void cs_main( uint3 DTid : SV_DispatchThreadID )
 {
     uint index = DTid.x;
+    if (index > particlesRange[1])
+        return;
     float currentLifeTime = g_time - particlesData[index].spawnTime;
     if (currentLifeTime > MAX_PARTICLE_LIFETIME)
     {
-        InterlockedAdd(particlesRange[2], 1);
+       // InterlockedAdd(particlesRange[2], 1);
         return;
     }
-    particlesData[index].velocity.y -= 0.1f; //G_ACCELERATION * particlesData[index].velocity.y;
-    particlesData[index].position.y -= 0.1f; //particlesData[index].velocity;
+    particlesData[index].velocity.y -= 0.01f; //* abs(particlesData[index].velocity.y);
+    particlesData[index].position += particlesData[index].velocity;
     
     //float4 clip_space_pos = mul(float4(particlesData[index].position, 1), g_viewProj);
     //clip_space_pos /= clip_space_pos.w;

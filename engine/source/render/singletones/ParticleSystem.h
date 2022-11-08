@@ -57,6 +57,7 @@ namespace engine
 		DxResPtr<ID3D11Buffer> m_particlesRange;
 		DxResPtr<ID3D11UnorderedAccessView> m_particlesRangeUAV;
 		DxResPtr<ID3D11Buffer> m_particlesIndirectArgs;
+		DxResPtr<ID3D11Buffer> m_particlesIndirectArgsWritable;
 		DxResPtr<ID3D11UnorderedAccessView> m_particlesIndirectArgsUAV;
 
 		Shader m_sparks_spawning_shader;

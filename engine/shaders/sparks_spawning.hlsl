@@ -8,10 +8,10 @@ struct Particle
     float padding;
 };
 
-RWStructuredBuffer<Particle> particlesData : register(u0);
-RWBuffer<uint> particlesRange : register(u1);
+RWStructuredBuffer<Particle> particlesData : register(u1);
+RWBuffer<uint> particlesRange : register(u2);
 static const uint BUFFER_SIZE = 128;
-static const float SPAWN_PARTICLE_SPEED = 2.2f;
+static const float SPAWN_PARTICLE_SPEED = 0.05f;
 
 cbuffer MeshToModel : register(b1)
 {
