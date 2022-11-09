@@ -38,14 +38,6 @@ namespace engine::windows
 
 	void Application::Init()
 	{
-		/*DxResPtr<ID3D11Buffer> structuredBuffer;
-		auto structuredBufferDesc = CD3D11_BUFFER_DESC(sizeof(GpuParticle), D3D11_BIND_UNORDERED_ACCESS, D3D11_USAGE_DEFAULT, 0, D3D11_RESOURCE_MISC_FLAG::D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS);
-					HRESULT result = engine::s_device->CreateBuffer(&structuredBufferDesc, nullptr, m_structuredBuffer.reset());
-					ALWAYS_ASSERT(result >= 0 && "CreateBuffer");
-
-*/
-
-
 		m_currentTime = std::chrono::steady_clock::now();
 		renderer.Init(1u);
 		m_postProcess.Init(1.5f);
@@ -280,6 +272,11 @@ namespace engine::windows
 			transform.SetPosition({ 0,-3,0 });
 			transform.SetScale({ 50.f,1.f,50.f });
 			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
+
+			transform.SetPosition({ 0,0,0 });
+			transform.SetScale({ 1.f,1.f,1.f });
+			transform.Rotate(Quaternion(M_PI / 6.f, transform.top()));
+			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitQuadModel(), brick, OpaqueInstances::Instance(transform));
 		}
 	}
 
@@ -343,7 +340,7 @@ namespace engine::windows
 				auto& meshInstance = modelInstance.meshInstances[i];
 				auto& material = meshInstance.materialInstances[out_materialIndex].material;
 				auto& instance = meshInstance.materialInstances[out_materialIndex].instances[out_instanceIndex];
-				if (now - instance.creationTime > instance.lifeTime)
+				if (now - instance.creationTime > instance.lifeTime + delta_time)
 				{
 					transformID = instance.transform_id;
 				}

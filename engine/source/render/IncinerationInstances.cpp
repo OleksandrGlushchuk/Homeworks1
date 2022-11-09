@@ -131,7 +131,6 @@ namespace engine
 		m_instanceBuffer.Bind(1);
 		m_constantBuffer.BindVS(1);
 
-		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		uint32_t renderedInstances = 0;
 		for (auto& modelInstances : m_modelInstances)
 		{

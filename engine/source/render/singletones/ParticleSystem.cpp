@@ -51,7 +51,8 @@ namespace engine
 		s_instance->m_sparksIndirectArgsWritable.Init(1, &subresource);
 		s_instance->m_sparksBufferSize.Init(D3D11_USAGE_IMMUTABLE, 0, &bufferSize);
 
-		s_instance->m_sparks_spawning_shader.Init(L"engine/shaders/sparks_spawning.hlsl", MeshSystem::instance().incinerationInstances.m_inputDesc,12,ShaderEnabling(false, true));
+		s_instance->m_sparks_spawning_shader.Init(L"engine/shaders/sparks_spawning.hlsl", 
+			MeshSystem::instance().incinerationInstances.m_inputDesc,12,ShaderEnabling(false, true, true));
 		s_instance->m_sparks_updation_shader.InitCompute(L"engine/shaders/sparks_updation.hlsl");
 		s_instance->m_sparks_range_updation_shader.InitCompute(L"engine/shaders/sparks_range_updation.hlsl");
 		s_instance->m_sparks_drawing_shader.Init(L"engine/shaders/sparks_drawing.hlsl", nullptr, 0, ShaderEnabling(true, false));
@@ -134,10 +135,10 @@ namespace engine
 
 	void ParticleSystem::spawnSparks()
 	{
-		m_sparks_spawning_shader.Bind();
 		ID3D11UnorderedAccessView* uavs[2]{ m_sparksData.m_uav.ptr(), m_sparksRange.m_uav.ptr() };
 		engine::s_deviceContext->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 1, 2, uavs, nullptr);
-
+		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+		m_sparks_spawning_shader.Bind();
 		MeshSystem::instance().incinerationInstances.renderForParticleSystem();
 		uavs[0] = uavs[1] = nullptr;
 		engine::s_deviceContext->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 1, 2, uavs, nullptr);
@@ -179,6 +180,7 @@ namespace engine
 		engine::s_deviceContext->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 1, 2,
 			uavs, nullptr);
 
+		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		s_deviceContext->CopyResource(m_sparksIndirectArgs.m_buffer.ptr(), m_sparksIndirectArgsWritable.m_buffer.ptr());
 		s_deviceContext->DrawInstancedIndirect(m_sparksIndirectArgs.m_buffer.ptr(), 0);
 

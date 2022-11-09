@@ -16,7 +16,7 @@ struct Particle
 
 RWStructuredBuffer<Particle> particlesData : register(u0);
 RWBuffer<uint> particlesRange : register(u1);
-static const float MAX_PARTICLE_LIFETIME = 3.f;
+static const float MAX_PARTICLE_LIFETIME = 30.f;
 
 #include "octahedron.hlsli"
 Texture2D<float> g_depth : register(t0);
@@ -34,8 +34,8 @@ void cs_main( uint3 DTid : SV_DispatchThreadID )
         InterlockedAdd(particlesRange[2], 1);
         return;
     }
-    particlesData[index].velocity.y -= 0.005f;
-    particlesData[index].position += particlesData[index].velocity;
+   // particlesData[index].velocity.y -= 0.005f;
+    //particlesData[index].position += particlesData[index].velocity;
 
     float4 clip_space_pos = mul(float4(particlesData[index].position, 1), g_viewProj);
     clip_space_pos /= clip_space_pos.w;
@@ -54,9 +54,19 @@ void cs_main( uint3 DTid : SV_DispatchThreadID )
     
     if (abs(sceneDepth - sparkDepth) < 0.07f)
     {
-        float3 geometry_normal = unpackOctahedron(g_normals.Load(sample_location).zw);
-        particlesData[index].position += geometry_normal*0.03f;
-        particlesData[index].velocity = normalize(geometry_normal + normalize(particlesData[index].velocity)) * particlesData[index].velocity * 0.4f;
-        
+        float speed = length(particlesData[index].velocity);
+        //if(speed < 0.2f)
+        //{
+        //    particlesData[index].velocity = float3(0, 0, 0);
+        //    particlesData[index].position = scenePos.xyz;
+
+        //}
+        //else
+        {
+            float3 geometry_normal = unpackOctahedron(g_normals.Load(sample_location).xy);
+            
+            particlesData[index].velocity = normalize(geometry_normal + normalize(particlesData[index].velocity)) * speed * 0.6f;
+            //particlesData[index].position = scenePos.xyz + particlesData[index].velocity;
+        }
     }
 }
