@@ -23,6 +23,14 @@ public:
     };
 
     bool occupied(ID id) const { DEV_ASSERT(id < m_forwardMap.size()); return m_forwardMap[id].occupied; }
+    bool exist(ID id) const 
+    { 
+        if (id < m_forwardMap.size())
+            if (m_forwardMap[id].occupied)
+                return true;
+
+        return false;
+    }
 
     uint32_t size() const { return uint32_t(m_data.size()); }
 

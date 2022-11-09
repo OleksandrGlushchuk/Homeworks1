@@ -90,7 +90,7 @@ HS_INPUT vs_main(VS_INPUT input)
     float4x4 WorldMatrix = mul(g_meshToModelMatrix, TransformMatrix);
 
     output.position = input.position; //mul(float4(input.position, 1.0f), WorldMatrix).xyz;
-    output.normal = input.position; //mul(float4(input.normal, 0), WorldMatrix).xyz;
+    output.normal = input.normal; //mul(float4(input.normal, 0), WorldMatrix).xyz;
     output.creationTime = input.creationTime;
     output.spherePos = input.spherePos;
     output.sphereVelocity = input.sphereVelocity;

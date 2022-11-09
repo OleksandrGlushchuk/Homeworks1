@@ -93,7 +93,7 @@ PS_OUTPUT ps_main(PS_INPUT input)
     }
     float2 tex_coord;
     tex_coord.x = (pos_in_decal_space.x + 1) * 0.5f;
-    tex_coord.y = (pos_in_decal_space.y - 1) / (-0.5f);
+    tex_coord.y = (pos_in_decal_space.y - 1) * (-0.5f);
     
     float4 map_normal = g_decalNormalMap.Sample(g_samplerState, tex_coord);
     
@@ -114,9 +114,6 @@ PS_OUTPUT ps_main(PS_INPUT input)
     float3 bitangent = cross(gbufferMapNormal, tangent);
     float3x3 TBN = float3x3(tangent, normalize(bitangent), gbufferMapNormal);
     map_normal.xyz = mul(map_normal.xyz, TBN);
-    
-   
-    
     map_normal.xyz = normalize(gbufferMapNormal + map_normal.xyz);
     
     output.normals.xy = packOctahedron(map_normal.xyz);

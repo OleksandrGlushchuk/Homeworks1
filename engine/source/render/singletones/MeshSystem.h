@@ -101,12 +101,14 @@ namespace engine
 		{
 			opaqueInstances.renderSceneDepthToCubemaps();
 			dissolubleInstances.renderSceneDepthToCubemaps();
+			incinerationInstances.renderSceneDepthToCubemaps();
 		}
 
 		void renderSceneDepthForDirectionalLights()
 		{
 			opaqueInstances.renderSceneDepthForDirectionalLights();
 			dissolubleInstances.renderSceneDepthForDirectionalLights();
+			incinerationInstances.renderSceneDepthForDirectionalLights();
 		}
 
 		void render()

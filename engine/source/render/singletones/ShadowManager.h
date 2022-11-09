@@ -98,6 +98,9 @@ namespace engine
 		Shader m_pointLightDissolubleShadowShader;
 		Shader m_directionalLightDissolubleShadowShader;
 
+		Shader m_pointLightIncinerationShadowShader;
+		Shader m_directionalLightIncinerationShadowShader;
+
 		Shader m_pointLightGrassShadowShader;
 		Shader m_directionalLightGrassShadowShader;
 	};

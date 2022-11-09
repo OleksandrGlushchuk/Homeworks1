@@ -34,8 +34,8 @@ void cs_main( uint3 DTid : SV_DispatchThreadID )
         InterlockedAdd(particlesRange[2], 1);
         return;
     }
-   // particlesData[index].velocity.y -= 0.005f;
-    //particlesData[index].position += particlesData[index].velocity;
+    particlesData[index].velocity.y -= 0.005f;
+    particlesData[index].position += particlesData[index].velocity;
 
     float4 clip_space_pos = mul(float4(particlesData[index].position, 1), g_viewProj);
     clip_space_pos /= clip_space_pos.w;
@@ -66,7 +66,7 @@ void cs_main( uint3 DTid : SV_DispatchThreadID )
             float3 geometry_normal = unpackOctahedron(g_normals.Load(sample_location).xy);
             
             particlesData[index].velocity = normalize(geometry_normal + normalize(particlesData[index].velocity)) * speed * 0.6f;
-            //particlesData[index].position = scenePos.xyz + particlesData[index].velocity;
+            particlesData[index].position = scenePos.xyz + particlesData[index].velocity;
         }
     }
 }

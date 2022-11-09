@@ -103,6 +103,10 @@ namespace engine
 
 	void DecalSystem::update()
 	{
+		auto it = std::remove_if(m_instances.begin(), m_instances.end(),
+			[&](Decal& decal) { return !TransformSystem::instance().m_transforms.exist(decal.meshTransformID); });
+		m_instances.erase(it, m_instances.end());
+
 		uint32_t size = m_instances.size();
 		if (size == 0)
 			return;

@@ -493,6 +493,12 @@ namespace engine::windows
 				}
 				if (need_to_rotate_object)
 				{
+					if (!TransformSystem::instance().m_transforms.exist(clicked_object_transform_id))
+					{
+						need_to_move_object = false;
+						return;
+					}
+
 					rotate_angles.pitch *= delta_time; rotate_angles.roll *= delta_time; rotate_angles.yaw *= delta_time;
 					if (need_to_rotate_object_relative_to_camera_axes)
 					{
@@ -745,6 +751,12 @@ namespace engine::windows
 	{
 		if (need_to_move_object)
 		{
+			if (!TransformSystem::instance().m_transforms.exist(clicked_object_transform_id))
+			{
+				need_to_move_object = false;
+				return;
+			}
+
 			float xx = (mouse_x + 0.5f) / ((wnd.screen.right) / 2.f) - 1.f;
 			float yy = (mouse_y + 0.5f) / ((wnd.screen.bottom) / (-2.f)) + 1.f;
 

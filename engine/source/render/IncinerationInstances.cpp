@@ -28,10 +28,10 @@ namespace engine
 		};
 		m_shader.Init(L"engine/shaders/incineration.hlsl", inputLayout, 12, ShaderEnabling(true, false));
 		std::copy(inputLayout, inputLayout + 12, m_inputDesc);
-		/*ShadowManager::instance().m_pointLightDissolubleShadowShader.Init(L"engine/shaders/dissoluble_pl_shadow.hlsl",
-			inputLayout, 11, ShaderEnabling(true, true));
-		ShadowManager::instance().m_directionalLightDissolubleShadowShader.Init(L"engine/shaders/dissoluble_dl_shadow.hlsl",
-			inputLayout, 11, ShaderEnabling(true, true));*/
+		ShadowManager::instance().m_pointLightIncinerationShadowShader.Init(L"engine/shaders/incineration_pl_shadow.hlsl", 
+			inputLayout, 12, ShaderEnabling(1, 1));
+		ShadowManager::instance().m_directionalLightIncinerationShadowShader.Init(L"engine/shaders/incineration_dl_shadow.hlsl",
+			inputLayout, 12, ShaderEnabling(1, 1));
 
 		m_constantBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 		m_materialConstantBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
@@ -159,7 +159,7 @@ namespace engine
 
 	void IncinerationInstances::renderSceneDepthToCubemaps()
 	{
-		/*uint32_t pointLightNum = LightSystem::instance().getPointLights().size();
+		uint32_t pointLightNum = LightSystem::instance().getPointLights().size();
 		if (pointLightNum == 0)
 			return;
 
@@ -167,12 +167,11 @@ namespace engine
 			return;
 
 		engine::s_deviceContext->OMSetBlendState(m_blendState.ptr(), blendFactor, sampleMask);
-		m_dissolubleMap.Bind(4);
 
 		m_instanceBuffer.Bind(1);
 		m_constantBuffer.BindVS(1);
 
-		ShadowManager::instance().m_pointLightDissolubleShadowShader.Bind();
+		ShadowManager::instance().m_pointLightIncinerationShadowShader.Bind();
 		ShadowManager::instance().m_pointLightShadowBuffer.BindGS(2);
 
 		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -204,12 +203,12 @@ namespace engine
 				}
 			}
 		}
-		engine::s_deviceContext->OMSetBlendState(nullptr, blendFactor, sampleMask);*/
+		engine::s_deviceContext->OMSetBlendState(nullptr, blendFactor, sampleMask);
 	}
 
 	void IncinerationInstances::renderSceneDepthForDirectionalLights()
 	{
-		/*uint32_t directionalLightNum = LightSystem::instance().getDirectionalLights().size();
+		uint32_t directionalLightNum = LightSystem::instance().getDirectionalLights().size();
 
 		if (directionalLightNum == 0)
 			return;
@@ -218,11 +217,10 @@ namespace engine
 			return;
 
 		engine::s_deviceContext->OMSetBlendState(m_blendState.ptr(), blendFactor, sampleMask);
-		m_dissolubleMap.Bind(4);
 		m_instanceBuffer.Bind(1);
 		m_constantBuffer.BindVS(1);
 
-		ShadowManager::instance().m_directionalLightDissolubleShadowShader.Bind();
+		ShadowManager::instance().m_directionalLightIncinerationShadowShader.Bind();
 		ShadowManager::instance().m_directionalLightShadowBuffer.BindGS(2);
 
 		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -254,6 +252,6 @@ namespace engine
 				}
 			}
 		}
-		engine::s_deviceContext->OMSetBlendState(nullptr, blendFactor, sampleMask);*/
+		engine::s_deviceContext->OMSetBlendState(nullptr, blendFactor, sampleMask);
 	}
 }

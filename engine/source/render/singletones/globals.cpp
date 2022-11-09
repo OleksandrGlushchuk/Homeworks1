@@ -69,7 +69,7 @@ namespace engine
 		ALWAYS_ASSERT(result >= 0 && "Query ID3D11DeviceContext4");
 
 		result = m_device->QueryInterface(__uuidof(ID3D11Debug), (void**)m_devdebug.reset());
-		ALWAYS_ASSERT(result >= 0 && "Query ID3D11Debug");
+		//ALWAYS_ASSERT(result >= 0 && "Query ID3D11Debug");
 
 		// Write global pointers
 

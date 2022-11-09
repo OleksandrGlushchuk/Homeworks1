@@ -163,10 +163,12 @@ namespace engine::windows
 	{
 		engine::s_deviceContext->OMSetDepthStencilState(m_defDepthStencilState.ptr(), 1);
 		engine::ShadowManager::instance().BindPointLightDepthStencils();
+
 		engine::MeshSystem::instance().renderSceneDepthToCubemaps();
 		engine::VegetationSystem::instance().renderSceneDepthToCubemaps();
 
 		engine::ShadowManager::instance().BindDirectionalLightDepthStencils();
+
 		engine::MeshSystem::instance().renderSceneDepthForDirectionalLights();
 		engine::VegetationSystem::instance().renderSceneDepthForDirectionalLights();
 	}

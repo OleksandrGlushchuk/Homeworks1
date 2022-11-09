@@ -22,18 +22,24 @@ namespace engine
 			uint32_t transform_id;
 			float creationTime;
 			float lifeTime;
-			Vec3 spherePos;
+			Vec3 spherePosInModelSpace;
 			float sphereVelocity;
 			Instance() {}
 			explicit Instance(const Transform& transform, float _creationTime, float _lifeTime, const Vec3& sphere_pos, float sphere_velocity) : creationTime(_creationTime), lifeTime(_lifeTime),
 				transform_id(engine::TransformSystem::instance().m_transforms.insert(transform)),
-				spherePos(sphere_pos), sphereVelocity(sphere_velocity)
-			{}
+				sphereVelocity(sphere_velocity)
+			{
+				spherePosInModelSpace = sphere_pos;
+				spherePosInModelSpace.mult(engine::TransformSystem::instance().m_transforms[transform_id].getTransformInvMatrix(), 1);
+			}
 
 			explicit Instance(uint32_t copyTransform_ID, float _creationTime, float _lifeTime, const Vec3& sphere_pos, float sphere_velocity) :
 				creationTime(_creationTime), lifeTime(_lifeTime), transform_id(copyTransform_ID),
-				spherePos(sphere_pos), sphereVelocity(sphere_velocity)
-			{}
+				 sphereVelocity(sphere_velocity)
+			{
+				spherePosInModelSpace = sphere_pos;
+				spherePosInModelSpace.mult(engine::TransformSystem::instance().m_transforms[transform_id].getTransformInvMatrix(), 1);
+			}
 		};
 
 		struct GpuInstance
@@ -46,8 +52,11 @@ namespace engine
 			GpuInstance() {}
 			GpuInstance(const Instance& instance) : creationTime(instance.creationTime),
 				transformMatrix(engine::TransformSystem::instance().m_transforms[instance.transform_id].getTransformMatrix()),
-				spherePos(instance.spherePos), sphereVelocity(instance.sphereVelocity)
-			{}
+				sphereVelocity(instance.sphereVelocity)
+			{
+				spherePos = instance.spherePosInModelSpace;
+				spherePos.mult(transformMatrix, 1);
+			}
 		};
 
 		struct MaterialInstance

@@ -84,6 +84,32 @@ namespace engine
 			}
 		}
 
+		for (ModelID& modelID : incinerationInstances.m_modelIDs)
+		{
+			auto& model = incinerationInstances.m_modelInstances[modelID.model_index];
+			for (uint32_t i = 0; i < model.meshInstances.size(); ++i)
+			{
+				GetMaterialAndInstanceIndex<IncinerationInstances>(modelID, i, out_materialIndex, out_instanceIndex);
+				auto& meshInstance = model.meshInstances[i];
+
+				transformID = meshInstance.materialInstances[out_materialIndex].instances[out_instanceIndex].transform_id;
+				const Matr<4>& transformInv = engine::TransformSystem::instance().m_transforms[transformID].getTransformInvMatrix();
+				Matr<4> InvMatr = transformInv * model.model->m_meshes[i].meshToModelMatrix.invert();
+
+				ray model_ray = _ray;
+				model_ray.origin.mult(InvMatr);
+				model_ray.direction.mult(InvMatr, 0);
+
+				if (model.model->m_meshes[i].triangleOctree.intersect(model_ray, out_intersection))
+				{
+					out_transformID = transformID;
+					transform = &engine::TransformSystem::instance().m_transforms[transformID].getTransformMatrix();
+					mesh_to_model = &model.model->m_meshes[i].meshToModelMatrix;
+					result = true;
+				}
+			}
+		}
+
 		for (ModelID& modelID : emissiveInstances.m_modelIDs)
 		{
 			auto& model = emissiveInstances.m_modelInstances[modelID.model_index];

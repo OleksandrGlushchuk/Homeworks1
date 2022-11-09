@@ -399,6 +399,12 @@
     <FxCompile Include="engine\shaders\sparks_drawing.hlsl">
       <Filter>engine\shaders</Filter>
     </FxCompile>
+    <FxCompile Include="engine\shaders\incineration_pl_shadow.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="engine\shaders\incineration_dl_shadow.hlsl">
+      <Filter>engine\shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\source\include\win.hpp">
