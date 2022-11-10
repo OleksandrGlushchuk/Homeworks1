@@ -528,7 +528,7 @@ namespace engine::windows
 					5.f));
 				input_state['N'] = false;
 			}
-			if (input_state['M'])
+			if (input_state['B'])
 			{
 
 				const auto& SamuraiModel = engine::ModelManager::instance().LoadModel("engine/assets/Samurai/Samurai.fbx");
@@ -539,7 +539,7 @@ namespace engine::windows
 				MeshSystem::instance().addInstance(SamuraiModel, m_dissolubleSamuraiMaterial1, DissolubleInstances::Instance(transform,
 					std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
 					5.f));
-				input_state['M'] = false;
+				input_state['B'] = false;
 			}
 			if (input_state['K'])
 			{
@@ -581,7 +581,7 @@ namespace engine::windows
 
 		//INCINERATION
 		{
-			if (input_state['O'])
+			if (input_state['M'])
 			{
 				ray r;
 				MeshIntersection outIntersection;
@@ -629,7 +629,7 @@ namespace engine::windows
 						outIntersection.pos, sphere_velocity));
 				}
 
-				input_state['O'] = false;
+				input_state['M'] = false;
 			}
 		}
 

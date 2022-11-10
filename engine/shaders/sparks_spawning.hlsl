@@ -136,8 +136,8 @@ GS_INPUT vs_main(VS_INPUT input)
 //{
 //    GS_INPUT output;
 //    output.position = uvwCoord.x * patch[0].position + uvwCoord.y * patch[1].position + uvwCoord.z * patch[2].position;
-//    output.position =  mul(float4(output.position, 1), input.worldMatrix).xyz;
-//    output.normal = mul(float4(normalize(patch[0].normal + patch[1].normal + patch[2].normal), 0), input.worldMatrix).xyz;
+//   // output.position = mul(float4(output.position, 1), input.worldMatrix).xyz;
+//    output.normal = normalize(patch[0].normal + patch[1].normal + patch[2].normal); //mul(float4(normalize(patch[0].normal + patch[1].normal + patch[2].normal), 0), input.worldMatrix).xyz;
 //    output.creationTime = input.creationTime;
 //    output.spherePos = input.spherePos;
 //    output.sphereVelocity = input.sphereVelocity;
@@ -159,7 +159,7 @@ void gs_main(triangle GS_INPUT input[3], inout PointStream<GS_OUTPUT> pstream)
     float3 normal = normalize(cross(input[1].position - input[0].position, input[2].position - input[0].position));
     
     float spawnTime = input[0].creationTime + length(pos.xyz - input[0].spherePos) / input[0].sphereVelocity;
-    if (spawnTime > g_time - g_deltaTime && spawnTime < g_time + g_deltaTime)
+    if (spawnTime > g_time - g_deltaTime && spawnTime < g_time)
     {
         uint prevCount;
         InterlockedAdd(particlesRange[1], 1, prevCount);
