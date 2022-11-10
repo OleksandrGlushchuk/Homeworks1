@@ -52,7 +52,7 @@ namespace engine
 		s_instance->m_sparksBufferSize.Init(D3D11_USAGE_IMMUTABLE, 0, &bufferSize);
 
 		s_instance->m_sparks_spawning_shader.Init(L"engine/shaders/sparks_spawning.hlsl", 
-			MeshSystem::instance().incinerationInstances.m_inputDesc,12,ShaderEnabling(false, true, true));
+			MeshSystem::instance().incinerationInstances.m_inputDesc,12,ShaderEnabling(false, true, 0));
 		s_instance->m_sparks_updation_shader.InitCompute(L"engine/shaders/sparks_updation.hlsl");
 		s_instance->m_sparks_range_updation_shader.InitCompute(L"engine/shaders/sparks_range_updation.hlsl");
 		s_instance->m_sparks_drawing_shader.Init(L"engine/shaders/sparks_drawing.hlsl", nullptr, 0, ShaderEnabling(true, false));
@@ -137,7 +137,8 @@ namespace engine
 	{
 		ID3D11UnorderedAccessView* uavs[2]{ m_sparksData.m_uav.ptr(), m_sparksRange.m_uav.ptr() };
 		engine::s_deviceContext->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 1, 2, uavs, nullptr);
-		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+		//engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_sparks_spawning_shader.Bind();
 		MeshSystem::instance().incinerationInstances.renderForParticleSystem();
 		uavs[0] = uavs[1] = nullptr;
@@ -172,6 +173,7 @@ namespace engine
 		spawnSparks();
 		updateSparks();
 		updateSparksRange();
+		engine::s_deviceContext->OMSetDepthStencilState(m_readonlyDepthStencilState.ptr(), 1);
 		engine::s_deviceContext->OMSetBlendState(m_blendState.ptr(), blendFactor, sampleMask);
 
 		ID3D11UnorderedAccessView* uavs[2]{ m_sparksData.m_uav.ptr(), m_sparksRange.m_uav.ptr() };

@@ -9,7 +9,7 @@ static const uint MAX_DIRECTIONAL_LIGHTS = 2;
 static const float TRANSLUCENCY_POWER = 40;
 static const float3 TRANSMITTANCE_RGB = float3(0.1f, 0.1f, 0.1f);
 static const float MIN_LIGHT_RADIANCE = 1.f;
-static const float G_ACCELERATION = 9.8f;
+static const float MAX_PARTICLE_LIFETIME = 5.f;
 
 cbuffer PerFrameBuffer : register(b0)
 {

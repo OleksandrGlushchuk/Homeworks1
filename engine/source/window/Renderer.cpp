@@ -287,11 +287,9 @@ namespace engine::windows
 		MeshSystem::instance().emissiveInstances.render();
 		m_sky.Draw();
 
-
 		ParticleSystem::instance().CopyDepthTexture(m_depthStencil.GetDepthStencilResource());
-		m_copyNormalsTexture.BindCS(1);
-
 		ParticleSystem::instance().render();
+		m_copyNormalsTexture.BindCS(1);
 		ParticleSystem::instance().renderSparks();
 	}
 

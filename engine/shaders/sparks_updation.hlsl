@@ -16,7 +16,7 @@ struct Particle
 
 RWStructuredBuffer<Particle> particlesData : register(u0);
 RWBuffer<uint> particlesRange : register(u1);
-static const float MAX_PARTICLE_LIFETIME = 30.f;
+
 
 #include "octahedron.hlsli"
 Texture2D<float> g_depth : register(t0);
@@ -26,15 +26,18 @@ Texture2D<float4> g_normals : register(t1);
 void cs_main( uint3 DTid : SV_DispatchThreadID )
 {
     uint index = DTid.x;
-    if (index >= particlesRange[0] + particlesRange[1] || index < particlesRange[0])
+    if (index >= (particlesRange[1]))
         return;
+    index = (index + particlesRange[0]) % g_sparksBufferSize;
+    
+    
     float currentLifeTime = g_time - particlesData[index].spawnTime;
     if (currentLifeTime > MAX_PARTICLE_LIFETIME)
     {
         InterlockedAdd(particlesRange[2], 1);
         return;
     }
-    particlesData[index].velocity.y -= 0.005f;
+    particlesData[index].velocity.y -= 0.1f * g_deltaTime;
     particlesData[index].position += particlesData[index].velocity;
 
     float4 clip_space_pos = mul(float4(particlesData[index].position, 1), g_viewProj);
@@ -52,21 +55,13 @@ void cs_main( uint3 DTid : SV_DispatchThreadID )
     sceneDepth = length(scenePos.xyz - g_cameraPos);
     float sparkDepth = length(particlesData[index].position - g_cameraPos);
     
-    if (abs(sceneDepth - sparkDepth) < 0.07f)
+    if (abs(sceneDepth - sparkDepth) < 0.09f)
     {
         float speed = length(particlesData[index].velocity);
-        //if(speed < 0.2f)
-        //{
-        //    particlesData[index].velocity = float3(0, 0, 0);
-        //    particlesData[index].position = scenePos.xyz;
-
-        //}
-        //else
-        {
-            float3 geometry_normal = unpackOctahedron(g_normals.Load(sample_location).xy);
+        
+        float3 normal = unpackOctahedron(g_normals.Load(sample_location).xy);
             
-            particlesData[index].velocity = normalize(geometry_normal + normalize(particlesData[index].velocity)) * speed * 0.6f;
-            particlesData[index].position = scenePos.xyz + particlesData[index].velocity;
-        }
+        particlesData[index].velocity = normalize(normal + normalize(particlesData[index].velocity)) * speed * 0.7f;
+        particlesData[index].position = scenePos.xyz + particlesData[index].velocity;
     }
 }

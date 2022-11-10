@@ -19,7 +19,7 @@ RWBuffer<uint> particlesRange : register(u1);
 void cs_main( uint3 DTid : SV_DispatchThreadID )
 {
     particlesRange[0] = (particlesRange[0] + particlesRange[2]) % g_sparksBufferSize;
-    particlesRange[1] -= particlesRange[2];
+    particlesRange[1] = particlesRange[1] - particlesRange[2];
     particlesRange[2] = 0;
     
     uint index = DTid.x;

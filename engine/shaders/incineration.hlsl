@@ -94,7 +94,7 @@ PS_OUTPUT ps_main(PS_INPUT input)
     }
     else if (l < sphereRadius + THICKNESS)
     {
-        emission = lerp(float3(0, 0, 0), float3(5, 1.4f, 0.1f), (l - sphereRadius) / (THICKNESS)) * dissolutionValue;
+        emission = lerp(float3(0, 0, 0), float3(50, 1.4f, 0.1f), (l - sphereRadius) / (THICKNESS)) * dissolutionValue;
     }
         
     Surface surface;

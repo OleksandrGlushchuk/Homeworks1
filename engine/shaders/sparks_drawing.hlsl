@@ -23,6 +23,7 @@ struct PS_INPUT
 {
     float4 position : SV_Position;
     float2 tex_coord : TEXCOORD;
+    uint sparkIndex : SPARK_INDEX;
 };
 
 PS_INPUT vs_main(uint vertexID : SV_VertexID, uint instanceID : SV_InstanceID)
@@ -40,12 +41,18 @@ PS_INPUT vs_main(uint vertexID : SV_VertexID, uint instanceID : SV_InstanceID)
     vertex_pos = mul(float4(vertex_pos, 0), g_viewInv);
     vertex_pos += particlesData[sparkIndex].position + vertex_pos;
     output.position = mul(float4(vertex_pos, 1), g_viewProj);
+    output.sparkIndex = sparkIndex;
     return output;
 }
 
 float4 ps_main(PS_INPUT input) : SV_Target
 {
-    float3 color = float3(50,3,0.1f);
+    float4 color = float4(50,3,0.1f,1);
+    float currentLifeDuration = (g_time - particlesData[input.sparkIndex].spawnTime) / MAX_PARTICLE_LIFETIME;
+    color.a = currentLifeDuration < 0.2f ? saturate(currentLifeDuration / 0.2f) :
+    currentLifeDuration < 0.6f ? 1 : saturate(1.f - currentLifeDuration);
+    
     float alpha = g_sparkColor.Sample(g_samplerState, input.tex_coord);
-    return float4(color, alpha);
+    
+    return color * alpha;
 }
