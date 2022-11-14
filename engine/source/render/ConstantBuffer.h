@@ -56,4 +56,8 @@ public:
 	{
 		engine::s_deviceContext->GSSetConstantBuffers(startSlot, 1, &m_constantBuffer.ptr());
 	}
+	inline void BindCS(uint32_t startSlot = 0)
+	{
+		engine::s_deviceContext->CSSetConstantBuffers(startSlot, 1, &m_constantBuffer.ptr());
+	}
 };

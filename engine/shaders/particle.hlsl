@@ -23,8 +23,8 @@ struct VS_INPUT
     float4 tint : TINT;
     float angle : ANGLE;
     float thickness : THICKNESS;
-    nointerpolation float creationTime : CREATION_TIME;
-    nointerpolation float lifeTime : LIFE_TIME;
+    float creationTime : CREATION_TIME;
+    float lifeTime : LIFE_TIME;
 };
 
 struct PS_INPUT
@@ -35,7 +35,7 @@ struct PS_INPUT
     float2 tex_coord_next : TEXCOORD1;
     nointerpolation float4 tint : TINT;
     nointerpolation float frameFracTime : FRAME_FRAC_TIME;
-    nointerpolation float3x3 rotation_z : ROTATION_Z;
+    nointerpolation float3x3 rotation : ROTATION;
     nointerpolation float thickness : THICKNESS;
 };
 
@@ -44,7 +44,7 @@ void GetTexCoordsInAtlas(float creationTime, float lifeTime, uint vertexID, out 
     float xStep = 1.f / g_colsNum;
     float yStep = 1.f / g_rowsNum;
     
-    float currentLifeDuration = g_timeSinceEpoch - creationTime;
+    float currentLifeDuration = g_time - creationTime;
     float frameDuration = lifeTime / (g_rowsNum * g_colsNum);
     
     uint frameIndex = currentLifeDuration / frameDuration;
@@ -63,7 +63,6 @@ void GetTexCoordsInAtlas(float creationTime, float lifeTime, uint vertexID, out 
     {
         currentTexCoord = float2(colIndex * xStep, (1 + rowIndex) * yStep);
         nextTexCoord = float2(nextColIndex * xStep, (1 + nextRowIndex) * yStep);
-
     }
     else if(vertexID == 1)
     {
@@ -105,57 +104,54 @@ PS_INPUT vs_main(VS_INPUT input, uint vertexID : SV_VertexID)
     
     GetTexCoordsInAtlas(input.creationTime, input.lifeTime, vertexID, output.frameFracTime, output.tex_coord, output.tex_coord_next);
     output.tint = input.tint;
-    output.rotation_z = rotation_z;
+    output.rotation = mul(rotation_z, float3x3(g_viewInv[0].xyz, g_viewInv[1].xyz, g_viewInv[2].xyz));
     output.thickness = input.thickness;
     return output;
 }
 
 float4 ps_main(PS_INPUT input) : SV_Target
 {
-    float4 color = float4(0,0,0,0); 
+    float4 color = float4(0, 0, 0, 0);
     float3 rlt;
-    float3 botBF; 
+    float3 botBF;
     
     
-        const float g_mvScale = 0.001;
+    const float g_mvScale = 0.001;
 
-        float2 mvA = g_smokeEMVA.Sample(g_samplerState, input.tex_coord).gb;
-        float2 mvB = g_smokeEMVA.Sample(g_samplerState, input.tex_coord_next).gb;
+    float2 mvA = g_smokeEMVA.Sample(g_samplerState, input.tex_coord).gb;
+    float2 mvB = g_smokeEMVA.Sample(g_samplerState, input.tex_coord_next).gb;
     
-        mvA = 2 * mvA - 1;
-        mvB = 2 * mvB - 1;
+    mvA = 2 * mvA - 1;
+    mvB = 2 * mvB - 1;
 
-        float2 uvA = input.tex_coord;
-        uvA -= mvA * g_mvScale * input.frameFracTime;
+    float2 uvA = input.tex_coord;
+    uvA -= mvA * g_mvScale * input.frameFracTime;
 
-        float2 uvB = input.tex_coord_next;
-        uvB -= mvB * g_mvScale * (input.frameFracTime - 1.f);
+    float2 uvB = input.tex_coord_next;
+    uvB -= mvB * g_mvScale * (input.frameFracTime - 1.f);
 
-        float4 emva_a = g_smokeEMVA.Sample(g_samplerState, uvA);
-        float4 emva_b = g_smokeEMVA.Sample(g_samplerState, uvB);
+    float4 emva_a = g_smokeEMVA.Sample(g_samplerState, uvA);
+    float4 emva_b = g_smokeEMVA.Sample(g_samplerState, uvB);
 
-        float4 emva = lerp(emva_a, emva_b, input.frameFracTime);
+    float4 emva = lerp(emva_a, emva_b, input.frameFracTime);
         
-        float3 rlt_a = g_smokeRLT.Sample(g_samplerState, uvA);
-        float3 rlt_b = g_smokeRLT.Sample(g_samplerState, uvB);
+    float3 rlt_a = g_smokeRLT.Sample(g_samplerState, uvA);
+    float3 rlt_b = g_smokeRLT.Sample(g_samplerState, uvB);
         
-        rlt = lerp(rlt_a, rlt_b, input.frameFracTime);
+    rlt = lerp(rlt_a, rlt_b, input.frameFracTime);
         
-        float3 botBF_a = g_smokeBotBF.Sample(g_samplerState, uvA);
-        float3 botBF_b = g_smokeBotBF.Sample(g_samplerState, uvB);
+    float3 botBF_a = g_smokeBotBF.Sample(g_samplerState, uvA);
+    float3 botBF_b = g_smokeBotBF.Sample(g_samplerState, uvB);
         
-        botBF = lerp(botBF_a, botBF_b, input.frameFracTime);
+    botBF = lerp(botBF_a, botBF_b, input.frameFracTime);
         
-        color.w = emva.w;
-    
-        
+    color.w = emva.w;
     
     float3 toLightDir;
     float3 lightRadiance;
     
     float lightAngleSin, cosHalfAngularDiameter, distanceToLight;
     float solid_angle;
-    float shadowFactor;
     for (uint i = 0; i < g_pointLightNum; ++i)
     {
         toLightDir = g_pointLight[i].position - input.world_pos;
@@ -164,27 +160,32 @@ float4 ps_main(PS_INPUT input) : SV_Target
         
         solid_angle = FindSolidAngle(distanceToLight, g_pointLight[i].radius, lightAngleSin, cosHalfAngularDiameter);
         
-        lightRadiance = g_pointLight[i].radiance * solid_angle / HEMISPHERE_SOLID_ANGLE;
-        toLightDir = mul(toLightDir, input.rotation_z);
-        color.xyz += (toLightDir.x > 0) ? rlt.r * lightRadiance : rlt.g * lightRadiance;
-        color.xyz += (toLightDir.y > 0) ? rlt.b * lightRadiance : botBF.r * lightRadiance;
-        color.xyz += (toLightDir.z > 0) ? botBF.g * lightRadiance : botBF.b * lightRadiance;
+        lightRadiance = g_pointLight[i].radiance * solid_angle;
+        toLightDir = normalize(toLightDir);
+        float LdotRight = dot(toLightDir, input.rotation[0]);
+        float LdotUp = dot(toLightDir, input.rotation[1]);
+        float LdotForward = dot(toLightDir, input.rotation[2]);
+        color.xyz += lightRadiance * abs(LdotRight) * ((LdotRight >= 0) ? rlt.r : rlt.g);
+        color.xyz += lightRadiance * abs(LdotUp) * ((LdotUp >= 0) ? rlt.b : botBF.r);
+        color.xyz += lightRadiance * abs(LdotForward) * ((LdotForward >= 0) ? botBF.g : botBF.b);
     }
     for (uint j = 0; j < g_directionalLightNum; ++j)
     {
         toLightDir = g_directionalLight[j].direction;
         lightRadiance = g_directionalLight[j].radiance;
-        
-        toLightDir = mul(toLightDir, input.rotation_z);
-        color.xyz += (toLightDir.x > 0) ? rlt.r * lightRadiance : rlt.g * lightRadiance;
-        color.xyz += (toLightDir.y > 0) ? rlt.b * lightRadiance : botBF.r * lightRadiance;
-        color.xyz += (toLightDir.z > 0) ? botBF.g * lightRadiance : botBF.b * lightRadiance;
+
+        float LdotRight = dot(toLightDir, input.rotation[0]);
+        float LdotUp = dot(toLightDir, input.rotation[1]);
+        float LdotForward = dot(toLightDir, input.rotation[2]);
+        color.xyz += lightRadiance * abs(LdotRight) * ((LdotRight >= 0) ? rlt.r : rlt.g);
+        color.xyz += lightRadiance * abs(LdotUp) * ((LdotUp >= 0) ? rlt.b : botBF.r);
+        color.xyz += lightRadiance * abs(LdotForward) * ((LdotForward >= 0) ? botBF.g : botBF.b);
     }
     
     float alphaFading;
     
     float sceneDepth;
-    if(g_sampleCount == 1)
+    if (g_sampleCount == 1)
         sceneDepth = g_depthTexture.Load(float3(input.position.xy, 0));
     else
     {
@@ -196,8 +197,22 @@ float4 ps_main(PS_INPUT input) : SV_Target
     }
     
     
-    float particleDepth = input.position.z;
-    alphaFading = saturate((particleDepth - sceneDepth) / (input.thickness / length(g_cameraPos - input.world_pos)));
+    float4 clip_space_pos;
+    clip_space_pos.x = input.position.x / (g_screenWidth / 2.f) - 1.f;
+    clip_space_pos.y = -input.position.y / (g_screenHeight / 2.f) + 1.f;
+    clip_space_pos.z = sceneDepth;
+    clip_space_pos.w = 1.f;
+    float4 world_pos4 = mul(clip_space_pos, g_viewProjInv);
+    world_pos4 /= world_pos4.w;
+    
+    float particleDepth = length(g_cameraPos - input.world_pos);
+    sceneDepth = length(g_cameraPos - world_pos4.xyz);
+    
+    alphaFading = saturate(abs(particleDepth - sceneDepth)/input.thickness);
+    
+    
+    //float particleDepth = input.position.z;
+    //alphaFading = saturate((particleDepth - sceneDepth) / (input.thickness / length(g_cameraPos - input.world_pos)));
     color.a *= alphaFading;
     color *= input.tint;
     return color;

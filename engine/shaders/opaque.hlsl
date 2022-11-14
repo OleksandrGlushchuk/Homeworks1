@@ -1,6 +1,9 @@
 #include "globals.hlsli"
-#include "pbr_helpers.hlsli"
-#include "environment.hlsli"
+Texture2D g_colorMap : register(t0);
+Texture2D<float3> g_normalMap : register(t1);
+Texture2D<float> g_roughnessMap : register(t2);
+Texture2D<float> g_metalnessMap : register(t3);
+#include "gbuffer.hlsli"
 
 cbuffer MeshToModel : register(b1)
 {
@@ -19,6 +22,7 @@ struct VS_INPUT
     float4 transform_y : TRANSFORM_Y;
     float4 transform_z : TRANSFORM_Z;
     float4 transform_w : TRANSFORM_W;
+    uint meshID : MESH_ID;
 };
 
 struct PS_INPUT
@@ -28,6 +32,7 @@ struct PS_INPUT
     float3 normal : NORMAL;
     float3 tangent : TANGENT;
     float3 bitangent : BITANGENT;
+    nointerpolation uint meshID : MESH_ID;
     float4 world_pos : WORLD_POS;
 };
 
@@ -43,10 +48,18 @@ PS_INPUT vs_main(VS_INPUT input)
 
     output.position = pos;
     output.tex_coord = input.tex_coord;
+    
+    float3 axisX = normalize(WorldMatrix[0].xyz);
+    float3 axisY = normalize(WorldMatrix[1].xyz);
+    float3 axisZ = normalize(WorldMatrix[2].xyz);
 
-    output.normal = mul((float4(input.normal, 0)), WorldMatrix).xyz;
-    output.tangent = mul(float4(input.tangent, 0), WorldMatrix).xyz;
-    output.bitangent = mul(float4(input.bitangent, 0), WorldMatrix).xyz;
+    float3x3 rotation = float3x3(axisX, axisY, axisZ);
+
+    output.normal = mul(input.normal, rotation).xyz;
+    output.tangent = mul(input.tangent, rotation).xyz;
+    output.bitangent = mul(input.bitangent, rotation).xyz;
+
+    output.meshID = input.meshID;
    
     return output;
 }
@@ -63,34 +76,11 @@ cbuffer MaterialConstantBuffer : register(b2)
     float2 paddingMCB;
 }
 
-Texture2D g_colorMap : register(t0);
-Texture2D<float3> g_normalMap : register(t1);
-Texture2D<float> g_roughnessMap : register(t2);
-Texture2D<float> g_metalnessMap : register(t3);
 #include "opaque_helpers.hlsli"
 
-#include "shadow_helpers.hlsli"
-
-float4 ps_main(PS_INPUT input) : SV_TARGET
+PS_OUTPUT ps_main(PS_INPUT input)
 {
     Surface surface;
-    View view;
-    fillSurfaceStructure(surface, input.tex_coord, input.normal, input.tangent, input.bitangent);
-    fillViewStructure(view, surface.map_normal, input.world_pos.xyz);
-    
-    float shadowFactor;
-    float3 hdrColor = float3(0, 0, 0);
-    for (uint i = 0; i < g_pointLightNum; ++i)
-    {
-        shadowFactor = calcPointLightShadowFactor(input.world_pos.xyz, surface.map_normal, i);
-        hdrColor += (1.f - shadowFactor) * CalculatePointLight(g_pointLight[i], g_pointLight[i].position - input.world_pos.xyz, view, surface);
-    }
-    
-    for (uint j = 0; j < g_directionalLightNum; ++j)
-    {
-        shadowFactor = calcDirectionalLightShadowFactor(input.world_pos.xyz, view.PointToCameraNormalized, j);
-        hdrColor += (1.f - shadowFactor) * CalculateDirectionalLight(g_directionalLight[j], view, surface);
-    }
-    hdrColor += addEnvironmentReflection(view, surface);
-    return float4(hdrColor, 1.f);
+    fillSurfaceStructure(surface, input.tex_coord, input.normal, input.tangent, input.bitangent, float3(0,0,0), true);
+    return GBuffer(surface, input.meshID);
 }

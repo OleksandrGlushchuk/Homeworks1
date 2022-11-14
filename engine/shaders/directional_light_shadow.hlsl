@@ -5,10 +5,11 @@ cbuffer MeshToModel : register(b1)
     float4x4 g_meshToModelMatrix;
 }
 
-cbuffer LightIndex : register(b2)
+cbuffer DirectionalLightShadowBuffer : register(b2)
 {
     uint g_lightIndex;
-    float3 paddingPLI;
+    float3 paddingDLSB;
+    float4x4 g_viewProjDirectionalLight;
 }
 
 struct VS_INPUT
@@ -57,7 +58,7 @@ void gs_main(triangle VS_OUT input[3], inout TriangleStream<GS_OUT> outputStream
     {
         GS_OUT output;
         output.renderTarget = g_lightIndex;
-        output.position = mul(input[i].world_pos, g_viewProjDirectionalLight[g_lightIndex]);
+        output.position = mul(input[i].world_pos, g_viewProjDirectionalLight);
         outputStream.Append(output);
     }
     outputStream.RestartStrip();

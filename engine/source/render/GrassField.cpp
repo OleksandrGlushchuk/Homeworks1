@@ -4,6 +4,8 @@
 #include "singletones/ShadowManager.h"
 #include "singletones/LightSystem.h"
 #include "singletones/DepthStencilManager.h"
+#include "singletones/SamplerManager.h"
+#include "singletones/ModelManager.h"
 #include <vector>
 #include <random>
 #include <iterator>
@@ -14,12 +16,21 @@ namespace engine
 {
 	void GrassField::Init()
 	{
+		ModelManager::instance().InitGrassModel(8);
+		m_model = ModelManager::instance().GetGrassModel();
+
 		D3D11_INPUT_ELEMENT_DESC desc[] =
 		{
-			{"GRASS_POS", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1}
+			{"POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"TEXCOORD", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+
+			{"GRASS_POS", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1}
 		};
 
-		m_shader.Init(L"engine/shaders/grass.hlsl", desc, 1, ShaderEnabling(true, true));
+		m_shader.Init(L"engine/shaders/grass.hlsl", desc, 3, ShaderEnabling(true, true));
+		ShadowManager::instance().m_pointLightGrassShadowShader.Init(L"engine/shaders/grass_shadow_point_light.hlsl", desc, 3, ShaderEnabling(true, true));
+		ShadowManager::instance().m_directionalLightGrassShadowShader.Init(L"engine/shaders/grass_shadow_directional_light.hlsl", desc, 3, ShaderEnabling(true, true));
+
 
 		MaterialConstantBuffer mcb(false, true, true, false);
 		m_materialConstantBuffer.Init(D3D11_USAGE_DEFAULT, 0, &mcb);
@@ -30,12 +41,8 @@ namespace engine
 		m_grassAO.Load(L"engine/assets/Grass/AO.dds");
 		m_grassOpacity.Load(L"engine/assets/Grass/Opacity.dds");
 		m_grassTranslucency.Load(L"engine/assets/Grass/Translucency.dds");
-		m_blendState = BlendStateManager::instance().GetBlendState("alphaToCoverage");
 		m_rasterizerState = RasteriserStateManager::instance().GetRasteriserState("front_and_back");
-		m_depthStensilState = DepthStencilManager::instance().GetDepthStencilState("default");
-
-		ShadowManager::instance().m_pointLightGrassShadowShader.Init(L"engine/shaders/grass_shadow_point_light.hlsl", desc, 1, ShaderEnabling(true, true));
-		ShadowManager::instance().m_directionalLightGrassShadowShader.Init(L"engine/shaders/grass_shadow_directional_light.hlsl", desc, 1, ShaderEnabling(true, true));
+		m_blendState = BlendStateManager::instance().GetBlendState("alphaToCoverage");
 	}
 
 	void GrassField::AddGrassArea(float width, float height, float r, const Vec3& world_pos)
@@ -154,16 +161,15 @@ namespace engine
 
 	void GrassField::render()
 	{
-		engine::s_deviceContext->OMSetBlendState(m_blendState.ptr(), blendFactor, sampleMask);
-		engine::s_deviceContext->RSSetState(m_rasterizerState.ptr());
-		engine::s_deviceContext->OMSetDepthStencilState(m_depthStensilState.ptr(), 0);
+		if (m_instanceBuffer.Size() == 0)
+			return;
 
-		s_deviceContext->PSSetShaderResources(8, 1, &ShadowManager::instance().m_srvPointLightShadow.ptr());
-		s_deviceContext->PSSetShaderResources(9, 1, &ShadowManager::instance().m_srvDirectionalLightShadow.ptr());
-		ShadowManager::instance().m_pointLightDSResolutionBuffer.BindPS(8);
+		engine::s_deviceContext->RSSetState(m_rasterizerState.ptr());
 
 		m_shader.Bind();
-		m_instanceBuffer.Bind(0);
+		m_model->m_vertexBuffer.Bind(0);
+		m_model->m_indexBuffer.Bind();
+		m_instanceBuffer.Bind(1);
 		m_materialConstantBuffer.BindPS(1);
 
 		m_grassColor.Bind(0);
@@ -175,13 +181,9 @@ namespace engine
 		m_grassTranslucency.Bind(6);
 
 		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		engine::s_deviceContext->DrawInstanced(6, m_instanceBuffer.Size(), 0, 0);
+		engine::s_deviceContext->DrawIndexedInstanced(m_model->m_meshes[0].indexNum, m_instanceBuffer.Size(), 0, 0, 0);
 
-		engine::s_deviceContext->OMSetBlendState(nullptr, blendFactor, sampleMask);
 		engine::s_deviceContext->RSSetState(nullptr);
-
-		engine::s_deviceContext->PSSetShaderResources(8, 1, SRVnullptr);
-		engine::s_deviceContext->PSSetShaderResources(9, 1, SRVnullptr);
 	}
 
 	void GrassField::renderSceneDepthToCubemaps()
@@ -193,18 +195,19 @@ namespace engine
 		engine::s_deviceContext->RSSetState(m_rasterizerState.ptr());
 
 		ShadowManager::instance().m_pointLightGrassShadowShader.Bind();
-		ShadowManager::instance().m_lightIndexBuffer.BindGS(2);
+		ShadowManager::instance().m_pointLightShadowBuffer.BindGS(2);
 
-		m_instanceBuffer.Bind(0);
-
+		m_instanceBuffer.Bind(1);
+		m_model->m_vertexBuffer.Bind(0);
+		m_model->m_indexBuffer.Bind();
 		m_grassOpacity.Bind(0);
 
 		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		for (uint32_t i = 0; i < pointLightNum; ++i)
 		{
-			ShadowManager::instance().m_lightIndexBuffer.Update(i);
-			engine::s_deviceContext->DrawInstanced(6, m_instanceBuffer.Size(), 0, 0);
+			ShadowManager::instance().m_pointLightShadowBuffer.Update(ShadowManager::PointLightShadowBuffer(i));
+			engine::s_deviceContext->DrawIndexedInstanced(m_model->m_meshes[0].indexNum, m_instanceBuffer.Size(), 0, 0, 0);
 		}
 
 		engine::s_deviceContext->OMSetBlendState(nullptr, blendFactor, sampleMask);
@@ -222,18 +225,19 @@ namespace engine
 		engine::s_deviceContext->RSSetState(m_rasterizerState.ptr());
 
 		ShadowManager::instance().m_directionalLightGrassShadowShader.Bind();
-		ShadowManager::instance().m_lightIndexBuffer.BindGS(2);
+		ShadowManager::instance().m_directionalLightShadowBuffer.BindGS(2);
 
-		m_instanceBuffer.Bind(0);
-
+		m_instanceBuffer.Bind(1);
+		m_model->m_vertexBuffer.Bind(0);
+		m_model->m_indexBuffer.Bind();
 		m_grassOpacity.Bind(0);
 
 		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		for (uint32_t i = 0; i < directionalLightNum; ++i)
 		{
-			ShadowManager::instance().m_lightIndexBuffer.Update(i);
-			engine::s_deviceContext->DrawInstanced(6, m_instanceBuffer.Size(), 0, 0);
+			ShadowManager::instance().m_directionalLightShadowBuffer.Update(ShadowManager::DirectionalLightShadowBuffer(i));
+			engine::s_deviceContext->DrawIndexedInstanced(m_model->m_meshes[0].indexNum, m_instanceBuffer.Size(), 0, 0, 0);
 		}
 
 		engine::s_deviceContext->OMSetBlendState(nullptr, blendFactor, sampleMask);

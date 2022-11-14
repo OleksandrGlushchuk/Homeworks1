@@ -32,6 +32,8 @@ namespace engine::windows
 		std::vector<OpaqueInstances::Material> m_dissolubleKnightMaterial = std::vector<OpaqueInstances::Material>(9);
 		std::vector<OpaqueInstances::Material> m_dissolubleKnightMaterial1 = std::vector<OpaqueInstances::Material>(9);
 		std::vector<OpaqueInstances::Material> m_dissolubleKnightMaterial2 = std::vector<OpaqueInstances::Material>(9);
+
+
 		bool need_to_move_camera = false;
 		WORD mouse_x = 0, mouse_y = 0;
 		InputState input_state;
@@ -64,6 +66,7 @@ namespace engine::windows
 		void MoveCamera(const Vec3& offset);
 		void ProcessInput();
 		void CheckDissolutionObjects();
+		void CheckIncinerationObjects();
 		void UpdateCurrentTime();
 	public:
 		float delta_time = 0;
@@ -72,12 +75,14 @@ namespace engine::windows
 		void OnKeyDown(WPARAM key);
 		void OnKeyUp(WPARAM key);
 
+		void OnMouseMove(WORD x, WORD y);
+
 		void OnLMouseDown(WORD x, WORD y);
-		void OnLMouseMove(WORD x, WORD y);
+		void OnLMouseMove();
 		void OnLMouseUp(WORD x, WORD y);
 
 		void OnRMouseDown(WORD x, WORD y);
-		void OnRMouseMove(WORD x, WORD y);
+		void OnRMouseMove();
 		void OnRMouseUp(WORD x, WORD y);
 
 		void OnEnterSizeMove();

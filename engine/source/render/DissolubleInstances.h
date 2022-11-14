@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "Model.h"
 #include <vector>
 #include "Texture.h"
@@ -27,6 +26,9 @@ namespace engine
 			explicit Instance(const Transform& transform, float _creationTime, float _lifeTime) : creationTime(_creationTime), lifeTime(_lifeTime),
 				transform_id(engine::TransformSystem::instance().m_transforms.insert(transform))
 			{}
+
+			explicit Instance(uint32_t copyTransform_ID, float _creationTime, float _lifeTime) : 
+				creationTime(_creationTime), lifeTime(_lifeTime), transform_id(copyTransform_ID) {}
 		};
 
 		struct GpuInstance
@@ -89,7 +91,8 @@ namespace engine
 		std::vector<ModelID> m_modelIDs;
 		ConstantBuffer<MaterialConstantBuffer> m_materialConstantBuffer;
 		Texture m_dissolubleMap;
-		DxResPtr<ID3D11BlendState> m_alphaToCoverageBlendState;
+		Texture m_dissolubleMap1;
+		DxResPtr<ID3D11BlendState> m_blendState;
 	public:
 		DissolubleInstances() {}
 
@@ -99,8 +102,8 @@ namespace engine
 
 		void render();
 
-		/*void renderSceneDepthToCubemaps();
+		void renderSceneDepthToCubemaps();
 
-		void renderSceneDepthForDirectionalLights();*/
+		void renderSceneDepthForDirectionalLights();
 	};
 }

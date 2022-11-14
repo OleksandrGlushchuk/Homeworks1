@@ -4,6 +4,7 @@
 #include "VertexBuffer.h"
 #include "ConstantBuffer.h"
 #include "MaterialConstantBuffer.h"
+#include "Model.h"
 #include "../math/vec3.h"
 
 namespace engine
@@ -29,11 +30,11 @@ namespace engine
 
 		VertexBuffer<GrassInstance> m_instanceBuffer;
 		ConstantBuffer<MaterialConstantBuffer> m_materialConstantBuffer;
-		DxResPtr<ID3D11DepthStencilState> m_depthStensilState;
 
 		DxResPtr<ID3D11BlendState> m_blendState;
 		DxResPtr<ID3D11RasterizerState> m_rasterizerState;
 		std::vector<GrassInstance> m_instances;
+		std::shared_ptr<Model> m_model;
 	public:
 		GrassField() {}
 		void Init();
@@ -41,6 +42,9 @@ namespace engine
 		void render();
 		void renderSceneDepthToCubemaps();
 		void renderSceneDepthForDirectionalLights();
-
+		uint32_t NumInstances()
+		{
+			return m_instances.size();
+		}
 	};
 }

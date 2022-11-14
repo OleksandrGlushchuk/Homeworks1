@@ -17,9 +17,10 @@ namespace engine
 			{"TRANSFORM_X", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 			{"TRANSFORM_Y", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 			{"TRANSFORM_Z", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"TRANSFORM_W", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1}
+			{"TRANSFORM_W", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"MESH_ID", 0, DXGI_FORMAT::DXGI_FORMAT_R16_UINT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1}
 		};
-		m_shader.Init(L"engine/shaders/opaque.hlsl", inputLayout, 9, ShaderEnabling(true, false));
+		m_shader.Init(L"engine/shaders/opaque.hlsl", inputLayout, 10, ShaderEnabling(true, false));
 		m_constantBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 		m_materialConstantBuffer.Init(D3D11_USAGE::D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 
@@ -44,7 +45,7 @@ namespace engine
 		m_instanceBuffer.Init(totalInstances, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_FLAG::D3D11_CPU_ACCESS_WRITE);
 
 		auto mapping = m_instanceBuffer.Map();
-		Matr<4>* dst = static_cast<Matr<4>*>(mapping.pData);
+		GpuInstance* dst = static_cast<GpuInstance*>(mapping.pData);
 
 		uint32_t copiedNum = 0;
 		for (auto& modelInstances : m_modelInstances)
@@ -58,7 +59,7 @@ namespace engine
 					uint32_t numModelInstances = instances.size();
 					for (uint32_t index = 0; index < numModelInstances; ++index)
 					{
-						dst[copiedNum++] = engine::TransformSystem::instance().m_transforms[materialInstances.instances[index].transform_id].getTransformMatrix();
+						dst[copiedNum++] = GpuInstance(instances[index]);
 					}
 				}
 			}
@@ -79,7 +80,6 @@ namespace engine
 		m_instanceBuffer.Bind(1);
 		m_constantBuffer.BindVS(1);
 		m_materialConstantBuffer.BindPS(2);
-		ShadowManager::instance().m_pointLightDSResolutionBuffer.BindPS(8);
 
 
 		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -129,7 +129,7 @@ namespace engine
 		m_constantBuffer.BindVS(1);
 
 		ShadowManager::instance().m_pointLightOpaqueShadowShader.Bind();
-		ShadowManager::instance().m_lightIndexBuffer.BindGS(2);
+		ShadowManager::instance().m_pointLightShadowBuffer.BindGS(2);
 
 		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		uint32_t renderedInstances = 0;
@@ -153,7 +153,7 @@ namespace engine
 					uint32_t numInstances = uint32_t(materialInstances.instances.size());
 					for (uint32_t i = 0; i < pointLightNum; ++i)
 					{
-						ShadowManager::instance().m_lightIndexBuffer.Update(i);
+						ShadowManager::instance().m_pointLightShadowBuffer.Update(ShadowManager::PointLightShadowBuffer(i));
 						engine::s_deviceContext->DrawIndexedInstanced(mesh.indexNum, numInstances, mesh.indexOffset, mesh.vertexOffset, renderedInstances);
 					}
 					renderedInstances += numInstances;
@@ -175,7 +175,7 @@ namespace engine
 		m_constantBuffer.BindVS(1);
 
 		ShadowManager::instance().m_directionalLightOpaqueShadowShader.Bind();
-		ShadowManager::instance().m_lightIndexBuffer.BindGS(2);
+		ShadowManager::instance().m_directionalLightShadowBuffer.BindGS(2);
 
 		engine::s_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		uint32_t renderedInstances = 0;
@@ -199,7 +199,7 @@ namespace engine
 					uint32_t numInstances = uint32_t(materialInstances.instances.size());
 					for (uint32_t i = 0; i < directionalLightNum; ++i)
 					{
-						ShadowManager::instance().m_lightIndexBuffer.Update(i);
+						ShadowManager::instance().m_directionalLightShadowBuffer.Update(ShadowManager::DirectionalLightShadowBuffer(i));
 						engine::s_deviceContext->DrawIndexedInstanced(mesh.indexNum, numInstances, mesh.indexOffset, mesh.vertexOffset, renderedInstances);
 					}
 					renderedInstances += numInstances;

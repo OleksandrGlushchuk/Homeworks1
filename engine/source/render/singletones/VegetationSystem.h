@@ -13,8 +13,6 @@ namespace engine
 		VegetationSystem& operator=(VegetationSystem&& other) noexcept = delete;
 		GrassField grassField;
 	public:
-
-
 		static void init();
 		static void deinit();
 		static VegetationSystem& instance();
@@ -37,6 +35,11 @@ namespace engine
 		void AddGrassArea(float width, float height, float r, const Vec3 &world_pos)
 		{
 			grassField.AddGrassArea(width, height, r, world_pos);
+		}
+
+		uint32_t Size()
+		{
+			return grassField.NumInstances();
 		}
 	};
 }

@@ -39,26 +39,28 @@ namespace engine
 		result = m_factory->QueryInterface(__uuidof(IDXGIFactory5), (void**)m_factory5.reset());
 		ALWAYS_ASSERT(result >= 0 && "Query IDXGIFactory5");
 
-		{
+		
 			uint32_t index = 0;
-			IDXGIAdapter1* adapter;
-			while (m_factory5->EnumAdapters1(index++, &adapter) != DXGI_ERROR_NOT_FOUND)
+			
+			std::vector < DXGI_ADAPTER_DESC1> desc;
+			std::vector< IDXGIAdapter1*> adapter;
+			while (m_factory5->EnumAdapters1(index++, &adapter.emplace_back()) != DXGI_ERROR_NOT_FOUND)
 			{
-				DXGI_ADAPTER_DESC1 desc;
-				adapter->GetDesc1(&desc);
+			
+				adapter[index-1]->GetDesc1(&desc.emplace_back());
 
 				//LOG << "GPU #" << index << desc.Description;
 			}
-		}
+		
 
 		// Init D3D Device & Context
 
-		const D3D_FEATURE_LEVEL featureLevelRequested = D3D_FEATURE_LEVEL_11_0;
-		D3D_FEATURE_LEVEL featureLevelInitialized = D3D_FEATURE_LEVEL_11_0;
+		const D3D_FEATURE_LEVEL featureLevelRequested = D3D_FEATURE_LEVEL_11_1;
+		D3D_FEATURE_LEVEL featureLevelInitialized = D3D_FEATURE_LEVEL_11_1;
 		result = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_DEBUG,
 			&featureLevelRequested, 1, D3D11_SDK_VERSION, m_device.reset(), &featureLevelInitialized, m_devcon.reset());
 		ALWAYS_ASSERT(result >= 0 && "D3D11CreateDevice");
-		ALWAYS_ASSERT(featureLevelRequested == featureLevelInitialized && "D3D_FEATURE_LEVEL_11_0");
+		ALWAYS_ASSERT(featureLevelRequested == featureLevelInitialized && "D3D_FEATURE_LEVEL_11_1");
 
 		result = m_device->QueryInterface(__uuidof(ID3D11Device5), (void**)m_device5.reset());
 		ALWAYS_ASSERT(result >= 0 && "Query ID3D11Device5");
@@ -67,7 +69,7 @@ namespace engine
 		ALWAYS_ASSERT(result >= 0 && "Query ID3D11DeviceContext4");
 
 		result = m_device->QueryInterface(__uuidof(ID3D11Debug), (void**)m_devdebug.reset());
-		ALWAYS_ASSERT(result >= 0 && "Query ID3D11Debug");
+		//ALWAYS_ASSERT(result >= 0 && "Query ID3D11Debug");
 
 		// Write global pointers
 
@@ -81,18 +83,19 @@ namespace engine
 		m_perFrameBuffer.BindVS(0);
 		m_perFrameBuffer.BindPS(0);
 		m_perFrameBuffer.BindGS(0);
+		m_perFrameBuffer.BindCS(0);
 		engine::s_deviceContext->PSSetSamplers(0, 1, &SamplerManager::instance().GetGlobalSamplerState().ptr());
 		engine::s_deviceContext->PSSetSamplers(1, 1, &SamplerManager::instance().GetSamplerState("ss_mmlmp_clamp").ptr());
 		engine::s_deviceContext->PSSetSamplers(2, 1, &SamplerManager::instance().GetSamplerState("ss_mmmp").ptr());
 		engine::s_deviceContext->PSSetSamplers(3, 1, &SamplerManager::instance().GetSamplerState("ss_cmmlmp").ptr());
+		engine::s_deviceContext->PSSetSamplers(4, 1, &SamplerManager::instance().GetSamplerState("ss_masked").ptr());
 	}
 
-	void Globals::UpdatePerFrameBuffer(const Camera& camera, const std::chrono::steady_clock::time_point& currentTime, uint32_t sampleCount)
+	void Globals::UpdatePerFrameBuffer(const Camera& camera, const std::chrono::steady_clock::time_point& currentTime, float delta_time,
+		uint32_t sampleCount, uint32_t _screenWidth, uint32_t _screenHeight)
 	{
-		LightSystem::instance().updatePointLightMatrices();
-		LightSystem::instance().updateDirectionalLightMatrices(camera);
-		m_perFrameBuffer.Update(PerFrameBuffer(camera, engine::LightSystem::instance().getPointLights(),
-			engine::LightSystem::instance().getDirectionalLights(), currentTime, sampleCount));
+		m_perFrameBuffer.Update(PerFrameBuffer(camera, currentTime, delta_time, LightSystem::instance().getPointLights(),
+			LightSystem::instance().getDirectionalLights(), sampleCount, _screenWidth, _screenHeight));
 	}
 
 	Globals::~Globals()

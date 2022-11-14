@@ -23,6 +23,64 @@ namespace engine
 		ALWAYS_ASSERT(s_instance); return *s_instance;
 	}
 
+	void ModelManager::InitGrassModel(uint32_t numSegments)
+	{
+		if (m_GrassModelIsInited)
+			return;
+		std::shared_ptr<Model> grass_model(new Model);
+		auto& model = *grass_model;
+		model.name = "Grass";
+		model.box = Box::unit();
+
+		model.m_meshes.resize(1);
+
+		auto& mesh = model.m_meshes[0];
+		mesh.box = Box::unit();
+		mesh.meshToModelMatrix = Matr<4>::identity();
+		mesh.name = "Grass";
+		mesh.vertices.resize(numSegments * 2 + 2);
+		mesh.triangles.resize(numSegments * 2);
+		mesh.indexNum = 6 * numSegments;
+		mesh.indexOffset = 0;
+		mesh.vertexOffset = 0;
+		mesh.vertexNum = mesh.vertices.size();
+		Vec3 tangent, bitangent, normal;
+		tangent = { 1, 0, 0 };
+		bitangent = { 0, -1, 0 };
+		normal = { 0,0,-1 };
+
+		uint32_t numRibs = numSegments + 1;
+		float yStep = 1.f / numSegments;
+		float vStep = yStep;
+
+		for (uint32_t i = 0, j = 0; i < mesh.vertexNum; i+=2, j+= 1)
+		{
+			mesh.vertices[i].position = Vec3(-0.5f, 0.f + yStep*j, 0.f);
+			mesh.vertices[i].textureCoords = Vec2(0, std::max(0.f,1.f - vStep*j));
+			mesh.vertices[i].normal = normal;
+			mesh.vertices[i].tangent = tangent;
+			mesh.vertices[i].bitangent = bitangent;
+
+			mesh.vertices[i+1].position = Vec3(0.5f, 0.f + yStep*j, 0.f);
+			mesh.vertices[i+1].textureCoords = Vec2(1, std::max(0.f, 1.f - vStep * j));
+			mesh.vertices[i+1].normal = normal;
+			mesh.vertices[i+1].tangent = tangent;
+			mesh.vertices[i+1].bitangent = bitangent;
+		}
+
+		for (uint32_t i = 2; i < mesh.vertexNum; i += 2)
+		{
+			mesh.triangles[i - 2] = TriangleIndices(i-2, i, i+1);
+			mesh.triangles[i - 1] = TriangleIndices(i+1, i-1, i-2);
+		}
+		model.m_indexBuffer.Init(mesh.triangles);
+		model.m_vertexBuffer.Init(mesh.vertices);
+
+
+		m_defaultModel[grass_model->name] = grass_model;
+		m_GrassModelIsInited = true;
+	}
+
 	void ModelManager::InitUnitQuadModel()
 	{
 		if (m_UnitQuadModelIsInited)
@@ -30,12 +88,12 @@ namespace engine
 		std::shared_ptr<Model> quad_model(new Model);
 		auto& model = *quad_model;
 		model.name = "Quad";
-		model.box = Box::unit();
+		model.box = Box::unit_2();
 
 		model.m_meshes.resize(1);
 
 		auto& mesh = model.m_meshes[0];
-		mesh.box = Box::unit();
+		mesh.box = Box::unit_2();
 		mesh.meshToModelMatrix = Matr<4>::identity();
 		mesh.name = "Quad";
 		mesh.vertices.resize(4);
@@ -92,12 +150,13 @@ namespace engine
 		std::shared_ptr<Model> cube_model(new Model);
 		auto& model = *cube_model;
 		model.name = "Cube";
-		model.box = Box::unit();
+		model.box = Box::unit_2();
 
 		model.m_meshes.resize(1);
 
 		auto& mesh = model.m_meshes[0];
-		mesh.box = Box::unit();
+		mesh.box = model.box;
+
 		mesh.meshToModelMatrix = Matr<4>::identity();
 		mesh.name = "Cube";
 		mesh.vertices.resize(24);
@@ -400,9 +459,9 @@ namespace engine
 					setPos(side, vertex[2], quad[2]);
 
 					{
-						Vec3 AB = vertex[1].position - vertex[0].position;
-						Vec3 AC = vertex[2].position - vertex[0].position;
-						vertex[0].normal = vertex[1].normal = vertex[2].normal = Vec3::cross(AC,AB).normalized();
+						vertex[0].normal = vertex[0].position;
+						vertex[1].normal = vertex[1].position;
+						vertex[2].normal = vertex[2].position;
 					}
 
 					triangle[0] = TriangleIndices(vertex - mesh.vertices.data() + 2, vertex - mesh.vertices.data() + 1, vertex - mesh.vertices.data());
@@ -416,9 +475,9 @@ namespace engine
 					setPos(side, vertex[2], quad[2]);
 
 					{
-						Vec3 AB = vertex[1].position - vertex[0].position;
-						Vec3 AC = vertex[2].position - vertex[0].position;
-						vertex[0].normal = vertex[1].normal = vertex[2].normal = Vec3::cross(AC, AB).normalized();
+						vertex[0].normal = vertex[0].position;
+						vertex[1].normal = vertex[1].position;
+						vertex[2].normal = vertex[2].position;
 					}
 
 					triangle[0] = TriangleIndices(vertex - mesh.vertices.data()+2, vertex - mesh.vertices.data() + 1, vertex - mesh.vertices.data());
@@ -464,7 +523,8 @@ namespace engine
 		std::shared_ptr<Model> model(new Model);
 		Model& model_ref = *model;
 		model_ref.name = path;
-		model_ref.box = {};
+		model_ref.box.min = reinterpret_cast<Vec3&>(assimpScene->mMeshes[0]->mAABB.mMin);
+		model_ref.box.max = reinterpret_cast<Vec3&>(assimpScene->mMeshes[0]->mAABB.mMax);
 		model_ref.m_meshes.resize(numMeshes);
 
 		GetMatrices(assimpScene->mRootNode, model_ref);
@@ -485,7 +545,16 @@ namespace engine
 			dstMesh.vertices.resize(srcMesh->mNumVertices);
 			dstMesh.triangles.resize(srcMesh->mNumFaces);
 			dstMesh.box.min = reinterpret_cast<Vec3&>(srcMesh->mAABB.mMin);
+			model_ref.box.min.e[0] = model_ref.box.min.e[0] > dstMesh.box.min.e[0] ? dstMesh.box.min.e[0] : model_ref.box.min.e[0];
+			model_ref.box.min.e[1] = model_ref.box.min.e[1] > dstMesh.box.min.e[1] ? dstMesh.box.min.e[1] : model_ref.box.min.e[1];
+			model_ref.box.min.e[2] = model_ref.box.min.e[2] > dstMesh.box.min.e[2] ? dstMesh.box.min.e[2] : model_ref.box.min.e[2];
+
 			dstMesh.box.max = reinterpret_cast<Vec3&>(srcMesh->mAABB.mMax);
+
+			model_ref.box.max.e[0] = model_ref.box.max.e[0] < dstMesh.box.max.e[0] ? dstMesh.box.max.e[0] : model_ref.box.max.e[0];
+			model_ref.box.max.e[1] = model_ref.box.max.e[1] < dstMesh.box.max.e[1] ? dstMesh.box.max.e[1] : model_ref.box.max.e[1];
+			model_ref.box.max.e[2] = model_ref.box.max.e[2] < dstMesh.box.max.e[2] ? dstMesh.box.max.e[2] : model_ref.box.max.e[2];
+			
 			dstMesh.vertexNum = srcMesh->mNumVertices;
 			dstMesh.indexNum = srcMesh->mNumFaces * 3;
 

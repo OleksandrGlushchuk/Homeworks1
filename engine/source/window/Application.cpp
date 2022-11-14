@@ -7,6 +7,7 @@
 #include "../render/singletones/ShadowManager.h"
 #include "../render/singletones/ParticleSystem.h"
 #include "../render/singletones/VegetationSystem.h"
+#include "../render/singletones/DecalSystem.h"
 
 const float p_near = 0.01f, p_far = 100.f, fovy = M_PI / 3.f;
 
@@ -17,6 +18,7 @@ namespace engine::windows
 	{
 		ProcessInput();
 		CheckDissolutionObjects();
+		CheckIncinerationObjects();
 		UpdateCurrentTime();
 		wnd.BeginFrame();
 		renderer.Render(wnd.m_renderTargetView, camera, m_postProcess, m_currentTime, delta_time);
@@ -37,16 +39,16 @@ namespace engine::windows
 	void Application::Init()
 	{
 		m_currentTime = std::chrono::steady_clock::now();
-		renderer.Init(4u);
+		renderer.Init(1u);
 		m_postProcess.Init(1.5f);
 		ShadowManager::instance().SetDirectionalLightDSResolution(2048.f);
-		ShadowManager::instance().SetDirectionalLightShadowDistance(60.f);
+		ShadowManager::instance().SetDirectionalLightShadowDistance(40.f);
 		ShadowManager::instance().SetPointLightDSResolution(1024.f);
 
-		ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(-0.5f, 0, 0.f), Vec3(0.5f, 0.1f, 5.f), 
-			1.f, 2.5f, 0.015f, 0.05f, 0.5f, 1.01f, 0.2f, 8, 8));
+		ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(-0.5f, 0, 0.f), Vec3(0.2f, 0.1f, 1.f), 
+			1.f, 2.5f, 1.f, 0.15f, 0.3f, 0.7f, 0.2f, 8, 8));
 		ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(0.995f, 0.8f, 0.6f), Vec3(0.01f, 0.01f, 0.01f),
-			0.5f, 3.5f, 0.005f, 0.05f, 0.15f, 1.005f, 0.01f, 8, 8));
+			0.5f, 3.f, 0.3f, 0.05f, 0.15f, 0.1f, 0.01f, 8, 8));
 
 
 		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
@@ -54,8 +56,10 @@ namespace engine::windows
 		LightSystem::instance().setDirectionalLightFrustum(camera);
 		camera.setWorldOffset(Vec3(0, 0, -2));
 
-		VegetationSystem::instance().AddGrassArea(3, 3, 0.4f, { -7,-2,-2 });
-		VegetationSystem::instance().AddGrassArea(2, 2, 0.4f, { -10, -2,-2 });
+		VegetationSystem::instance().AddGrassArea(4, 4, 0.6f, { -7,-2.55f,-2 });
+		//VegetationSystem::instance().AddGrassArea(2, 6, 0.7f, { -10, -2,-2.5f });
+
+		DecalSystem::instance().SetDecalSize(0.4f);
 
 		//LIGHTS
 		{
@@ -79,6 +83,7 @@ namespace engine::windows
 				L"engine/assets/Sky/night_street_reflectance.dds", 
 				L"engine/assets/Sky/night_street_reflection.dds");
 		}
+
 		//KNIGHTS
 		{
 			const auto& KnightModel = engine::ModelManager::instance().LoadModel("engine/assets/Knight/Knight.fbx");
@@ -199,7 +204,6 @@ namespace engine::windows
 			m_dissolubleSamuraiMaterial = m_samuraiMaterial;
 			m_dissolubleSamuraiMaterial1 = m_samuraiMaterial;
 			m_dissolubleSamuraiMaterial1[7].m_colorMap.Load(L"engine/assets/Stone/Stone_COLOR.dds");
-			
 
 			Transform transform = Transform::Identity();
 			transform.Translate(Vec3(3.5f, -1.f, -1.f));
@@ -265,9 +269,14 @@ namespace engine::windows
 			transform.SetPosition({ 1.f, 3.4f, 0.f });
 			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
 
-			transform.SetPosition({ 5,0,0 });
-			transform.SetScale({ 1.f,100.f,100.f });
+			transform.SetPosition({ 0,-3,0 });
+			transform.SetScale({ 50.f,1.f,50.f });
 			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitCubeModel(), brick, OpaqueInstances::Instance(transform));
+
+			transform.SetPosition({ 0,0,0 });
+			transform.SetScale({ 1.f,1.f,1.f });
+			transform.Rotate(Quaternion(M_PI / 6.f, transform.top()));
+			engine::MeshSystem::instance().addInstance(engine::ModelManager::instance().GetUnitQuadModel(), brick, OpaqueInstances::Instance(transform));
 		}
 	}
 
@@ -279,117 +288,66 @@ namespace engine::windows
 		if (dissolutionInstances.m_modelIDs.empty())
 			return;
 
-		bool need_to_reduce_material_instances = false, need_to_reduce_model_instances = false;
-		uint32_t out_materialIndex, out_instanceIndex, meshMaterialWriteOffset = 0;
+		uint32_t out_materialIndex, out_instanceIndex;
 		int transformID = -1;
 		float now = std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count();
 		for (uint32_t id = 0; id < dissolutionInstances.m_modelIDs.size(); ++id)
 		{
-			auto modelID = dissolutionInstances.m_modelIDs.at(id);
+			auto modelID = dissolutionInstances.m_modelIDs[id];
 			auto& modelInstance = dissolutionInstances.m_modelInstances[modelID.model_index];
 			uint32_t meshSize = modelInstance.meshInstances.size();
 			std::vector<OpaqueInstances::Material> meshMaterials(meshSize);
 			for (uint32_t i = 0; i < meshSize; ++i)
 			{
 				MeshSystem::instance().GetMaterialAndInstanceIndex<DissolubleInstances>(modelID, i, out_materialIndex, out_instanceIndex);
-				auto& meshInstance = modelInstance.meshInstances.at(i);
-				auto& material = meshInstance.materialInstances.at(out_materialIndex).material;
-				auto& instance = meshInstance.materialInstances.at(out_materialIndex).instances.at(out_instanceIndex);
+				auto& meshInstance = modelInstance.meshInstances[i];
+				auto& material = meshInstance.materialInstances[out_materialIndex].material;
+				auto& instance = meshInstance.materialInstances[out_materialIndex].instances[out_instanceIndex];
 				if (now - instance.creationTime > instance.lifeTime)
 				{
-					meshMaterials[i + meshMaterialWriteOffset] = material;
+					meshMaterials[i] = material;
 					transformID = instance.transform_id;
-
-					auto instance_iterator = meshInstance.materialInstances.at(out_materialIndex).instances.begin();
-					std::advance(instance_iterator, out_instanceIndex);
-					meshInstance.materialInstances.at(out_materialIndex).instances.erase(instance_iterator);
-
-					if (meshInstance.materialInstances.at(out_materialIndex).instances.empty())
-					{
-						auto material_instance_iterator = meshInstance.materialInstances.begin();
-						std::advance(material_instance_iterator, out_materialIndex);
-						meshInstance.materialInstances.erase(material_instance_iterator);
-
-						need_to_reduce_material_instances = true;
-
-						if (meshInstance.materialInstances.empty())
-						{
-							auto mesh_instance_iterator = modelInstance.meshInstances.begin();
-							std::advance(mesh_instance_iterator, out_materialIndex);
-							modelInstance.meshInstances.erase(mesh_instance_iterator);
-							--i;
-							++meshMaterialWriteOffset;
-							meshSize = modelInstance.meshInstances.size();
-						}
-					}
 				}
 			}
-			meshMaterialWriteOffset = 0;
 			if (transformID != -1)
 			{
 				MeshSystem::instance().addInstance(modelInstance.model, meshMaterials, OpaqueInstances::Instance(transformID));
-				if (modelInstance.meshInstances.empty())
+				MeshSystem::instance().deleteInstances<DissolubleInstances>(modelID, false);
+				transformID = -1;
+			}
+		}
+	}
+
+	void Application::CheckIncinerationObjects()
+	{
+		if (time_stopped) return;
+
+		auto& incinerationInstances = MeshSystem::instance().incinerationInstances;
+		if (incinerationInstances.m_modelIDs.empty())
+			return;
+
+		uint32_t out_materialIndex, out_instanceIndex;
+		int transformID = -1;
+		float now = std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count();
+		for (uint32_t id = 0; id < incinerationInstances.m_modelIDs.size(); ++id)
+		{
+			auto modelID = incinerationInstances.m_modelIDs[id];
+			auto& modelInstance = incinerationInstances.m_modelInstances[modelID.model_index];
+			uint32_t meshSize = modelInstance.meshInstances.size();
+			for (uint32_t i = 0; i < meshSize; ++i)
+			{
+				MeshSystem::instance().GetMaterialAndInstanceIndex<IncinerationInstances>(modelID, i, out_materialIndex, out_instanceIndex);
+				auto& meshInstance = modelInstance.meshInstances[i];
+				auto& material = meshInstance.materialInstances[out_materialIndex].material;
+				auto& instance = meshInstance.materialInstances[out_materialIndex].instances[out_instanceIndex];
+				if (now - instance.creationTime > instance.lifeTime + delta_time)
 				{
-					auto model_instance_iterator = dissolutionInstances.m_modelInstances.begin();
-					std::advance(model_instance_iterator, modelID.model_index);
-					dissolutionInstances.m_modelInstances.erase(model_instance_iterator);
-
-					need_to_reduce_model_instances = true;
+					transformID = instance.transform_id;
 				}
-
-				for (uint32_t i = 1; i < dissolutionInstances.m_modelIDs.size(); ++i)
-				{
-					auto& ID = dissolutionInstances.m_modelIDs[i];
-
-					if (ID.model_index == modelID.model_index)
-					{
-						auto& model = dissolutionInstances.m_modelInstances[ID.model_index];
-						for (uint32_t k = 0; k < model.meshInstances.size(); ++k)
-						{
-							uint32_t& instance_index = model.meshIDs[ID.meshesBlock_index + (k * 2 + 1)];
-							uint32_t& material_index = model.meshIDs[ID.meshesBlock_index + (k * 2)];
-							if (material_index == model.meshIDs[0 + k * 2] && instance_index != 0)
-							{
-								instance_index -= 1;
-							}
-							if (need_to_reduce_material_instances && material_index != 0)
-							{
-								material_index -= 1;
-							}
-						}
-					}
-				}
-				need_to_reduce_material_instances = false;
-
-				auto id_iterator = dissolutionInstances.m_modelIDs.begin();
-				std::advance(id_iterator, id);
-				dissolutionInstances.m_modelIDs.erase(id_iterator);
-
-				if (need_to_reduce_model_instances)
-				{
-					for (uint32_t i = 0; i < dissolutionInstances.m_modelIDs.size(); i++)
-					{
-						if (dissolutionInstances.m_modelIDs[i].model_index != 0)
-							dissolutionInstances.m_modelIDs[i].model_index -= 1;
-					}
-					need_to_reduce_model_instances = false;
-				}
-				else
-				{
-					if (!dissolutionInstances.m_modelInstances.empty())
-					{
-						auto meshIDs_iterator = dissolutionInstances.m_modelInstances[modelID.model_index].meshIDs.begin();
-						std::advance(meshIDs_iterator, 2 * dissolutionInstances.m_modelInstances[modelID.model_index].meshInstances.size());
-						dissolutionInstances.m_modelInstances[modelID.model_index].meshIDs.erase(
-							dissolutionInstances.m_modelInstances[modelID.model_index].meshIDs.begin(), meshIDs_iterator);
-					}
-					for (uint32_t i = 0; i < dissolutionInstances.m_modelIDs.size(); i++)
-					{
-						if (dissolutionInstances.m_modelIDs[i].model_index == modelID.model_index)
-							dissolutionInstances.m_modelIDs[i].meshesBlock_index -= 2 * dissolutionInstances.m_modelInstances[modelID.model_index].meshInstances.size();
-					}
-				}
-				--id;
+			}
+			if (transformID != -1)
+			{
+				MeshSystem::instance().deleteInstances<IncinerationInstances>(modelID, true);
 				transformID = -1;
 			}
 		}
@@ -535,6 +493,12 @@ namespace engine::windows
 				}
 				if (need_to_rotate_object)
 				{
+					if (!TransformSystem::instance().m_transforms.exist(clicked_object_transform_id))
+					{
+						need_to_move_object = false;
+						return;
+					}
+
 					rotate_angles.pitch *= delta_time; rotate_angles.roll *= delta_time; rotate_angles.yaw *= delta_time;
 					if (need_to_rotate_object_relative_to_camera_axes)
 					{
@@ -550,77 +514,164 @@ namespace engine::windows
 			}
 		}
 		
-		if (input_state['N'])
+		//CREATING DISSOLUBLE INSTANCES
 		{
-			const auto& SamuraiModel = engine::ModelManager::instance().LoadModel("engine/assets/Samurai/Samurai.fbx");
-			Transform transform = Transform::Identity();
-			Vec3 cameraPos = camera.position();
-			Vec3 cameraForward = camera.forward();
-			transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
-			MeshSystem::instance().addInstance(SamuraiModel, m_dissolubleSamuraiMaterial, DissolubleInstances::Instance(transform,
-				std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
-				3.f));
-			input_state['N'] = false;
-		}
-		if (input_state['M'])
-		{
+			if (input_state['N'])
+			{
+				const auto& SamuraiModel = engine::ModelManager::instance().LoadModel("engine/assets/Samurai/Samurai.fbx");
+				Transform transform = Transform::Identity();
+				Vec3 cameraPos = camera.position();
+				Vec3 cameraForward = camera.forward();
+				transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
+				MeshSystem::instance().addInstance(SamuraiModel, m_dissolubleSamuraiMaterial, DissolubleInstances::Instance(transform,
+					std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
+					5.f));
+				input_state['N'] = false;
+			}
+			if (input_state['B'])
+			{
 
-			const auto& SamuraiModel = engine::ModelManager::instance().LoadModel("engine/assets/Samurai/Samurai.fbx");
-			Transform transform = Transform::Identity();
-			Vec3 cameraPos = camera.position();
-			Vec3 cameraForward = camera.forward();
-			transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
-			MeshSystem::instance().addInstance(SamuraiModel, m_dissolubleSamuraiMaterial1, DissolubleInstances::Instance(transform,
-				std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
-				3.f));
-			input_state['M'] = false;
+				const auto& SamuraiModel = engine::ModelManager::instance().LoadModel("engine/assets/Samurai/Samurai.fbx");
+				Transform transform = Transform::Identity();
+				Vec3 cameraPos = camera.position();
+				Vec3 cameraForward = camera.forward();
+				transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
+				MeshSystem::instance().addInstance(SamuraiModel, m_dissolubleSamuraiMaterial1, DissolubleInstances::Instance(transform,
+					std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
+					5.f));
+				input_state['B'] = false;
+			}
+			if (input_state['K'])
+			{
+				const auto& KnightModel = engine::ModelManager::instance().LoadModel("engine/assets/Knight/Knight.fbx");
+				Transform transform = Transform::Identity();
+				Vec3 cameraPos = camera.position();
+				Vec3 cameraForward = camera.forward();
+				transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
+				MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial, DissolubleInstances::Instance(transform,
+					std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
+					5.f));
+				input_state['K'] = false;
+			}
+			if (input_state['J'])
+			{
+				const auto& KnightModel = engine::ModelManager::instance().LoadModel("engine/assets/Knight/Knight.fbx");
+				Transform transform = Transform::Identity();
+				Vec3 cameraPos = camera.position();
+				Vec3 cameraForward = camera.forward();
+				transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
+				MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial1, DissolubleInstances::Instance(transform,
+					std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
+					5.f));
+				input_state['J'] = false;
+			}
+			if (input_state['H'])
+			{
+				const auto& KnightModel = engine::ModelManager::instance().LoadModel("engine/assets/Knight/Knight.fbx");
+				Transform transform = Transform::Identity();
+				Vec3 cameraPos = camera.position();
+				Vec3 cameraForward = camera.forward();
+				transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
+				MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial2, DissolubleInstances::Instance(transform,
+					std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
+					5.f));
+				input_state['H'] = false;
+			}
 		}
-		if (input_state['K'])
+
+		//INCINERATION
 		{
-			const auto& KnightModel = engine::ModelManager::instance().LoadModel("engine/assets/Knight/Knight.fbx");
-			Transform transform = Transform::Identity();
-			Vec3 cameraPos = camera.position();
-			Vec3 cameraForward = camera.forward();
-			transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
-			MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial, DissolubleInstances::Instance(transform,
-				std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
-				3.f));
-			input_state['K'] = false;
+			if (input_state['M'])
+			{
+				ray r;
+				MeshIntersection outIntersection;
+				outIntersection.reset(1);
+
+				float xx = (mouse_x + 0.5f) / ((wnd.screen.right) / 2.f) - 1.f;
+				float yy = (mouse_y + 0.5f) / ((wnd.screen.bottom) / (-2.f)) + 1.f;
+				r.origin = Vec3(xx, yy, 1);
+
+				float w;
+				r.origin.mult(camera.m_viewProjInv, 1, &w);
+				r.origin /= w;
+
+				r.direction = r.origin - camera.position();
+				r.direction.normalize();
+
+				uint32_t outTransformId;
+				uint16_t outModelID;
+				std::shared_ptr<Model> model;
+				std::vector<OpaqueInstances::Material> material;
+				ModelID outObjectID;
+				if (MeshSystem::instance().findIntersectionOpaqueEx(r, outIntersection, outTransformId, outModelID, outObjectID))
+				{
+					model = MeshSystem::instance().opaqueInstances.m_modelInstances[outObjectID.model_index].model;
+					auto& meshInstances = MeshSystem::instance().opaqueInstances.m_modelInstances[outObjectID.model_index].meshInstances;
+
+					uint32_t outMaterialIndex, outInstanceIndex;
+					for (uint32_t i = 0; i < meshInstances.size(); ++i)
+					{
+						MeshSystem::instance().GetMaterialAndInstanceIndex<OpaqueInstances>(outObjectID, i, outMaterialIndex, outInstanceIndex);
+						material.emplace_back(meshInstances[i].materialInstances[outMaterialIndex].material);
+					}
+
+					MeshSystem::instance().deleteInstances<OpaqueInstances>(outObjectID, false);
+
+					const Vec3& scale = TransformSystem::instance().m_transforms[outTransformId].getScale();
+
+					float sphere_max_radius = ((model->box.max - model->box.min) * scale).length();
+					float incirenationTime = 7.f;
+					float sphere_velocity = sphere_max_radius / incirenationTime;
+
+
+					MeshSystem::instance().addInstance(model, material, IncinerationInstances::Instance(outTransformId,
+						std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(), incirenationTime,
+						outIntersection.pos, sphere_velocity));
+				}
+
+				input_state['M'] = false;
+			}
 		}
-		if (input_state['J'])
+
+		//SPAWNING DECALS
 		{
-			const auto& KnightModel = engine::ModelManager::instance().LoadModel("engine/assets/Knight/Knight.fbx");
-			Transform transform = Transform::Identity();
-			Vec3 cameraPos = camera.position();
-			Vec3 cameraForward = camera.forward();
-			transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
-			MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial1, DissolubleInstances::Instance(transform,
-				std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
-				3.f));
-			input_state['J'] = false;
-		}
-		if (input_state['H'])
-		{
-			const auto& KnightModel = engine::ModelManager::instance().LoadModel("engine/assets/Knight/Knight.fbx");
-			Transform transform = Transform::Identity();
-			Vec3 cameraPos = camera.position();
-			Vec3 cameraForward = camera.forward();
-			transform.SetPosition(cameraPos + 2.f * cameraForward - Vec3(0, 1.f, 0));
-			MeshSystem::instance().addInstance(KnightModel, m_dissolubleKnightMaterial2, DissolubleInstances::Instance(transform,
-				std::chrono::duration_cast<std::chrono::duration<float>>(m_currentTime.time_since_epoch()).count(),
-				3.f));
-			input_state['H'] = false;
+			if (input_state['F'])
+			{
+				ray r;
+				MeshIntersection outIntersection;
+				outIntersection.reset(1);
+
+				float xx = (mouse_x + 0.5f) / ((wnd.screen.right) / 2.f) - 1.f;
+				float yy = (mouse_y + 0.5f) / ((wnd.screen.bottom) / (-2.f)) + 1.f;
+				r.origin = Vec3(xx, yy, 1);
+
+				float w;
+				r.origin.mult(camera.m_viewProjInv, 1, &w);
+				r.origin /= w;
+
+				r.direction = r.origin - camera.position();
+				r.direction.normalize();
+
+				uint32_t outTransformId;
+				uint16_t outModelID;
+
+				if (MeshSystem::instance().findIntersectionOpaque(r, outIntersection, outTransformId, outModelID))
+					DecalSystem::instance().AddDecalInstance(camera.right(), camera.top(), camera.forward(), outIntersection.pos, outIntersection.normal, outTransformId, outModelID);
+
+				input_state['F'] = false;
+			}
+			
 		}
 
 		if (need_to_rotate_camera)
 			RotateCamera();
 		if (need_to_move_camera)
 		{
-			MoveCamera(delta_time * offset);
+			MoveCamera(offset * delta_time);
 			need_to_move_camera = false;
 		}
 		if (need_to_move_object)
-			OnRMouseMove(mouse_x, mouse_y);
+			OnRMouseMove();
 	}
 
 	void Application::OnKeyDown(WPARAM key)
@@ -631,6 +682,12 @@ namespace engine::windows
 	void Application::OnKeyUp(WPARAM key)
 	{
 		input_state[key] = false;
+	}
+
+	void Application::OnMouseMove(WORD x, WORD y)
+	{
+		mouse_x = x;
+		mouse_y = y;
 	}
 
 	void Application::MoveCamera(const Vec3& offset)
@@ -649,12 +706,10 @@ namespace engine::windows
 		dir_rotation = Vec3(0, 0, 1);
 	}
 
-	void Application::OnLMouseMove(WORD x, WORD y)
+	void Application::OnLMouseMove()
 	{
-		mouse_x = x;
-		mouse_y = y;
-		end_rotation.e[0] = x;
-		end_rotation.e[1] = y;
+		end_rotation.e[0] = mouse_x;
+		end_rotation.e[1] = mouse_y;
 		dir_rotation = delta_time * (start_rotation - end_rotation) * M_PI / wnd.screen.right;
 	}
 
@@ -692,14 +747,18 @@ namespace engine::windows
 		}
 	}
 
-	void Application::OnRMouseMove(WORD x, WORD y)
+	void Application::OnRMouseMove()
 	{
 		if (need_to_move_object)
 		{
-			mouse_x = x;
-			mouse_y = y;
-			float xx = (x + 0.5f) / ((wnd.screen.right) / 2.f) - 1.f;
-			float yy = (y + 0.5f) / ((wnd.screen.bottom) / (-2.f)) + 1.f;
+			if (!TransformSystem::instance().m_transforms.exist(clicked_object_transform_id))
+			{
+				need_to_move_object = false;
+				return;
+			}
+
+			float xx = (mouse_x + 0.5f) / ((wnd.screen.right) / 2.f) - 1.f;
+			float yy = (mouse_y + 0.5f) / ((wnd.screen.bottom) / (-2.f)) + 1.f;
 
 			ray_clicked_to_object.origin = Vec3(xx, yy, 1);
 

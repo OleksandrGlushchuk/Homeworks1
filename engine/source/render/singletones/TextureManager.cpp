@@ -24,16 +24,20 @@ namespace engine
 		ALWAYS_ASSERT(s_instance); return *s_instance;
 	}
 
-	const engine::DxResPtr<ID3D11ShaderResourceView>& TextureManager::LoadTexture(const std::wstring& fileName, bool need_to_force_sRGB)
+	const engine::DxResPtr<ID3D11ShaderResourceView>& TextureManager::LoadTexture(const std::wstring& fileName, 
+		DxResPtr<ID3D11Texture2D>& out_resource, bool need_to_force_sRGB)
 	{
-		std::unordered_map< std::wstring, engine::DxResPtr<ID3D11ShaderResourceView> >::iterator find_it;
-		if ((find_it = m_shaderResourceView.find(fileName)) != m_shaderResourceView.end())
+		std::unordered_map<std::wstring, std::pair<engine::DxResPtr<ID3D11ShaderResourceView>, DxResPtr<ID3D11Resource> >>::iterator find_it;
+		if ((find_it = m_SRVandResource.find(fileName)) != m_SRVandResource.end())
 		{
-			return find_it->second;
+			HRESULT result = find_it->second.second->QueryInterface(IID_ID3D11Texture2D, (void**)out_resource.reset());
+			ALWAYS_ASSERT(result >= 0 && "QueryInterface");
+			return find_it->second.first;
 		}
+		auto& SRVandResource = m_SRVandResource[fileName];
 		if (!need_to_force_sRGB)
 		{
-			HRESULT result = DirectX::CreateDDSTextureFromFile(engine::s_device, engine::s_deviceContext, fileName.c_str(), m_resource.reset(), m_shaderResourceView[fileName].reset());
+			HRESULT result = DirectX::CreateDDSTextureFromFile(engine::s_device, engine::s_deviceContext, fileName.c_str(), SRVandResource.second.reset(), SRVandResource.first.reset());
 			ALWAYS_ASSERT(result >= 0 && "CreateDDSTextureFromFile");
 		}
 		else
@@ -41,18 +45,13 @@ namespace engine
 			HRESULT result = DirectX::CreateDDSTextureFromFileEx(engine::s_device, engine::s_deviceContext,	fileName.c_str(), 0,
 				D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
 				DirectX::DDS_LOADER_FORCE_SRGB,
-				m_resource.reset(), m_shaderResourceView[fileName].reset(), nullptr);
+				SRVandResource.second.reset(), SRVandResource.first.reset(), nullptr);
 			
 			ALWAYS_ASSERT(result >= 0 && "CreateDDSTextureFromFile");
 		}
-		return m_shaderResourceView[fileName];
+		HRESULT result = SRVandResource.second.ptr()->QueryInterface(IID_ID3D11Texture2D, (void**)out_resource.reset());
+		ALWAYS_ASSERT(result >= 0 && "QueryInterface");
+		return SRVandResource.first;
 
-	}
-
-	const engine::DxResPtr<ID3D11ShaderResourceView>& TextureManager::GetTexture(const std::wstring& textureKey)
-	{
-		std::unordered_map< std::wstring, engine::DxResPtr<ID3D11ShaderResourceView> >::iterator result;
-		ALWAYS_ASSERT((result = m_shaderResourceView.find(textureKey)) != m_shaderResourceView.end() && "Bad textureKey");
-		return result->second;
 	}
 }

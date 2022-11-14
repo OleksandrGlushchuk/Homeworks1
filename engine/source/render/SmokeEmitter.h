@@ -3,6 +3,9 @@
 #include "../math/Timer.h"
 #include <vector>
 #include <random>
+#define _USE_MATH_DEFINES
+#include <math.h>
+static const float FRAME_DURATION = 1.f / 60.f;
 
 namespace engine
 {
@@ -34,7 +37,7 @@ namespace engine
 			m_atlasColsNum(atlasColsNum), m_atlasRowsNum(atlasRowsNum)
 		{
 			m_frameDuration = (m_particleSaturateTime + m_particleFadingTime) / float(m_atlasRowsNum * m_atlasColsNum);
-			m_timer.StartTimer();
+			m_timer.RestartTimer();
 		}
 		void Update(const std::chrono::steady_clock::time_point& currentTime, float deltaTime);
 		uint32_t GetParticleNum() { return m_particles.size(); }

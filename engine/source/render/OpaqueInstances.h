@@ -47,12 +47,23 @@ namespace engine
 		struct Instance
 		{
 			uint32_t transform_id;
+			uint16_t modelID;
 			Instance() {}
 			explicit Instance(const Transform& transform)
 			{
 				transform_id = engine::TransformSystem::instance().m_transforms.insert(transform);
 			}
 			explicit Instance(uint32_t copyTransform_ID) : transform_id(copyTransform_ID){}
+		};
+
+		struct GpuInstance
+		{
+			Matr<4> transform;
+			uint16_t modelID;
+			GpuInstance(){}
+			explicit GpuInstance(const Instance& instance) : transform(TransformSystem::instance().m_transforms[instance.transform_id].getTransformMatrix()),
+				modelID(instance.modelID)
+			{}
 		};
 
 		struct MaterialInstance
@@ -98,7 +109,7 @@ namespace engine
 
 		Shader m_shader;
 		std::vector<ModelInstance> m_modelInstances;
-		VertexBuffer<Matr<4>> m_instanceBuffer;
+		VertexBuffer<GpuInstance> m_instanceBuffer;
 		ConstantBuffer<Matr<4>> m_constantBuffer;
 		std::vector<ModelID> m_modelIDs;
 		ConstantBuffer<MaterialConstantBuffer> m_materialConstantBuffer;
