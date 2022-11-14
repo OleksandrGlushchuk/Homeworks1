@@ -45,10 +45,10 @@ namespace engine::windows
 		ShadowManager::instance().SetDirectionalLightShadowDistance(40.f);
 		ShadowManager::instance().SetPointLightDSResolution(1024.f);
 
-		/*ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(-0.5f, 0, 0.f), Vec3(0.2f, 0.1f, 1.f), 
+		ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(-0.5f, 0, 0.f), Vec3(0.2f, 0.1f, 1.f), 
 			1.f, 2.5f, 1.f, 0.15f, 0.3f, 0.7f, 0.2f, 8, 8));
 		ParticleSystem::instance().AddSmokeEmitter(SmokeEmitter(Vec3(0.995f, 0.8f, 0.6f), Vec3(0.01f, 0.01f, 0.01f),
-			0.5f, 3.f, 0.3f, 0.05f, 0.15f, 0.1f, 0.01f, 8, 8));*/
+			0.5f, 3.f, 0.3f, 0.05f, 0.15f, 0.1f, 0.01f, 8, 8));
 
 
 		float aspect = float(wnd.screen.right) / wnd.screen.bottom;
@@ -56,7 +56,7 @@ namespace engine::windows
 		LightSystem::instance().setDirectionalLightFrustum(camera);
 		camera.setWorldOffset(Vec3(0, 0, -2));
 
-		//VegetationSystem::instance().AddGrassArea(4, 4, 0.6f, { -7,-2.55f,-2 });
+		VegetationSystem::instance().AddGrassArea(4, 4, 0.6f, { -7,-2.55f,-2 });
 		//VegetationSystem::instance().AddGrassArea(2, 6, 0.7f, { -10, -2,-2.5f });
 
 		DecalSystem::instance().SetDecalSize(0.4f);

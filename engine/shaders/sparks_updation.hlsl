@@ -62,6 +62,6 @@ void cs_main( uint3 DTid : SV_DispatchThreadID )
         float3 normal = unpackOctahedron(g_normals.Load(sample_location).xy);
             
         particlesData[index].velocity = normalize(normal + normalize(particlesData[index].velocity)) * speed * 0.7f;
-        particlesData[index].position = scenePos.xyz + particlesData[index].velocity;
+        particlesData[index].position += particlesData[index].velocity;
     }
 }
